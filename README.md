@@ -10,7 +10,7 @@ Should you require asistance, fixes, or updates please contact us on support.
 A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com/ShimmerResearch/shimmer3/releases) , we currently recommend using LogAndStream_Shimmer3_BLE_v0.16.002. 
 
 # Quick Start Guide
-1) Use ShimmerExamplePlot
+1) Use ShimmerExamplePlot (both macOS and iOS is supported)
 2) Goto Signing & Capabilities, set to automatically manage signing, set your team
 3) Start the active scheme ShimmerExamplePlot
 4) Update your Shimmer 3 device to the following https://github.com/ShimmerResearch/shimmer3/releases/tag/LogAndStream_Shimmer3_BLE_v0.16.002 ,please note of the bug noted in known issues below, should the bug occur, just press disconnect and re-connect to the device. This bug should only occur once everytime you switch back/on a device. We are working on a fix for the issue, but if there is urgency please contact us on support.
@@ -23,6 +23,12 @@ A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com
 10) In the drop down Select Plot, select Low Noise Accelerometer X_Calibrated_m/s2
 11) In the drop down Number of Signals, select 3
 12) You should now see data from the three axis of the Accelerometer being plotted
+
+
+
+https://github.com/ShimmerEngineering/SwiftAPI/assets/9572576/119f2044-e5a7-4531-a07b-85114c07d77b
+
+
    
 # Known Issues
 1) Currently when using LogAndStream_Shimmer3_BLE_v0.16.002 the first time you connect to a device which has been powered you will require disconnecting from it, should you see the following :- 
