@@ -1,0 +1,686 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3A780CAF2AE12CC400EAF050 /* TestAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CAE2AE12CC400EAF050 /* TestAppApp.swift */; };
+		3A780CB12AE12CC400EAF050 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CB02AE12CC400EAF050 /* ContentView.swift */; };
+		3A780CB32AE12CC500EAF050 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A780CB22AE12CC500EAF050 /* Assets.xcassets */; };
+		3A780CB72AE12CC500EAF050 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3A780CB62AE12CC500EAF050 /* Preview Assets.xcassets */; };
+		3A780CC12AE12CC500EAF050 /* TestAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CC02AE12CC500EAF050 /* TestAppTests.swift */; };
+		3A780CCB2AE12CC500EAF050 /* TestAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CCA2AE12CC500EAF050 /* TestAppUITests.swift */; };
+		3A780CCD2AE12CC500EAF050 /* TestAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CCC2AE12CC500EAF050 /* TestAppUITestsLaunchTests.swift */; };
+		3A780CDC2AE12F2C00EAF050 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CDB2AE12F2C00EAF050 /* ViewModel.swift */; };
+		3AD18D8A2AE1436800AE7475 /* ShimmerBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3AD18D892AE1436800AE7475 /* ShimmerBluetooth.framework */; };
+		3AD18D8B2AE1436800AE7475 /* ShimmerBluetooth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3AD18D892AE1436800AE7475 /* ShimmerBluetooth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3A780CBD2AE12CC500EAF050 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A780CA32AE12CC400EAF050 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A780CAA2AE12CC400EAF050;
+			remoteInfo = TestApp;
+		};
+		3A780CC72AE12CC500EAF050 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A780CA32AE12CC400EAF050 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A780CAA2AE12CC400EAF050;
+			remoteInfo = TestApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3AD18D8C2AE1436800AE7475 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				3AD18D8B2AE1436800AE7475 /* ShimmerBluetooth.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		3A7712922AE2B5C9006213A8 /* TestAppDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestAppDebug.entitlements; sourceTree = "<group>"; };
+		3A7712932AE2BAF9006213A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3A780CAB2AE12CC400EAF050 /* ShimmerExamplePlot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ShimmerExamplePlot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A780CAE2AE12CC400EAF050 /* TestAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppApp.swift; sourceTree = "<group>"; };
+		3A780CB02AE12CC400EAF050 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		3A780CB22AE12CC500EAF050 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3A780CB42AE12CC500EAF050 /* TestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestApp.entitlements; sourceTree = "<group>"; };
+		3A780CB62AE12CC500EAF050 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		3A780CBC2AE12CC500EAF050 /* ShimmerExamplePlotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShimmerExamplePlotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A780CC02AE12CC500EAF050 /* TestAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppTests.swift; sourceTree = "<group>"; };
+		3A780CC62AE12CC500EAF050 /* ShimmerExamplePlotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShimmerExamplePlotUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A780CCA2AE12CC500EAF050 /* TestAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppUITests.swift; sourceTree = "<group>"; };
+		3A780CCC2AE12CC500EAF050 /* TestAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		3A780CDB2AE12F2C00EAF050 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		3AD18D892AE1436800AE7475 /* ShimmerBluetooth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ShimmerBluetooth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3A780CA82AE12CC400EAF050 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AD18D8A2AE1436800AE7475 /* ShimmerBluetooth.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780CB92AE12CC500EAF050 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780CC32AE12CC500EAF050 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3A780CA22AE12CC400EAF050 = {
+			isa = PBXGroup;
+			children = (
+				3A780CAD2AE12CC400EAF050 /* ShimmerExamplePlot */,
+				3A780CBF2AE12CC500EAF050 /* ShimmerExamplePlotTests */,
+				3A780CC92AE12CC500EAF050 /* ShimmerExamplePlotUITests */,
+				3A780CAC2AE12CC400EAF050 /* Products */,
+				3AD18D882AE1435800AE7475 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		3A780CAC2AE12CC400EAF050 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3A780CAB2AE12CC400EAF050 /* ShimmerExamplePlot.app */,
+				3A780CBC2AE12CC500EAF050 /* ShimmerExamplePlotTests.xctest */,
+				3A780CC62AE12CC500EAF050 /* ShimmerExamplePlotUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3A780CAD2AE12CC400EAF050 /* ShimmerExamplePlot */ = {
+			isa = PBXGroup;
+			children = (
+				3A7712932AE2BAF9006213A8 /* Info.plist */,
+				3A7712922AE2B5C9006213A8 /* TestAppDebug.entitlements */,
+				3A780CDB2AE12F2C00EAF050 /* ViewModel.swift */,
+				3A780CAE2AE12CC400EAF050 /* TestAppApp.swift */,
+				3A780CB02AE12CC400EAF050 /* ContentView.swift */,
+				3A780CB22AE12CC500EAF050 /* Assets.xcassets */,
+				3A780CB42AE12CC500EAF050 /* TestApp.entitlements */,
+				3A780CB52AE12CC500EAF050 /* Preview Content */,
+			);
+			path = ShimmerExamplePlot;
+			sourceTree = "<group>";
+		};
+		3A780CB52AE12CC500EAF050 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				3A780CB62AE12CC500EAF050 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		3A780CBF2AE12CC500EAF050 /* ShimmerExamplePlotTests */ = {
+			isa = PBXGroup;
+			children = (
+				3A780CC02AE12CC500EAF050 /* TestAppTests.swift */,
+			);
+			path = ShimmerExamplePlotTests;
+			sourceTree = "<group>";
+		};
+		3A780CC92AE12CC500EAF050 /* ShimmerExamplePlotUITests */ = {
+			isa = PBXGroup;
+			children = (
+				3A780CCA2AE12CC500EAF050 /* TestAppUITests.swift */,
+				3A780CCC2AE12CC500EAF050 /* TestAppUITestsLaunchTests.swift */,
+			);
+			path = ShimmerExamplePlotUITests;
+			sourceTree = "<group>";
+		};
+		3AD18D882AE1435800AE7475 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3AD18D892AE1436800AE7475 /* ShimmerBluetooth.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3A780CAA2AE12CC400EAF050 /* ShimmerExamplePlot */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A780CD02AE12CC500EAF050 /* Build configuration list for PBXNativeTarget "ShimmerExamplePlot" */;
+			buildPhases = (
+				3A780CA72AE12CC400EAF050 /* Sources */,
+				3A780CA82AE12CC400EAF050 /* Frameworks */,
+				3A780CA92AE12CC400EAF050 /* Resources */,
+				3AD18D8C2AE1436800AE7475 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShimmerExamplePlot;
+			productName = TestApp;
+			productReference = 3A780CAB2AE12CC400EAF050 /* ShimmerExamplePlot.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3A780CBB2AE12CC500EAF050 /* ShimmerExamplePlotTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A780CD32AE12CC500EAF050 /* Build configuration list for PBXNativeTarget "ShimmerExamplePlotTests" */;
+			buildPhases = (
+				3A780CB82AE12CC500EAF050 /* Sources */,
+				3A780CB92AE12CC500EAF050 /* Frameworks */,
+				3A780CBA2AE12CC500EAF050 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A780CBE2AE12CC500EAF050 /* PBXTargetDependency */,
+			);
+			name = ShimmerExamplePlotTests;
+			productName = TestAppTests;
+			productReference = 3A780CBC2AE12CC500EAF050 /* ShimmerExamplePlotTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3A780CC52AE12CC500EAF050 /* ShimmerExamplePlotUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A780CD62AE12CC500EAF050 /* Build configuration list for PBXNativeTarget "ShimmerExamplePlotUITests" */;
+			buildPhases = (
+				3A780CC22AE12CC500EAF050 /* Sources */,
+				3A780CC32AE12CC500EAF050 /* Frameworks */,
+				3A780CC42AE12CC500EAF050 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A780CC82AE12CC500EAF050 /* PBXTargetDependency */,
+			);
+			name = ShimmerExamplePlotUITests;
+			productName = TestAppUITests;
+			productReference = 3A780CC62AE12CC500EAF050 /* ShimmerExamplePlotUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3A780CA32AE12CC400EAF050 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					3A780CAA2AE12CC400EAF050 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					3A780CBB2AE12CC500EAF050 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = 3A780CAA2AE12CC400EAF050;
+					};
+					3A780CC52AE12CC500EAF050 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = 3A780CAA2AE12CC400EAF050;
+					};
+				};
+			};
+			buildConfigurationList = 3A780CA62AE12CC400EAF050 /* Build configuration list for PBXProject "ShimmerExamplePlot" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3A780CA22AE12CC400EAF050;
+			productRefGroup = 3A780CAC2AE12CC400EAF050 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3A780CAA2AE12CC400EAF050 /* ShimmerExamplePlot */,
+				3A780CBB2AE12CC500EAF050 /* ShimmerExamplePlotTests */,
+				3A780CC52AE12CC500EAF050 /* ShimmerExamplePlotUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3A780CA92AE12CC400EAF050 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780CB72AE12CC500EAF050 /* Preview Assets.xcassets in Resources */,
+				3A780CB32AE12CC500EAF050 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780CBA2AE12CC500EAF050 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780CC42AE12CC500EAF050 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3A780CA72AE12CC400EAF050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780CB12AE12CC400EAF050 /* ContentView.swift in Sources */,
+				3A780CDC2AE12F2C00EAF050 /* ViewModel.swift in Sources */,
+				3A780CAF2AE12CC400EAF050 /* TestAppApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780CB82AE12CC500EAF050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780CC12AE12CC500EAF050 /* TestAppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780CC22AE12CC500EAF050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780CCD2AE12CC500EAF050 /* TestAppUITestsLaunchTests.swift in Sources */,
+				3A780CCB2AE12CC500EAF050 /* TestAppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3A780CBE2AE12CC500EAF050 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A780CAA2AE12CC400EAF050 /* ShimmerExamplePlot */;
+			targetProxy = 3A780CBD2AE12CC500EAF050 /* PBXContainerItemProxy */;
+		};
+		3A780CC82AE12CC500EAF050 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A780CAA2AE12CC400EAF050 /* ShimmerExamplePlot */;
+			targetProxy = 3A780CC72AE12CC500EAF050 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3A780CCE2AE12CC500EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				NEW_SETTING = "";
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3A780CCF2AE12CC500EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				NEW_SETTING = "";
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		3A780CD12AE12CC500EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ShimmerExamplePlot/TestAppDebug.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ShimmerExamplePlot/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShimmerExamplePlot/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Allow for Bluetooth use";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Please allow using Blueooth for discovering peripherals";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				NEW_SETTING1 = "";
+				NSBluetoothAlwaysUsageDescription = "Our app uses bluetooth to find, connect and transfer data between different devices";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerExamplePlot;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3A780CD22AE12CC500EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ShimmerExamplePlot/TestApp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"ShimmerExamplePlot/Preview Content\"";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				"ENABLE_HARDENED_RUNTIME[sdk=macosx*]" = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ShimmerExamplePlot/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Allow for Bluetooth use";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Please allow using Blueooth for discovering peripherals";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				NEW_SETTING1 = "";
+				NSBluetoothAlwaysUsageDescription = "Our app uses bluetooth to find, connect and transfer data between different devices";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerExamplePlot;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3A780CD42AE12CC500EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.TestAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShimmerExamplePlot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ShimmerExamplePlot";
+			};
+			name = Debug;
+		};
+		3A780CD52AE12CC500EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.TestAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ShimmerExamplePlot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ShimmerExamplePlot";
+			};
+			name = Release;
+		};
+		3A780CD72AE12CC500EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.TestAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TestApp;
+			};
+			name = Debug;
+		};
+		3A780CD82AE12CC500EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.TestAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TestApp;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3A780CA62AE12CC400EAF050 /* Build configuration list for PBXProject "ShimmerExamplePlot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780CCE2AE12CC500EAF050 /* Debug */,
+				3A780CCF2AE12CC500EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A780CD02AE12CC500EAF050 /* Build configuration list for PBXNativeTarget "ShimmerExamplePlot" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780CD12AE12CC500EAF050 /* Debug */,
+				3A780CD22AE12CC500EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A780CD32AE12CC500EAF050 /* Build configuration list for PBXNativeTarget "ShimmerExamplePlotTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780CD42AE12CC500EAF050 /* Debug */,
+				3A780CD52AE12CC500EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A780CD62AE12CC500EAF050 /* Build configuration list for PBXNativeTarget "ShimmerExamplePlotUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780CD72AE12CC500EAF050 /* Debug */,
+				3A780CD82AE12CC500EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3A780CA32AE12CC400EAF050 /* Project object */;
+}

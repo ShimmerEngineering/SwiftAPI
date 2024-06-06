@@ -1,0 +1,625 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3A0B4B632B0DDD4500786295 /* ADCSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0B4B622B0DDD4500786295 /* ADCSensor.swift */; };
+		3A0B4B652B0DDE0000786295 /* GSRSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0B4B642B0DDE0000786295 /* GSRSensor.swift */; };
+		3A0B4B672B0EE42700786295 /* IMUSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0B4B662B0EE42700786295 /* IMUSensor.swift */; };
+		3A1CBAD32AE2DD1C00BC1E54 /* BleByteRadio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A1CBAD22AE2DD1C00BC1E54 /* BleByteRadio.swift */; };
+		3A7712892AE1773E006213A8 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7712882AE1773E006213A8 /* BluetoothManager.swift */; };
+		3A77128D2AE177A4006213A8 /* ShimmerDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A77128C2AE177A4006213A8 /* ShimmerDevice.swift */; };
+		3A77128F2AE177AF006213A8 /* Shimmer3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A77128E2AE177AF006213A8 /* Shimmer3.swift */; };
+		3A7712912AE26805006213A8 /* BLEByteRadioold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7712902AE26805006213A8 /* BLEByteRadioold.swift */; };
+		3A780C8A2AE12BEB00EAF050 /* ShimmerBluetooth.docc in Sources */ = {isa = PBXBuildFile; fileRef = 3A780C892AE12BEB00EAF050 /* ShimmerBluetooth.docc */; };
+		3A780C902AE12BEB00EAF050 /* ShimmerBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A780C852AE12BEB00EAF050 /* ShimmerBluetooth.framework */; };
+		3A780C952AE12BEB00EAF050 /* ShimmerBluetoothTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780C942AE12BEB00EAF050 /* ShimmerBluetoothTests.swift */; };
+		3A780C962AE12BEB00EAF050 /* ShimmerBluetooth.h in Headers */ = {isa = PBXBuildFile; fileRef = 3A780C882AE12BEB00EAF050 /* ShimmerBluetooth.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		3A780CA12AE12C0100EAF050 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3A780CA02AE12C0100EAF050 /* CoreBluetooth.framework */; };
+		3A780CDA2AE12D8300EAF050 /* VerisenseProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A780CD92AE12D8300EAF050 /* VerisenseProtocol.swift */; };
+		3A7A7F242AE7753E001FD6BD /* ShimmerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7A7F232AE7753E001FD6BD /* ShimmerProtocol.swift */; };
+		3A7A7F262AE776FC001FD6BD /* ByteCommunication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7A7F252AE776FC001FD6BD /* ByteCommunication.swift */; };
+		3A7A7F282AE77F0E001FD6BD /* Shimmer3Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A7A7F272AE77F0E001FD6BD /* Shimmer3Protocol.swift */; };
+		3AA359132AF34D89008AD334 /* Shimmer3InfoMem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA359122AF34D89008AD334 /* Shimmer3InfoMem.swift */; };
+		3AA359152AF37943008AD334 /* ConfigByteLayoutShimmer3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AA359142AF37943008AD334 /* ConfigByteLayoutShimmer3.swift */; };
+		3AB320E62B070830003D94F8 /* Sensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB320E52B070830003D94F8 /* Sensor.swift */; };
+		3AB320E82B070910003D94F8 /* LNAccelSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB320E72B070910003D94F8 /* LNAccelSensor.swift */; };
+		3AB320EA2B07092C003D94F8 /* WRAccelSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB320E92B07092C003D94F8 /* WRAccelSensor.swift */; };
+		3AB320EC2B0709DA003D94F8 /* ObjectCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AB320EB2B0709DA003D94F8 /* ObjectCluster.swift */; };
+		3AD7C6032BD23238000E5455 /* SensorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AD7C6022BD23238000E5455 /* SensorTest.swift */; };
+		3AEB12F92BCE6F7E00B5F6F1 /* Shimmer3SpeedTestProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AEB12F82BCE6F7E00B5F6F1 /* Shimmer3SpeedTestProtocol.swift */; };
+		3AED20692B0AF79E0066A0F8 /* TimeSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED20682B0AF79E0066A0F8 /* TimeSensor.swift */; };
+		3AED206B2B0AFCD10066A0F8 /* ShimmerUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED206A2B0AFCD10066A0F8 /* ShimmerUtilities.swift */; };
+		3AED206D2B0B10960066A0F8 /* ShimmerUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED206C2B0B10960066A0F8 /* ShimmerUtilitiesTest.swift */; };
+		3AED20712B0C4BA60066A0F8 /* MagSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED20702B0C4BA60066A0F8 /* MagSensor.swift */; };
+		3AED20732B0C587B0066A0F8 /* GyroSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED20722B0C587B0066A0F8 /* GyroSensor.swift */; };
+		9299E50E2B85054E001EEFE0 /* PressureTempSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E50D2B85054E001EEFE0 /* PressureTempSensor.swift */; };
+		9299E5102B850571001EEFE0 /* BattVoltageSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E50F2B850571001EEFE0 /* BattVoltageSensor.swift */; };
+		92B1067A2B7DAFBC00AB9952 /* EXGSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B106792B7DAFBC00AB9952 /* EXGSensor.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3A780C912AE12BEB00EAF050 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3A780C7C2AE12BEB00EAF050 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3A780C842AE12BEB00EAF050;
+			remoteInfo = ShimmerBluetooth;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3A0B4B622B0DDD4500786295 /* ADCSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ADCSensor.swift; sourceTree = "<group>"; };
+		3A0B4B642B0DDE0000786295 /* GSRSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GSRSensor.swift; sourceTree = "<group>"; };
+		3A0B4B662B0EE42700786295 /* IMUSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IMUSensor.swift; sourceTree = "<group>"; };
+		3A1CBAD22AE2DD1C00BC1E54 /* BleByteRadio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BleByteRadio.swift; sourceTree = "<group>"; };
+		3A7712882AE1773E006213A8 /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		3A77128C2AE177A4006213A8 /* ShimmerDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerDevice.swift; sourceTree = "<group>"; };
+		3A77128E2AE177AF006213A8 /* Shimmer3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer3.swift; sourceTree = "<group>"; };
+		3A7712902AE26805006213A8 /* BLEByteRadioold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BLEByteRadioold.swift; sourceTree = "<group>"; };
+		3A780C852AE12BEB00EAF050 /* ShimmerBluetooth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ShimmerBluetooth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A780C882AE12BEB00EAF050 /* ShimmerBluetooth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShimmerBluetooth.h; sourceTree = "<group>"; };
+		3A780C892AE12BEB00EAF050 /* ShimmerBluetooth.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = ShimmerBluetooth.docc; sourceTree = "<group>"; };
+		3A780C8F2AE12BEB00EAF050 /* ShimmerBluetoothTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ShimmerBluetoothTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A780C942AE12BEB00EAF050 /* ShimmerBluetoothTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerBluetoothTests.swift; sourceTree = "<group>"; };
+		3A780CA02AE12C0100EAF050 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS17.0.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		3A780CD92AE12D8300EAF050 /* VerisenseProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerisenseProtocol.swift; sourceTree = "<group>"; };
+		3A7A7F232AE7753E001FD6BD /* ShimmerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerProtocol.swift; sourceTree = "<group>"; };
+		3A7A7F252AE776FC001FD6BD /* ByteCommunication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteCommunication.swift; sourceTree = "<group>"; };
+		3A7A7F272AE77F0E001FD6BD /* Shimmer3Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer3Protocol.swift; sourceTree = "<group>"; };
+		3AA359122AF34D89008AD334 /* Shimmer3InfoMem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer3InfoMem.swift; sourceTree = "<group>"; };
+		3AA359142AF37943008AD334 /* ConfigByteLayoutShimmer3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigByteLayoutShimmer3.swift; sourceTree = "<group>"; };
+		3AB320E52B070830003D94F8 /* Sensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sensor.swift; sourceTree = "<group>"; };
+		3AB320E72B070910003D94F8 /* LNAccelSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LNAccelSensor.swift; sourceTree = "<group>"; };
+		3AB320E92B07092C003D94F8 /* WRAccelSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WRAccelSensor.swift; sourceTree = "<group>"; };
+		3AB320EB2B0709DA003D94F8 /* ObjectCluster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObjectCluster.swift; sourceTree = "<group>"; };
+		3AD7C6022BD23238000E5455 /* SensorTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SensorTest.swift; sourceTree = "<group>"; };
+		3AEB12F82BCE6F7E00B5F6F1 /* Shimmer3SpeedTestProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shimmer3SpeedTestProtocol.swift; sourceTree = "<group>"; };
+		3AED20682B0AF79E0066A0F8 /* TimeSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeSensor.swift; sourceTree = "<group>"; };
+		3AED206A2B0AFCD10066A0F8 /* ShimmerUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerUtilities.swift; sourceTree = "<group>"; };
+		3AED206C2B0B10960066A0F8 /* ShimmerUtilitiesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShimmerUtilitiesTest.swift; sourceTree = "<group>"; };
+		3AED20702B0C4BA60066A0F8 /* MagSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagSensor.swift; sourceTree = "<group>"; };
+		3AED20722B0C587B0066A0F8 /* GyroSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroSensor.swift; sourceTree = "<group>"; };
+		9299E50D2B85054E001EEFE0 /* PressureTempSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureTempSensor.swift; sourceTree = "<group>"; };
+		9299E50F2B850571001EEFE0 /* BattVoltageSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BattVoltageSensor.swift; sourceTree = "<group>"; };
+		92B106792B7DAFBC00AB9952 /* EXGSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXGSensor.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3A780C822AE12BEB00EAF050 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780CA12AE12C0100EAF050 /* CoreBluetooth.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780C8C2AE12BEB00EAF050 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780C902AE12BEB00EAF050 /* ShimmerBluetooth.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3A780C7B2AE12BEB00EAF050 = {
+			isa = PBXGroup;
+			children = (
+				3A780C872AE12BEB00EAF050 /* ShimmerBluetooth */,
+				3A780C932AE12BEB00EAF050 /* ShimmerBluetoothTests */,
+				3A780C862AE12BEB00EAF050 /* Products */,
+				3A780C9F2AE12C0100EAF050 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		3A780C862AE12BEB00EAF050 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3A780C852AE12BEB00EAF050 /* ShimmerBluetooth.framework */,
+				3A780C8F2AE12BEB00EAF050 /* ShimmerBluetoothTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3A780C872AE12BEB00EAF050 /* ShimmerBluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				3AEB12F82BCE6F7E00B5F6F1 /* Shimmer3SpeedTestProtocol.swift */,
+				3A780C882AE12BEB00EAF050 /* ShimmerBluetooth.h */,
+				3A780C892AE12BEB00EAF050 /* ShimmerBluetooth.docc */,
+				3A7712882AE1773E006213A8 /* BluetoothManager.swift */,
+				3A77128C2AE177A4006213A8 /* ShimmerDevice.swift */,
+				3A77128E2AE177AF006213A8 /* Shimmer3.swift */,
+				3A7A7F272AE77F0E001FD6BD /* Shimmer3Protocol.swift */,
+				3A780CD92AE12D8300EAF050 /* VerisenseProtocol.swift */,
+				3A7A7F232AE7753E001FD6BD /* ShimmerProtocol.swift */,
+				3A7712902AE26805006213A8 /* BLEByteRadioold.swift */,
+				3A1CBAD22AE2DD1C00BC1E54 /* BleByteRadio.swift */,
+				3A7A7F252AE776FC001FD6BD /* ByteCommunication.swift */,
+				3AA359122AF34D89008AD334 /* Shimmer3InfoMem.swift */,
+				3AA359142AF37943008AD334 /* ConfigByteLayoutShimmer3.swift */,
+				3AB320E52B070830003D94F8 /* Sensor.swift */,
+				3A0B4B662B0EE42700786295 /* IMUSensor.swift */,
+				3A0B4B622B0DDD4500786295 /* ADCSensor.swift */,
+				3A0B4B642B0DDE0000786295 /* GSRSensor.swift */,
+				3AED20722B0C587B0066A0F8 /* GyroSensor.swift */,
+				3AB320E72B070910003D94F8 /* LNAccelSensor.swift */,
+				3AED20702B0C4BA60066A0F8 /* MagSensor.swift */,
+				3AB320E92B07092C003D94F8 /* WRAccelSensor.swift */,
+				3AED20682B0AF79E0066A0F8 /* TimeSensor.swift */,
+				3AB320EB2B0709DA003D94F8 /* ObjectCluster.swift */,
+				3AED206A2B0AFCD10066A0F8 /* ShimmerUtilities.swift */,
+				92B106792B7DAFBC00AB9952 /* EXGSensor.swift */,
+				9299E50D2B85054E001EEFE0 /* PressureTempSensor.swift */,
+				9299E50F2B850571001EEFE0 /* BattVoltageSensor.swift */,
+			);
+			path = ShimmerBluetooth;
+			sourceTree = "<group>";
+		};
+		3A780C932AE12BEB00EAF050 /* ShimmerBluetoothTests */ = {
+			isa = PBXGroup;
+			children = (
+				3A780C942AE12BEB00EAF050 /* ShimmerBluetoothTests.swift */,
+				3AED206C2B0B10960066A0F8 /* ShimmerUtilitiesTest.swift */,
+				3AD7C6022BD23238000E5455 /* SensorTest.swift */,
+			);
+			path = ShimmerBluetoothTests;
+			sourceTree = "<group>";
+		};
+		3A780C9F2AE12C0100EAF050 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				3A780CA02AE12C0100EAF050 /* CoreBluetooth.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		3A780C802AE12BEB00EAF050 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A780C962AE12BEB00EAF050 /* ShimmerBluetooth.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		3A780C842AE12BEB00EAF050 /* ShimmerBluetooth */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A780C992AE12BEB00EAF050 /* Build configuration list for PBXNativeTarget "ShimmerBluetooth" */;
+			buildPhases = (
+				3A780C802AE12BEB00EAF050 /* Headers */,
+				3A780C812AE12BEB00EAF050 /* Sources */,
+				3A780C822AE12BEB00EAF050 /* Frameworks */,
+				3A780C832AE12BEB00EAF050 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ShimmerBluetooth;
+			productName = ShimmerBluetooth;
+			productReference = 3A780C852AE12BEB00EAF050 /* ShimmerBluetooth.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		3A780C8E2AE12BEB00EAF050 /* ShimmerBluetoothTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A780C9C2AE12BEB00EAF050 /* Build configuration list for PBXNativeTarget "ShimmerBluetoothTests" */;
+			buildPhases = (
+				3A780C8B2AE12BEB00EAF050 /* Sources */,
+				3A780C8C2AE12BEB00EAF050 /* Frameworks */,
+				3A780C8D2AE12BEB00EAF050 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3A780C922AE12BEB00EAF050 /* PBXTargetDependency */,
+			);
+			name = ShimmerBluetoothTests;
+			productName = ShimmerBluetoothTests;
+			productReference = 3A780C8F2AE12BEB00EAF050 /* ShimmerBluetoothTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3A780C7C2AE12BEB00EAF050 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					3A780C842AE12BEB00EAF050 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					3A780C8E2AE12BEB00EAF050 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 3A780C7F2AE12BEB00EAF050 /* Build configuration list for PBXProject "ShimmerBluetooth" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3A780C7B2AE12BEB00EAF050;
+			productRefGroup = 3A780C862AE12BEB00EAF050 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3A780C842AE12BEB00EAF050 /* ShimmerBluetooth */,
+				3A780C8E2AE12BEB00EAF050 /* ShimmerBluetoothTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3A780C832AE12BEB00EAF050 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780C8D2AE12BEB00EAF050 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3A780C812AE12BEB00EAF050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AED206B2B0AFCD10066A0F8 /* ShimmerUtilities.swift in Sources */,
+				3A780CDA2AE12D8300EAF050 /* VerisenseProtocol.swift in Sources */,
+				3AED20732B0C587B0066A0F8 /* GyroSensor.swift in Sources */,
+				92B1067A2B7DAFBC00AB9952 /* EXGSensor.swift in Sources */,
+				3A7712892AE1773E006213A8 /* BluetoothManager.swift in Sources */,
+				9299E5102B850571001EEFE0 /* BattVoltageSensor.swift in Sources */,
+				3AB320E62B070830003D94F8 /* Sensor.swift in Sources */,
+				3A0B4B672B0EE42700786295 /* IMUSensor.swift in Sources */,
+				3A1CBAD32AE2DD1C00BC1E54 /* BleByteRadio.swift in Sources */,
+				3A7712912AE26805006213A8 /* BLEByteRadioold.swift in Sources */,
+				3A77128D2AE177A4006213A8 /* ShimmerDevice.swift in Sources */,
+				3AA359152AF37943008AD334 /* ConfigByteLayoutShimmer3.swift in Sources */,
+				3AED20692B0AF79E0066A0F8 /* TimeSensor.swift in Sources */,
+				9299E50E2B85054E001EEFE0 /* PressureTempSensor.swift in Sources */,
+				3A0B4B652B0DDE0000786295 /* GSRSensor.swift in Sources */,
+				3AB320EC2B0709DA003D94F8 /* ObjectCluster.swift in Sources */,
+				3A77128F2AE177AF006213A8 /* Shimmer3.swift in Sources */,
+				3AB320E82B070910003D94F8 /* LNAccelSensor.swift in Sources */,
+				3AB320EA2B07092C003D94F8 /* WRAccelSensor.swift in Sources */,
+				3A7A7F262AE776FC001FD6BD /* ByteCommunication.swift in Sources */,
+				3A780C8A2AE12BEB00EAF050 /* ShimmerBluetooth.docc in Sources */,
+				3AED20712B0C4BA60066A0F8 /* MagSensor.swift in Sources */,
+				3A7A7F242AE7753E001FD6BD /* ShimmerProtocol.swift in Sources */,
+				3A7A7F282AE77F0E001FD6BD /* Shimmer3Protocol.swift in Sources */,
+				3AEB12F92BCE6F7E00B5F6F1 /* Shimmer3SpeedTestProtocol.swift in Sources */,
+				3AA359132AF34D89008AD334 /* Shimmer3InfoMem.swift in Sources */,
+				3A0B4B632B0DDD4500786295 /* ADCSensor.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A780C8B2AE12BEB00EAF050 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3AED206D2B0B10960066A0F8 /* ShimmerUtilitiesTest.swift in Sources */,
+				3A780C952AE12BEB00EAF050 /* ShimmerBluetoothTests.swift in Sources */,
+				3AD7C6032BD23238000E5455 /* SensorTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3A780C922AE12BEB00EAF050 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3A780C842AE12BEB00EAF050 /* ShimmerBluetooth */;
+			targetProxy = 3A780C912AE12BEB00EAF050 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3A780C972AE12BEB00EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		3A780C982AE12BEB00EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		3A780C9A2AE12BEB00EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Our app uses bluetooth to find, connect and transfer data between different devices";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBluetooth;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx watchos watchsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,4";
+			};
+			name = Debug;
+		};
+		3A780C9B2AE12BEB00EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Our app uses bluetooth to find, connect and transfer data between different devices";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"@executable_path/../Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBluetooth;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx watchos watchsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,4";
+			};
+			name = Release;
+		};
+		3A780C9D2AE12BEB00EAF050 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBluetoothTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx watchos watchsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,4";
+			};
+			name = Debug;
+		};
+		3A780C9E2AE12BEB00EAF050 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBluetoothTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx watchos watchsimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,4";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3A780C7F2AE12BEB00EAF050 /* Build configuration list for PBXProject "ShimmerBluetooth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780C972AE12BEB00EAF050 /* Debug */,
+				3A780C982AE12BEB00EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A780C992AE12BEB00EAF050 /* Build configuration list for PBXNativeTarget "ShimmerBluetooth" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780C9A2AE12BEB00EAF050 /* Debug */,
+				3A780C9B2AE12BEB00EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A780C9C2AE12BEB00EAF050 /* Build configuration list for PBXNativeTarget "ShimmerBluetoothTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3A780C9D2AE12BEB00EAF050 /* Debug */,
+				3A780C9E2AE12BEB00EAF050 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3A780C7C2AE12BEB00EAF050 /* Project object */;
+}
