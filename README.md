@@ -31,7 +31,7 @@ https://github.com/ShimmerEngineering/SwiftAPI/assets/9572576/119f2044-e5a7-4531
 
    
 # Known Issues
-1) Currently when using LogAndStream_Shimmer3_BLE_v0.16.002 the first time you connect to a device which has been powered you will require disconnecting from it, should you see the following :- 
+1) Currently when using LogAndStream_Shimmer3_BLE_v0.16.002 the first time you connect to a device which has been powered you will require disconnecting and reconnecting to it, should you see the following :- 
 LogAndStream_Shimmer3_BLE_v0.16.002 
 ![F215B9F0-1924-42DC-BE75-27189E26FD97](https://github.com/ShimmerEngineering/SwiftAPI/assets/2862032/66656b2d-85c7-440f-953e-66c6dfcbfa06)
 
