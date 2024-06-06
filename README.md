@@ -6,6 +6,9 @@ Please refer to our [support policy](https://shimmersensing.com/support/wireless
 
 Should you require asistance, fixes, or updates please contact us on support.
 
+# Prerequisites 
+A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com/ShimmerResearch/shimmer3/releases) , we currently recommend using LogAndStream_Shimmer3_BLE_v0.16.002. 
+
 # Quick Start Guide
 1) Use ShimmerExamplePlot
 2) Goto Signing & Capabilities, set to automatically manage signing, set your team
