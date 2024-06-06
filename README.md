@@ -4,7 +4,7 @@ Currently the Shimmer Swift API and Example Projects are released as a Pre-Alpha
 
 Please refer to our [support policy](https://shimmersensing.com/support/wireless-sensor-networks-documentation/) on Pre-Alpha Releases
 
-Should you require asistance, fixes, or updates please contact us on support.
+Should you require asistance, fixes, new features or updates please contact us on support.
 
 # Prerequisites 
 A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com/ShimmerResearch/shimmer3/releases) , we currently recommend using LogAndStream_Shimmer3_BLE_v0.16.002. 
