@@ -24,11 +24,9 @@ A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com
 11) In the drop down Number of Signals, select 3
 12) You should now see data from the three axis of the Accelerometer being plotted
 
-
-
 https://github.com/ShimmerEngineering/SwiftAPI/assets/9572576/119f2044-e5a7-4531-a07b-85114c07d77b
 
-
+https://github.com/ShimmerEngineering/SwiftAPI/assets/9572576/8513c3c9-ff07-4ad1-b1db-8ae65d27c981
    
 # Known Issues
 1) Currently when using LogAndStream_Shimmer3_BLE_v0.16.002 the first time you connect to a device which has been powered you will require disconnecting and reconnecting to it, should you see the following :- 
