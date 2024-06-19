@@ -405,7 +405,10 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
         numberOfPackets+=1
         let endTime = Date()
-        let elapsedTime = endTime.timeIntervalSince(self.startTime)
+        var elapsedTime = endTime.timeIntervalSince(self.startTime)
+        if (elapsedTime == 0){
+            elapsedTime = 1
+        }
         var PRR = Int((((Double)(numberOfPackets)/self.CurrentSamplingRate)/elapsedTime)*100)
         if (PRR>100){
             PRR=100
