@@ -12,6 +12,7 @@ public class ObjectCluster {
     public var SignalNames : [String] = []
     public var SignalData : [Double] = []
     let Seperator = "_"
+    public var PacketReceptionRate = -1
     public func addData(sensorName:String,formatName:String,unitName:String,value:Double){
         let newName = [sensorName,Seperator,formatName,Seperator,unitName].joined()
         SignalNames.append(newName)

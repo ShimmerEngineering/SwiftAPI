@@ -20,7 +20,8 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
     }
 
-    
+    var startTime = Date()
+    var numberOfPackets = 0
     public var REV_HW_MAJOR: Int = -1
     
     public var REV_HW_MINOR: Int = -1
@@ -39,7 +40,6 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     public var EXPANSION_BOARD_REV_SPECIAL: Int = -1
 
-    
     var lnAccelSensor: LNAccelSensor = LNAccelSensor()
     public var wrAccelSensor: WRAccelSensor = WRAccelSensor()
     var timeSensor: TimeSensor = TimeSensor()
@@ -400,6 +400,21 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         if battVoltageSensor.sensorEnabled{
             ojc = battVoltageSensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
+        if (numberOfPackets==0){
+            startTime = Date()
+        }
+        numberOfPackets+=1
+        let endTime = Date()
+        var elapsedTime = endTime.timeIntervalSince(self.startTime)
+        if (elapsedTime == 0){
+            elapsedTime = 1
+        }
+        var PRR = Int((((Double)(numberOfPackets)/self.CurrentSamplingRate)/elapsedTime)*100)
+        if (PRR>100){
+            PRR=100
+        }
+        ojc.PacketReceptionRate = PRR
+        print("Elapsed time: \(elapsedTime) seconds ; Number of packets: \(numberOfPackets) ; Packet Reception Rate(%): \(PRR)")
         return ojc
     }
     
@@ -1145,6 +1160,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
         if (result!){
             print("StartStreaming!")
+            numberOfPackets = 0
             self.changeState(btState:Shimmer3BTState.STREAMING)
         }
         return result
