@@ -7,7 +7,7 @@ Please refer to our [support policy](https://shimmersensing.com/support/wireless
 Should you require asistance, fixes, new features or updates please contact us on support.
 
 # Prerequisites 
-A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com/ShimmerResearch/shimmer3/releases) , we currently recommend using LogAndStream_Shimmer3_BLE_v0.16.002. 
+A Shimmer3 with a RN4678 radio and the appropriate [firmware](https://github.com/ShimmerResearch/shimmer3/releases) , we currently recommend using LogAndStream_Shimmer3_BLE_v0.16.004. 
 
 # Quick Start Guide
 1) Use ShimmerExamplePlot (both macOS and iOS is supported)
@@ -28,11 +28,6 @@ https://github.com/ShimmerEngineering/SwiftAPI/assets/9572576/119f2044-e5a7-4531
 
 https://github.com/ShimmerEngineering/SwiftAPI/assets/9572576/8513c3c9-ff07-4ad1-b1db-8ae65d27c981
    
-# Known Issues
-1) Currently when using LogAndStream_Shimmer3_BLE_v0.16.002 the first time you connect to a device which has been powered you will require disconnecting and reconnecting to it, should you see the following :- 
-LogAndStream_Shimmer3_BLE_v0.16.002 
-![F215B9F0-1924-42DC-BE75-27189E26FD97](https://github.com/ShimmerEngineering/SwiftAPI/assets/2862032/66656b2d-85c7-440f-953e-66c6dfcbfa06)
-
 # The Following Applies To All Code Provided in the repository
 Copyright (c) 2017, Shimmer Research, Ltd. All rights reserved
 
