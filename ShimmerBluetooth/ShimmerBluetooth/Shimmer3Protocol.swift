@@ -11,11 +11,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     enum HardwareType: Int {
         case Shimmer3 = 3
-
+        case Shimmer3R = 10
         var description: String {
             switch self {
             case .Shimmer3:
                 return "Shimmer3"
+            case .Shimmer3R:
+                return "Shimmer3R"
             }
         }
     }
@@ -564,6 +566,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                             if (self.receivedBytes[1] == PacketTypeShimmer.inquiryResponse.rawValue)
                             {
                                 var length = 1 + 1 + 8 //ack + response byte + 8
+                                if (self.REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                                    length = length + 3;
+                                }
                                 var received = Array(self.receivedBytes.prefix(length))
                                 self.receivedBytes.removeFirst(length)
                                 for index in 0..<(received[2+6]+self.CRCMode.rawValue){
