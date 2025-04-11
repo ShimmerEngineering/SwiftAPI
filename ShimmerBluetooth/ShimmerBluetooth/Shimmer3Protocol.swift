@@ -565,13 +565,17 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                         } else if (self.commandSent==PacketTypeShimmer.inquiryCommand){
                             if (self.receivedBytes[1] == PacketTypeShimmer.inquiryResponse.rawValue)
                             {
+                                print(self.receivedBytes.map { String($0) }.joined(separator: " "))
                                 var length = 1 + 1 + 8 //ack + response byte + 8
+                                var xlength = 0
                                 if (self.REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
-                                    length = length + 3;
+                                    xlength = 3
+                                    length = length + xlength
                                 }
                                 var received = Array(self.receivedBytes.prefix(length))
                                 self.receivedBytes.removeFirst(length)
-                                for index in 0..<(received[2+6]+self.CRCMode.rawValue){
+                                
+                                for index in 0..<(received[2+6+xlength]+self.CRCMode.rawValue){
                                     received.append(self.receivedBytes.removeFirst())
                                 }
                                 var crcresult = true
