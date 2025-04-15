@@ -93,6 +93,14 @@ public class BleByteRadio : NSObject, ByteCommunication {
         return true
     }
     
+    public func writeData(data: Data) ->Bool {
+        guard let char = self.characteristics[RBL_CHAR_TX_UUID] else { return false}
+        print("Write Data \(data)")
+        print(char.uuid.uuidString)
+        self.activePeripheral?.writeValue(data, for: char, type: .withResponse)
+        return true
+    }
+    
     public func enableNotifications(enable: Bool) {
         
         guard let char = self.characteristics[RBL_CHAR_RX_UUID] else { return }
