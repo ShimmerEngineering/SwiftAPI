@@ -23,7 +23,7 @@ struct Serve: AsyncParsableCommand {
   static let configuration = CommandConfiguration(abstract: "Starts a greeter server.")
 
   @Option(help: "The port to listen on")
-  var port: Int = 5000
+  var port: Int = 50052
 
   func run() async throws {
     let server = GRPCServer(

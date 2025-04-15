@@ -14,7 +14,7 @@ public class ConcurrentQueue<T> {
     public init() { }
     
     public func enqueue(_ element: T) {
-        dispatchQueue.async(flags: .barrier) {
+        dispatchQueue.sync(flags: .barrier) {
             self.queue.append(element)
         }
     }
