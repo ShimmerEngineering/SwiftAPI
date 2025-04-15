@@ -271,7 +271,7 @@ extension BleByteRadio : CBPeripheralDelegate {
             if let data = characteristic.value {
                 //self.processData(data)
                 print(data)
-                self.delegate?.byteCommunicationDataReceived(data: data)
+                self.delegate?.byteCommunicationDataReceived(data: data, deviceName: (deviceName ?? ""))
             }
         }
     }
