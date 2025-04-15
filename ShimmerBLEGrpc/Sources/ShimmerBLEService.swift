@@ -17,7 +17,6 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     
     private var bluetoothManager: BluetoothManager?
     private var centralManager: CBCentralManager?
-    private var radio: BleByteRadio?
     private var deviceNameToConnect: String = ""
     private var isConnecting: Bool = false
     
@@ -40,8 +39,8 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     func writeBytesShimmer(request: ShimmerBLEGRPC_WriteBytes, context: GRPCCore.ServerContext) async throws -> ShimmerBLEGRPC_Reply {
-        print("Received writeBytes request for: " + request.address)
-        radio!.writeData(data: request.byteToWrite)
+//        print("Received writeBytes request for: " + request.address)
+        radioMap[request.address]!.writeData(data: request.byteToWrite)
         return ShimmerBLEGRPC_Reply.with {
             $0.message = "Written " + request.address
         }
@@ -125,11 +124,12 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
         bluetoothDeviceMap[deviceNameToConnect] = peripheral
         queueMap[deviceNameToConnect] = ConcurrentQueue<Data>()
         
-        self.radio = BleByteRadio(deviceName: deviceNameToConnect,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
-        self.radio?.delegate = self
+        var radio = BleByteRadio(deviceName: deviceNameToConnect,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
+        radio.delegate = self
 
-        var success = await radio?.connect()
+        var success = await radio.connect()
         if(success ?? false) {
+            radioMap[deviceNameToConnect] = radio
             let status = ShimmerBLEGRPC_StateStatus.with {
                 $0.state = ShimmerBLEGRPC_BluetoothState.connected
                 $0.message = "Success"
@@ -146,10 +146,11 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     
     func startDisconnectShimmer(name: String) {
         Task {
-            await radio?.disconnect()
+            await radioMap[name]?.disconnect()
             bluetoothDeviceMap.removeValue(forKey: name)
             connectStreamMap.removeValue(forKey: name)
             queueMap.removeValue(forKey: name)
+            radioMap.removeValue(forKey: name)
         }
     }
     
