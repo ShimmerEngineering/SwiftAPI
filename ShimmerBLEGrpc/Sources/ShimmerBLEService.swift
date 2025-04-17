@@ -61,10 +61,10 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
         print("Received connectShimmer request for: " + deviceNameToConnect)
         
         print("Start Bluetooth Manager Scan")
-        var res = bluetoothManager?.startScanning(deviceName: deviceNameToConnect, timeout: 3)
+        var res = self.bluetoothManager?.startScanning(deviceName: self.deviceNameToConnect, timeout: 3)
         
         connectStreamMap[deviceNameToConnect] = response
-        await writeConnectingState(response: response)
+        await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.connecting, message: "Connecting")
         
         try await Task.sleep(for: .seconds(4))
         while(bluetoothDeviceMap.keys.contains(deviceNameToConnect)) {
@@ -73,15 +73,18 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
         }
     }
     
-    private func writeConnectingState(response: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>) async {
-        var status = ShimmerBLEGRPC_StateStatus()
-        status.state = ShimmerBLEGRPC_BluetoothState.connecting
-        status.message = "Connecting"
-        let stateStatusStream = connectStreamMap[deviceNameToConnect]
-        do {
-            try await stateStatusStream?.write(status)
-        } catch let error {
-            print(error)
+    private func writeStatusResponse(deviceName: String, state: ShimmerBLEGRPC_BluetoothState, message: String) async {
+        var stateStatusStream = connectStreamMap[deviceName]
+        if(stateStatusStream != nil) {
+            let status = ShimmerBLEGRPC_StateStatus.with {
+                $0.state = state
+                $0.message = message
+            }
+            do {
+                try await stateStatusStream?.write(status)
+            } catch let error {
+                print(error)
+            }
         }
     }
     
@@ -120,27 +123,24 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     
     func startConnectShimmer() async {
         let peripheral = bluetoothManager?.getPeripheral(deviceName: deviceNameToConnect)
-        
-        bluetoothDeviceMap[deviceNameToConnect] = peripheral
-        queueMap[deviceNameToConnect] = ConcurrentQueue<Data>()
-        
-        var radio = BleByteRadio(deviceName: deviceNameToConnect,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
-        radio.delegate = self
-
-        var success = await radio.connect()
-        if(success ?? false) {
-            radioMap[deviceNameToConnect] = radio
-            let status = ShimmerBLEGRPC_StateStatus.with {
-                $0.state = ShimmerBLEGRPC_BluetoothState.connected
-                $0.message = "Success"
+        if(peripheral != nil) {
+            bluetoothDeviceMap[deviceNameToConnect] = peripheral
+            queueMap[deviceNameToConnect] = ConcurrentQueue<Data>()
+            
+            let radio = BleByteRadio(deviceName: deviceNameToConnect,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
+            radio.delegate = self
+            
+            let success = await radio.connect()
+            if(success ?? false) {
+                radioMap[deviceNameToConnect] = radio
+                await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.connected, message: "Success")
+            } else {
+                await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.disconnected, message: "Radio failed to connect")
             }
-            let stateStatusStream = connectStreamMap[deviceNameToConnect]
-            do {
-                try await stateStatusStream?.write(status)
-            } catch let error {
-                print(error)
-            }
+        } else {
+            await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.disconnected, message: "Failed to discover device")
         }
+        
         isConnecting = false
     }
     
