@@ -59,8 +59,6 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
         deviceNameToConnect = request.name
         isConnecting = true
         print("Received connectShimmer request for: " + deviceNameToConnect)
-        
-        print("Start Bluetooth Manager Scan")
         var res = self.bluetoothManager?.startScanning(deviceName: self.deviceNameToConnect, timeout: 3)
         
         connectStreamMap[deviceNameToConnect] = response
@@ -158,7 +156,6 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
 
 extension ShimmerBLEService : BluetoothManagerDelegate {
     func scanCompleted() {
-        print("Bluetooth Manager Scan Completed")
         if(isConnecting) {
             Task {
                 await startConnectShimmer()
