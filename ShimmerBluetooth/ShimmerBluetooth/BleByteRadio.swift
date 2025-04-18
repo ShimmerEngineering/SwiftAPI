@@ -9,7 +9,7 @@ public class BleByteRadio : NSObject, ByteCommunication {
     private var bluetoothManager: BluetoothManager?
     public static let VERISENSE = "Verisense"
     public static let SHIMMER3 = "Shimmer3"
-    public static let SHIMMER3R = "Shimmer3r"
+    public static let SHIMMER3R = "Shimmer3R"
     private var continuation: CheckedContinuation<Bool?, Never>?
     public static let VERISENSE_RBL_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
     public static let VERISENSE_RBL_CHAR_RX_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
