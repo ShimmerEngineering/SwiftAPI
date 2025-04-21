@@ -266,7 +266,12 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 }
                 shimmer3InfoMem.configByteParse(configBytes: infoMem)
                 initializeSensors()
-                await sendPressureCalibCoefficientsCommand()
+                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
+                    await sendBMP280PressureCalibCoefficientsCommand()
+                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                    await sendPressureCalibCoefficientsCommand()
+                }
+                
                 await sendInquiryCommand()
                 changeState(btState:Shimmer3BTState.CONNECTED)
                 print("Current State: \(BTState)")
@@ -1292,7 +1297,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
     }
     
-    private func sendPressureCalibCoefficientsCommand() async -> Bool?{
+    private func sendBMP280PressureCalibCoefficientsCommand() async -> Bool?{
         
         let bytes:[UInt8] = [PacketTypeShimmer.getBmp280CalibrationCoefficientsCommand.rawValue]
         commandSent = PacketTypeShimmer.getBmp280CalibrationCoefficientsCommand
@@ -1305,6 +1310,10 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 self.continuation = continuation
             }
         }
+    }
+    
+    private func sendPressureCalibCoefficientsCommand() async -> Bool?{
+        
     }
     
     public func sendSetSamplingRateCommand(samplingRate: Double) async -> Bool?{
@@ -1771,6 +1780,8 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case bmp180CalibrationCoefficientsResponse = 0x58
         case getBmp280CalibrationCoefficientsCommand = 0xA0
         case bmp280CalibrationCoefficientsResponse = 0x9F
+        case getpressureCalibrationCoefficientsCommand = 0xA7
+        case pressureCalibrationCoefficientsResponse = 0xA6
         case setExgRegsCommand = 0x61
         case exgRegsResponse = 0x62
         case getExgRegsCommand = 0x63
