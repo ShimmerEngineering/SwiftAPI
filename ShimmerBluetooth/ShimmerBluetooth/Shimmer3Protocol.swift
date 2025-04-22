@@ -10,6 +10,7 @@ import Foundation
 public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     enum HardwareType: Int {
+        case UNKNOWN = -1
         case Shimmer3 = 3
         case Shimmer3R = 10
         var description: String {
@@ -18,6 +19,8 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 return "Shimmer3"
             case .Shimmer3R:
                 return "Shimmer3R"
+            case .UNKNOWN:
+                return "Unknown"
             }
         }
     }
@@ -42,11 +45,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     public var EXPANSION_BOARD_REV_SPECIAL: Int = -1
 
-    var lnAccelSensor: LNAccelSensor = LNAccelSensor()
-    public var wrAccelSensor: WRAccelSensor = WRAccelSensor()
+    var lnAccelSensor: LNAccelSensor = LNAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
+    public var wrAccelSensor: WRAccelSensor = WRAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var timeSensor: TimeSensor = TimeSensor()
-    var magSensor: MagSensor = MagSensor()
-    public var gyroSensor: GyroSensor = GyroSensor()
+    public var magSensor: MagSensor = MagSensor(hwid: HardwareType.UNKNOWN.rawValue)
+    public var gyroSensor: GyroSensor = GyroSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var adcA13Sensor: ADCSensor = ADCSensor()
     var adcA12Sensor: ADCSensor = ADCSensor()
     var adcA1Sensor: ADCSensor = ADCSensor()
@@ -304,11 +307,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     func createSensors(){
         if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
-            lnAccelSensor = LNAccelSensor()
-            wrAccelSensor = WRAccelSensor()
+            lnAccelSensor = LNAccelSensor(hwid: REV_HW_MAJOR)
+            wrAccelSensor = WRAccelSensor(hwid: REV_HW_MAJOR)
             timeSensor = TimeSensor()
-            magSensor = MagSensor()
-            gyroSensor = GyroSensor()
+            magSensor = MagSensor(hwid: REV_HW_MAJOR)
+            gyroSensor = GyroSensor(hwid: REV_HW_MAJOR)
             adcA13Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A13)
             adcA12Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A12)
             adcA1Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A1)
@@ -319,6 +322,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             exgSensor = EXGSensor()
             pressureTempSensor = PressureTempSensor()
             battVoltageSensor = BattVoltageSensor()
+        } else if(REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+            lnAccelSensor = LNAccelSensor(hwid: REV_HW_MAJOR)
+            timeSensor = TimeSensor()
         }
     }
     
@@ -340,6 +346,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             exgSensor.setInfoMem(infomem: infoMem)
             pressureTempSensor.setInfoMom(infomem: infoMem)
             battVoltageSensor.setInfoMom(infomem: infoMem)
+        } else  if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+            timeSensor.setInfoMem(infomem: infoMem)
+            lnAccelSensor.setInfoMem(infomem: infoMem)
         }
     }
 
@@ -430,7 +439,6 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     public let TimeStampPacketByteSize = 3;
     private var EnabledSensors = 0;
     private var PacketSize = 0;
-    private var SignalNameArray = [String]()
     private var SignalDataTypeArray = [SensorDataType]()
     private var processing: Bool = false
     
@@ -835,14 +843,10 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     
     func interpretDataPacketFormat(nC: Int, signalid: [UInt8]) {
-        var signalNameArray = [String]()
-        var signalDataTypeArray = [SensorDataType]()
-        signalNameArray.append(ShimmerConfiguration.SignalNames.TIMESTAMP)
         //signalDataTypeArray.append("u16")
         var packetSize = 2 // Time stamp
 
         //if CompatibilityCode >= 6 {
-        signalDataTypeArray.append(SensorDataType.u24)
         packetSize = TimeStampPacketByteSize // Time stamp
         timeSensor.packetIndexTimeStamp = 0
         timeSensor.sensorEnabled = true
@@ -855,242 +859,119 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
 
             switch signalIdByte {
             case ChannelContentsShimmer3.XLNAccel.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(LNAccelSensor.LOW_NOISE_ACCELEROMETER_X)
-                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
-                    signalDataTypeArray.append(SensorDataType.u12)
-                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
-                    signalDataTypeArray.append(SensorDataType.i16)
-                }
                 lnAccelSensor.packetIndexAccelX = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_A_ACCEL.rawValue)
-                /*} else if HardwareVersion == ShimmerVersion.SHIMMER2R {
-                    signalNameArray.append(Shimmer2Configuration.SignalNames.ACCELEROMETER_X)
-                    signalDataTypeArray.append("u12")
-                    packetSize += 2
-                    enabledSensors |= Int(SensorBitmapShimmer2.SENSOR_ACCEL)
-                }*/
             case ChannelContentsShimmer3.YLNAccel.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(LNAccelSensor.LOW_NOISE_ACCELEROMETER_Y)
-                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
-                    signalDataTypeArray.append(SensorDataType.u12)
-                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
-                    signalDataTypeArray.append(SensorDataType.i16)
-                }
                 lnAccelSensor.packetIndexAccelY = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_A_ACCEL.rawValue)
-                /*} else if HardwareVersion == ShimmerVersion.SHIMMER2R {
-                    signalNameArray.append(Shimmer2Configuration.SignalNames.ACCELEROMETER_Y)
-                    signalDataTypeArray.append("u12")
-                    packetSize += 2
-                    enabledSensors |= Int(SensorBitmapShimmer2.SENSOR_ACCEL)
-                }*/
             case ChannelContentsShimmer3.ZLNAccel.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(LNAccelSensor.LOW_NOISE_ACCELEROMETER_Z)
-                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
-                    signalDataTypeArray.append(SensorDataType.u12)
-                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
-                    signalDataTypeArray.append(SensorDataType.i16)
-                }
                 lnAccelSensor.packetIndexAccelZ = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_A_ACCEL.rawValue)
-                /*} else if HardwareVersion == ShimmerVersion.SHIMMER2R {
-                    signalNameArray.append(Shimmer2Configuration.SignalNames.ACCELEROMETER_Z)
-                    signalDataTypeArray.append("u12")
-                    packetSize += 2
-                    enabledSensors |= Int(SensorBitmapShimmer2.SENSOR_ACCEL)
-                }*/
             case ChannelContentsShimmer3.VBatt.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(Shimmer3Configuration.SignalNames.V_SENSE_BATT)
-                signalDataTypeArray.append(SensorDataType.i16)
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_VBATT.rawValue)
-                /*} else if HardwareVersion == ShimmerVersion.SHIMMER2R {
-                    signalNameArray.append(Shimmer2Configuration.SignalNames.GYROSCOPE_X)
-                    signalDataTypeArray.append("u12")
-                    packetSize += 2
-                    enabledSensors |= Int(SensorBitmapShimmer2.SENSOR_GYRO)
-                }*/
-            // Add more cases for other signal IDs...
             case ChannelContentsShimmer3.XWRAccel.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(WRAccelSensor.WIDE_RANGE_ACCELEROMETER_X)
-                signalDataTypeArray.append(SensorDataType.i16)
                 wrAccelSensor.packetIndexAccelX = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_D_ACCEL.rawValue)
-                
             case ChannelContentsShimmer3.YWRAccel.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(WRAccelSensor.WIDE_RANGE_ACCELEROMETER_Y)
-                signalDataTypeArray.append(SensorDataType.i16)
                 wrAccelSensor.packetIndexAccelY = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_D_ACCEL.rawValue)
-                
             case ChannelContentsShimmer3.ZWRAccel.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(WRAccelSensor.WIDE_RANGE_ACCELEROMETER_Z)
-                signalDataTypeArray.append(SensorDataType.i16)
                 wrAccelSensor.packetIndexAccelZ = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_D_ACCEL.rawValue)
             case ChannelContentsShimmer3.XMag.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(Shimmer3Configuration.SignalNames.MAGNETOMETER_X)
-                signalDataTypeArray.append(SensorDataType.i16)
                 magSensor.packetIndexMagX = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LSM303DLHC_MAG.rawValue)
-                
             case ChannelContentsShimmer3.YMag.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(Shimmer3Configuration.SignalNames.MAGNETOMETER_Y)
-                signalDataTypeArray.append(SensorDataType.i16)
                 magSensor.packetIndexMagY = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LSM303DLHC_MAG.rawValue)
-                
             case ChannelContentsShimmer3.ZMag.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(Shimmer3Configuration.SignalNames.MAGNETOMETER_Z)
-                signalDataTypeArray.append(SensorDataType.i16)
                 magSensor.packetIndexMagZ = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LSM303DLHC_MAG.rawValue)
             case ChannelContentsShimmer3.XGyro.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(GyroSensor.GYROSCOPE_X)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 gyroSensor.packetIndexGyroX = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_MPU9150_GYRO.rawValue)
-                
             case ChannelContentsShimmer3.YGyro.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(GyroSensor.GYROSCOPE_Y)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 gyroSensor.packetIndexGyroY = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_MPU9150_GYRO.rawValue)
-                
             case ChannelContentsShimmer3.ZGyro.rawValue:
-                //if HardwareVersion == ShimmerVersion.SHIMMER3 {
-                signalNameArray.append(GyroSensor.GYROSCOPE_Z)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 gyroSensor.packetIndexGyroZ = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_MPU9150_GYRO.rawValue)
             case ChannelContentsShimmer3.GsrRaw.rawValue:
-                signalNameArray.append(GSRSensor.GSR)
-                signalDataTypeArray.append(SensorDataType.u16)
                 gsrSensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_GSR.rawValue)
             case ChannelContentsShimmer3.Exg1_Status.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG1_STATUS)
-                signalDataTypeArray.append(SensorDataType.u8)
                 packetSize += 1
             case ChannelContentsShimmer3.Exg1_CH1.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG1_CH1_24BIT)
-                signalDataTypeArray.append(SensorDataType.i24MSB)
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue)
             case ChannelContentsShimmer3.Exg1_CH2.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG1_CH2_24BIT)
-                signalDataTypeArray.append(SensorDataType.i24MSB)
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue)
             case ChannelContentsShimmer3.Exg2_Status.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG2_STATUS)
-                signalDataTypeArray.append(SensorDataType.u8)
                 packetSize += 1
             case ChannelContentsShimmer3.Exg2_CH1.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG2_CH1_24BIT)
-                signalDataTypeArray.append(SensorDataType.i24MSB)
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG2_24BIT.rawValue)
             case ChannelContentsShimmer3.Exg2_CH2.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG2_CH2_24BIT)
-                signalDataTypeArray.append(SensorDataType.i24MSB)
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG2_24BIT.rawValue)
             case ChannelContentsShimmer3.Exg1_CH1_16Bit.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG1_CH1_16BIT)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG1_16BIT.rawValue)
             case ChannelContentsShimmer3.Exg1_CH2_16Bit.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG1_CH2_16BIT)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG1_16BIT.rawValue)
             case ChannelContentsShimmer3.Exg2_CH1_16Bit.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG2_CH1_16BIT)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG2_16BIT.rawValue)
             case ChannelContentsShimmer3.Exg2_CH2_16Bit.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.EXG2_CH2_16BIT)
-                signalDataTypeArray.append(SensorDataType.i16MSB)
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG2_16BIT.rawValue)
             case ChannelContentsShimmer3.InternalAdc13.rawValue:
-                signalNameArray.append(ADCSensor.ADCType.Shimmer3_A13.description)
-                signalDataTypeArray.append(SensorDataType.u12)
                 adcA13Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A13.rawValue)
             case ChannelContentsShimmer3.ExternalAdc15.rawValue:
-                signalNameArray.append(ADCSensor.ADCType.Shimmer3_A15.description)
-                signalDataTypeArray.append(SensorDataType.u12)
                 adcA15Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A15.rawValue)
             case ChannelContentsShimmer3.InternalAdc12.rawValue:
-                signalNameArray.append(ADCSensor.ADCType.Shimmer3_A12.description)
-                signalDataTypeArray.append(SensorDataType.u12)
                 adcA12Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A12.rawValue)
             case ChannelContentsShimmer3.InternalAdc1.rawValue:
-                signalNameArray.append(ADCSensor.ADCType.Shimmer3_A1.description)
-                signalDataTypeArray.append(SensorDataType.u12)
                 adcA1Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A1.rawValue)
             case ChannelContentsShimmer3.ExternalAdc6.rawValue:
-                signalNameArray.append(ADCSensor.ADCType.Shimmer3_A6.description)
-                signalDataTypeArray.append(SensorDataType.u12)
                 adcA6Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A6.rawValue)
             case ChannelContentsShimmer3.ExternalAdc7.rawValue:
-                signalNameArray.append(ADCSensor.ADCType.Shimmer3_A7.description)
-                signalDataTypeArray.append(SensorDataType.u12)
                 adcA7Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A7.rawValue)
             case ChannelContentsShimmer3.Temperature.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.TEMPERATURE)
-                signalDataTypeArray.append(SensorDataType.u16MSB)
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_BMP180_PRESSURE.rawValue)
             case ChannelContentsShimmer3.Pressure.rawValue:
-                signalNameArray.append(Shimmer3Configuration.SignalNames.PRESSURE)
-                signalDataTypeArray.append(SensorDataType.u24MSB)
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_BMP180_PRESSURE.rawValue)
-          
             default:
-                signalNameArray.append("")
-                signalDataTypeArray.append(SensorDataType.u12)
                 packetSize += 2
             }
 
@@ -1098,12 +979,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
         
         EnabledSensors = enabledSensors
-        SignalNameArray = signalNameArray
-        SignalDataTypeArray = signalDataTypeArray
         PacketSize = packetSize + Int(CRCMode.rawValue)
-        
-        print(SignalNameArray)
-        print(SignalDataTypeArray)
         print(PacketSize)
         //print("Packet Size : \(PacketSize)  CRC Mode and starting byte not included")
     }

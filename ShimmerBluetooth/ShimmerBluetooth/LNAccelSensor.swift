@@ -17,16 +17,25 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
     var AlignmentMatrix:[[Double]] = [[]]
     var SensitivityMatrix:[[Double]] = [[]]
     var OffsetVector:[Double]=[]
-    let CALIBRATION_ID = 2
+    var CalibrationID = 2
     
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         let x = Array(sensorPacket[packetIndexAccelX..<packetIndexAccelX+2])
         let y = Array(sensorPacket[packetIndexAccelY..<packetIndexAccelY+2])
         let z = Array(sensorPacket[packetIndexAccelZ..<packetIndexAccelZ+2])
-        let rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.u12)!)
-        let rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.u12)!)
-        let rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.u12)!)
-        
+        var rawDataX: Double = 0
+        var rawDataY: Double = 0
+        var rawDataZ: Double = 0
+        if (HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+            rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.u12)!)
+            rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.u12)!)
+            rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.u12)!)
+        } else if (HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+            rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.i16)!)
+            rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i16)!)
+            rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.i16)!)
+            print("raw LN X : \(rawDataX) ,  raw LN Y : \(rawDataY),  raw LN Z : \(rawDataZ)")
+        }
         if (calibrationEnabled){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
             let(calData)=LNAccelSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)
@@ -44,8 +53,11 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
     }
     
     public override func parseSensorCalibrationDump(bytes: [UInt8]){
+        if (HardwareVersion==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+            CalibrationID = 37
+        }
         var sensorID = Int(bytes[0]) + (Int(bytes[1])<<8)
-        if bytes[0] == CALIBRATION_ID {
+        if bytes[0] == CalibrationID {
             var range = bytes[2]
             var calbytes = bytes
             calbytes.removeFirst(12)

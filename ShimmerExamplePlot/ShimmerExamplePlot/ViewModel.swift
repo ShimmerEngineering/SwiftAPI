@@ -118,11 +118,11 @@ class ViewModel: NSObject, ObservableObject {
     
     func sendInfoMemConfigUpdate() async {
         var infomem =  shimmer3Protocol?.getInfoMemByteArray()
-        var wrAccel = WRAccelSensor()
-        infomem = wrAccel.updateInfoMemAccelRange(infomem: infomem!, range: WRAccelSensor.Range.fromValue(UInt8(wrRangeIndex))!)
+        var wrAccel = shimmer3Protocol?.wrAccelSensor
+        infomem = wrAccel?.updateInfoMemAccelRange(infomem: infomem!, range: WRAccelSensor.Range.fromValue(UInt8(wrRangeIndex))!)
         
-        var gyro = GyroSensor()
-        infomem = gyro.updateInfoMemGyroRange(infomem: infomem!, range: GyroSensor.Range.fromValue(UInt8(gyroRangeIndex))!)
+        var gyro = shimmer3Protocol?.gyroSensor
+        infomem = gyro?.updateInfoMemGyroRange(infomem: infomem!, range: GyroSensor.Range.fromValue(UInt8(gyroRangeIndex))!)
         
         var press = PressureTempSensor()
         infomem = press.updateInfoMemPressureResolution(infomem: infomem!, res: PressureTempSensor.Resolution.fromValue(UInt8(pressResIndex))!)
@@ -140,14 +140,14 @@ class ViewModel: NSObject, ObservableObject {
         infomem = shimmer3Protocol?.updateInfoMemSamplingRate(infomem: infomem!,samplingRateFreq: samplingRate!)
         infomem = shimmer3Protocol?.exgSensor.updateInfoMemExgRate(infomem: infomem!,samplingRateFreq: samplingRate!)
         let updatedSensors = shimmer3Protocol?.isShimmer3withUpdatedSensors()
-        var mag = MagSensor()
-        infomem = mag.setLowPowerMag(enable:false, isShimmer3withUpdatedSensors: updatedSensors!, isShimmer3Sensor: (shimmer3Protocol?.isShimmer3Sensor())!, samplingRate: samplingRate!, infomem: infomem!)
+        var mag = shimmer3Protocol?.magSensor
+        infomem = mag?.setLowPowerMag(enable:false, isShimmer3withUpdatedSensors: updatedSensors!, isShimmer3Sensor: (shimmer3Protocol?.isShimmer3Sensor())!, samplingRate: samplingRate!, infomem: infomem!)
 
-        var wrAccel = WRAccelSensor()
-        infomem = wrAccel.setLowPowerWRAccel(enable:false, isShimmer3withUpdatedSensors: updatedSensors!, samplingRate: samplingRate!, infomem: infomem!)
+        var wrAccel = shimmer3Protocol?.wrAccelSensor
+        infomem = wrAccel?.setLowPowerWRAccel(enable:false, isShimmer3withUpdatedSensors: updatedSensors!, samplingRate: samplingRate!, infomem: infomem!)
         
-        var gyro = GyroSensor()
-        infomem = gyro.setLowPowerGyro(enable:false, samplingRate: samplingRate!, infomem: infomem!)
+        var gyro = shimmer3Protocol?.gyroSensor
+        infomem = gyro?.setLowPowerGyro(enable:false, samplingRate: samplingRate!, infomem: infomem!)
         await shimmer3Protocol?.writeShimmer3InfoMem(infoMem: infomem!)
 
     }
@@ -303,43 +303,45 @@ extension ViewModel : ShimmerProtocolDelegate {
     }
 
     func shimmerProtocolNewObjectCluster(message: ShimmerBluetooth.ObjectCluster) {
-        print(message)
-        
-        if (!updatedPicker){
-            pickerData = message.SignalNames;
-            updatedPicker = true;
-        }
-        
-        if (message.SignalData.count>=1){
-            if (message.SignalData.count<startIndex+numberOfSignals){
-                startIndex=0
+        DispatchQueue.main.async {
+            print(message)
+            
+            if (!self.updatedPicker) {
+                self.pickerData = message.SignalNames
+                self.updatedPicker = true
             }
-            if (numberOfSignals>0){
-                self.signal1.append(message.SignalData[startIndex+0])
+            
+            if (message.SignalData.count >= 1) {
+                if (message.SignalData.count < self.startIndex + self.numberOfSignals) {
+                    self.startIndex = 0
+                }
+                if (self.numberOfSignals > 0) {
+                    self.signal1.append(message.SignalData[self.startIndex + 0])
+                }
             }
-        }
-        if (message.SignalData.count>=2){
-            if (numberOfSignals>1){
-                self.signal2.append(message.SignalData[startIndex+1])
+            if (message.SignalData.count >= 2) {
+                if (self.numberOfSignals > 1) {
+                    self.signal2.append(message.SignalData[self.startIndex + 1])
+                }
             }
-        }
-        if (message.SignalData.count>=3){
-            if (numberOfSignals>2){
-                self.signal3.append(message.SignalData[startIndex+2])
+            if (message.SignalData.count >= 3) {
+                if (self.numberOfSignals > 2) {
+                    self.signal3.append(message.SignalData[self.startIndex + 2])
+                }
             }
-        }
-        if (signal1.count==500){
-            signal1.removeFirst()
-        }
-        if (signal2.count==500){
-            signal2.removeFirst()
-        }
-        if (signal3.count==500){
-            signal3.removeFirst()
-        }
-        self.count+=1
-        if (self.count%10 == 0){
-            self.delegate?.plotEvent(message: "")
+            if (self.signal1.count == 500) {
+                self.signal1.removeFirst()
+            }
+            if (self.signal2.count == 500) {
+                self.signal2.removeFirst()
+            }
+            if (self.signal3.count == 500) {
+                self.signal3.removeFirst()
+            }
+            self.count += 1
+            if (self.count % 10 == 0) {
+                self.delegate?.plotEvent(message: "")
+            }
         }
     }
     
