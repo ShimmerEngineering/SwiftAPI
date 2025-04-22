@@ -39,7 +39,6 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     func writeBytesShimmer(request: ShimmerBLEGRPC_WriteBytes, context: GRPCCore.ServerContext) async throws -> ShimmerBLEGRPC_Reply {
-//        print("Received writeBytes request for: " + request.address)
         radioMap[request.address]!.writeData(data: request.byteToWrite)
         return ShimmerBLEGRPC_Reply.with {
             $0.message = "Written " + request.address
@@ -56,30 +55,41 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     
     //Initiates a BLE scan first, before completing the process in startConnectShimmer()
     func connectShimmer(request: ShimmerBLEGRPC_Request, response: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>, context: GRPCCore.ServerContext) async throws {
-        deviceNameToConnect = request.name
-        isConnecting = true
-        print("Received connectShimmer request for: " + deviceNameToConnect)
-        var res = self.bluetoothManager?.startScanning(deviceName: self.deviceNameToConnect, timeout: 3)
-        
-        connectStreamMap[deviceNameToConnect] = response
-        await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.connecting, message: "Connecting")
-        
-        try await Task.sleep(for: .seconds(4))
-        while(bluetoothDeviceMap.keys.contains(deviceNameToConnect)) {
-            //this keeps the response GRPCCore.RPCWriter<> open
-            try await Task.sleep(for: .seconds(0.1)) //sleep 100ms
+        if(!isConnecting) {
+            deviceNameToConnect = request.name
+            isConnecting = true
+            print("Received connectShimmer request for: " + deviceNameToConnect)
+            var res = self.bluetoothManager?.startScanning(deviceName: self.deviceNameToConnect, timeout: 3)
+            
+            connectStreamMap[deviceNameToConnect] = response
+            await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.connecting, message: "Connecting")
+            
+            try await Task.sleep(for: .seconds(4))
+            while(bluetoothDeviceMap.keys.contains(deviceNameToConnect)) {
+                //this keeps the response GRPCCore.RPCWriter<> open
+                try await Task.sleep(for: .seconds(0.1)) //sleep 100ms
+            }
+        } else {
+            print("Received connectShimmer request for: " + deviceNameToConnect)
+            print("Error: connection attempt already in progress!")
+            await writeStatusResponseWithRPCWriter(deviceName: request.name, state: ShimmerBLEGRPC_BluetoothState.disconnected,
+                                                   message: "Connection failed! Existing connection attempt in progress", writer: response)
         }
     }
     
     private func writeStatusResponse(deviceName: String, state: ShimmerBLEGRPC_BluetoothState, message: String) async {
         var stateStatusStream = connectStreamMap[deviceName]
-        if(stateStatusStream != nil) {
+        await writeStatusResponseWithRPCWriter(deviceName: deviceName, state: state, message: message, writer: stateStatusStream)
+    }
+    
+    private func writeStatusResponseWithRPCWriter(deviceName: String, state: ShimmerBLEGRPC_BluetoothState, message: String, writer: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>?) async {
+        if(writer != nil) {
             let status = ShimmerBLEGRPC_StateStatus.with {
                 $0.state = state
                 $0.message = message
             }
             do {
-                try await stateStatusStream?.write(status)
+                try await writer?.write(status)
             } catch let error {
                 print(error)
             }
