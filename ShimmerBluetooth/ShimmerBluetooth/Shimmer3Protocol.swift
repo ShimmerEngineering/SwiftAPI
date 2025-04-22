@@ -594,7 +594,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                                     self.removeACKandCRCForResponse(bytes: &received)
                                     print(received)
                                     self.inquiry = received
-                                    self.interpretInquiryResponseShimmer3(packet: received)
+                                    if (self.REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                                        self.interpretInquiryResponseShimmer3R(packet: received)
+                                    } else if (self.REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
+                                        self.interpretInquiryResponseShimmer3(packet: received)
+                                    }
                                     print("Command ACK Received and Processed: \(self.commandSent!)")
                                     self.continuation?.resume(returning: true)
                                     self.continuation = nil
@@ -853,7 +857,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             case ChannelContentsShimmer3.XLNAccel.rawValue:
                 //if HardwareVersion == ShimmerVersion.SHIMMER3 {
                 signalNameArray.append(LNAccelSensor.LOW_NOISE_ACCELEROMETER_X)
-                signalDataTypeArray.append(SensorDataType.u12)
+                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
+                    signalDataTypeArray.append(SensorDataType.u12)
+                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                    signalDataTypeArray.append(SensorDataType.i16)
+                }
                 lnAccelSensor.packetIndexAccelX = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_A_ACCEL.rawValue)
@@ -866,7 +874,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             case ChannelContentsShimmer3.YLNAccel.rawValue:
                 //if HardwareVersion == ShimmerVersion.SHIMMER3 {
                 signalNameArray.append(LNAccelSensor.LOW_NOISE_ACCELEROMETER_Y)
-                signalDataTypeArray.append(SensorDataType.u12)
+                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
+                    signalDataTypeArray.append(SensorDataType.u12)
+                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                    signalDataTypeArray.append(SensorDataType.i16)
+                }
                 lnAccelSensor.packetIndexAccelY = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_A_ACCEL.rawValue)
@@ -879,7 +891,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             case ChannelContentsShimmer3.ZLNAccel.rawValue:
                 //if HardwareVersion == ShimmerVersion.SHIMMER3 {
                 signalNameArray.append(LNAccelSensor.LOW_NOISE_ACCELEROMETER_Z)
-                signalDataTypeArray.append(SensorDataType.u12)
+                if (REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
+                    signalDataTypeArray.append(SensorDataType.u12)
+                } else if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                    signalDataTypeArray.append(SensorDataType.i16)
+                }
                 lnAccelSensor.packetIndexAccelZ = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_A_ACCEL.rawValue)
@@ -1144,6 +1160,53 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
     }
     
+    func interpretInquiryResponseShimmer3R(packet: [UInt8]) {
+        // Check if this packet is sane and not just random
+        if packet.count >= 4 { // Max number of channels currently allowable
+            let ADCRawSamplingRateValue = Int(packet[0]) + (Int(packet[1]) << 8 & 0xFF00)
+            CurrentSamplingRate = Double(32768) / Double(ADCRawSamplingRateValue)
+
+            let ConfigSetupByte0 = Int64(packet[2]) + (Int64(packet[3]) << 8) + (Int64(packet[4]) << 16) + (Int64(packet[5]) << 24)
+            let AccelHRBit = Int((ConfigSetupByte0 >> 0) & 0x01)
+            let AccelLPBit = Int((ConfigSetupByte0 >> 1) & 0x01)
+            let AccelRange = Int((ConfigSetupByte0 >> 2) & 0x03)
+            let GyroRange = Int((ConfigSetupByte0 >> 16) & 0x03)
+            let MagGain = Int((ConfigSetupByte0 >> 21) & 0x07)
+            let AccelSamplingRate = Int((ConfigSetupByte0 >> 4) & 0xF)
+            let Mpu9150SamplingRate = Int((ConfigSetupByte0 >> 8) & 0xFF)
+            let magSamplingRate = Int((ConfigSetupByte0 >> 18) & 0x07)
+            let PressureResolution = Int((ConfigSetupByte0 >> 28) & 0x03)
+            let GSRRange = Int((ConfigSetupByte0 >> 25) & 0x07)
+            let InternalExpPower = Int((ConfigSetupByte0 >> 24) & 0x01)
+            let Mpu9150AccelRange = Int((ConfigSetupByte0 >> 30) & 0x03)
+            
+            if magSamplingRate == 4 && ADCRawSamplingRateValue < 3200 {
+                // 3200 is the raw ADC value and not in HZ
+                let LowPowerMagEnabled = true
+            }
+            
+            if AccelSamplingRate == 2 && ADCRawSamplingRateValue < 3200 {
+                let LowPowerAccelEnabled = true
+            }
+            
+            if Mpu9150SamplingRate == 0xFF && ADCRawSamplingRateValue < 3200 {
+                let LowPowerGyroEnabled = true
+            }
+            
+            let NumberofChannels = Int(packet[6+3])
+            let BufferSize = Int(packet[7+3])
+            var ListofSensorChannels: [UInt8] = []
+            
+            for i in 0..<NumberofChannels {
+                ListofSensorChannels.append(packet[8 + 3 + i])
+            }
+            
+            let signalIdArray = ListofSensorChannels
+            interpretDataPacketFormat(nC: NumberofChannels, signalid: signalIdArray)
+            //isFilled = true
+        }
+    }
+    
     
     
 
@@ -1313,7 +1376,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     }
     
     private func sendPressureCalibCoefficientsCommand() async -> Bool?{
-        
+        return true;
     }
     
     public func sendSetSamplingRateCommand(samplingRate: Double) async -> Bool?{
