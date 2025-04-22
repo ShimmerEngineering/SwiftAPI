@@ -72,17 +72,16 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
         } else {
             print("Received connectShimmer request for: " + deviceNameToConnect)
             print("Error: connection attempt already in progress!")
-            await writeStatusResponseWithRPCWriter(deviceName: request.name, state: ShimmerBLEGRPC_BluetoothState.disconnected,
-                                                   message: "Connection failed! Existing connection attempt in progress", writer: response)
+            await writeStatusResponseWithRPCWriter(state: ShimmerBLEGRPC_BluetoothState.disconnected, message: "Connection failed! Existing connection attempt in progress", writer: response)
         }
     }
     
     private func writeStatusResponse(deviceName: String, state: ShimmerBLEGRPC_BluetoothState, message: String) async {
         var stateStatusStream = connectStreamMap[deviceName]
-        await writeStatusResponseWithRPCWriter(deviceName: deviceName, state: state, message: message, writer: stateStatusStream)
+        await writeStatusResponseWithRPCWriter(state: state, message: message, writer: stateStatusStream)
     }
     
-    private func writeStatusResponseWithRPCWriter(deviceName: String, state: ShimmerBLEGRPC_BluetoothState, message: String, writer: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>?) async {
+    private func writeStatusResponseWithRPCWriter(state: ShimmerBLEGRPC_BluetoothState, message: String, writer: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>?) async {
         if(writer != nil) {
             let status = ShimmerBLEGRPC_StateStatus.with {
                 $0.state = state
