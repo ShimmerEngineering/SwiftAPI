@@ -36,7 +36,7 @@
 		456851932DA395630047A883 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
+			dstPath = /usr/share/man/man1;
 			dstSubfolderSpec = 0;
 			files = (
 			);
@@ -49,6 +49,7 @@
 		45345AC22DA62CD700EA7B41 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		45345AC92DA62FA100EA7B41 /* ShimmerBluetooth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ShimmerBluetooth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		456851952DA395630047A883 /* ShimmerBLEGrpc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ShimmerBLEGrpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		45A656212DBB4F2E001F8C55 /* ShimmerBLEGrpc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShimmerBLEGrpc.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -64,13 +65,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				45345ACA2DA62FA100EA7B41 /* ShimmerBluetooth.framework in Frameworks */,
 				45345AF12DA639C300EA7B41 /* GRPCProtobuf in Frameworks */,
 				45345AFB2DA63A1100EA7B41 /* ArgumentParser in Frameworks */,
 				45345AEA2DA6399900EA7B41 /* GRPCCodeGen in Frameworks */,
 				45345AD12DA6361500EA7B41 /* SwiftProtobufPluginLibrary in Frameworks */,
 				45345AEC2DA6399900EA7B41 /* GRPCCore in Frameworks */,
 				45345AF62DA639F300EA7B41 /* GRPCNIOTransportHTTP2Posix in Frameworks */,
-				45345ACA2DA62FA100EA7B41 /* ShimmerBluetooth.framework in Frameworks */,
 				45345ACF2DA6361500EA7B41 /* SwiftProtobuf in Frameworks */,
 				45345AF42DA639F300EA7B41 /* GRPCNIOTransportHTTP2 in Frameworks */,
 				45345AF82DA639F300EA7B41 /* GRPCNIOTransportHTTP2TransportServices in Frameworks */,
@@ -92,6 +93,7 @@
 		4568518C2DA395630047A883 = {
 			isa = PBXGroup;
 			children = (
+				45A656212DBB4F2E001F8C55 /* ShimmerBLEGrpc.entitlements */,
 				45345AC22DA62CD700EA7B41 /* Package.swift */,
 				45345AB62DA4F12500EA7B41 /* Readme.md */,
 				45345AAF2DA4F0EF00EA7B41 /* Sources */,
@@ -317,11 +319,13 @@
 		4568519D2DA395630047A883 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShimmerBLEGrpc.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				ENABLE_HARDENED_RUNTIME = YES;
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = "@executable_path";
 				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBLEGrpc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -332,11 +336,13 @@
 		4568519E2DA395630047A883 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShimmerBLEGrpc.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
 				ENABLE_HARDENED_RUNTIME = YES;
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = "@executable_path";
 				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBLEGrpc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

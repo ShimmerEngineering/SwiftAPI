@@ -15,8 +15,8 @@ import GRPCProtobuf
 
 final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleServiceProtocol {
     
-    private var bluetoothManager: BluetoothManager?
     private var centralManager: CBCentralManager?
+    private var bluetoothManager: BluetoothManager?
     private var deviceNameToConnect: String = ""
     private var isConnecting: Bool = false
     
@@ -77,7 +77,7 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     private func writeStatusResponse(deviceName: String, state: ShimmerBLEGRPC_BluetoothState, message: String) async {
-        var stateStatusStream = connectStreamMap[deviceName]
+        let stateStatusStream = connectStreamMap[deviceName]
         await writeStatusResponseWithRPCWriter(state: state, message: message, writer: stateStatusStream)
     }
     
@@ -189,7 +189,7 @@ extension ShimmerBLEService : ByteCommunicationDelegate {
     }
     
     func byteCommunicationDataReceived(data: Data?, deviceName: String) {
-        var queue = queueMap[deviceName]
+        let queue = queueMap[deviceName]
         if(data != nil) {
             queue?.enqueue(data ?? Data())
         }

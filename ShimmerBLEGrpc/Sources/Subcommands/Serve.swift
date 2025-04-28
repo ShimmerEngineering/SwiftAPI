@@ -20,7 +20,7 @@ import GRPCNIOTransportHTTP2
 import GRPCProtobuf
 
 struct Serve: AsyncParsableCommand {
-  static let configuration = CommandConfiguration(abstract: "Starts a greeter server.")
+  static let configuration = CommandConfiguration(abstract: "Starts the Shimmer BLE gRPC server.")
 
   @Option(help: "The port to listen on")
   var port: Int = 50052
@@ -37,7 +37,7 @@ struct Serve: AsyncParsableCommand {
     try await withThrowingDiscardingTaskGroup { group in
       group.addTask { try await server.serve() }
       if let address = try await server.listeningAddress {
-        print("Greeter listening on \(address)")
+        print("Shimmer BLE gRPC listening on \(address)")
       }
     }
   }
