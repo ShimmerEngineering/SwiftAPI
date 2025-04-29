@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import ShimmerBluetooth
 
 struct ToyShape: Identifiable {
     var type: String
@@ -61,7 +62,7 @@ struct ContentView: View {
     @State private var rangeSelection = 0
     @State private var protocolSelection = 0
     @State private var deviceSelection = 0
-
+    
     var body: some View {
         ScrollView {
             Picker(selection: $selectionS, label: Text("Number Of Signals (Max 3)")) {
@@ -134,7 +135,7 @@ struct ContentView: View {
                 print(protocolSelection)
                 viewModel.protocolShimmer3 = protocolSelection
             }
-
+            
             Text("BT State: \(viewModel.stateText)")
             Button("Connect Shimmer3",action: {Task {
                 do {
@@ -155,162 +156,193 @@ struct ContentView: View {
             }
             })
             
-        Button("StartStreaming Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendStartStreamingCommandDev2()
-            } catch {
-                print("Error: \(error)")
+            Button("StartStreaming Shimmer3",action:{ Task {
+                do {
+                    await viewModel.sendStartStreamingCommandDev2()
+                } catch {
+                    print("Error: \(error)")
+                }
             }
-        }
-        })
-        Button("StopStreaming Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendStopStreamingCommandDev2()
-            } catch {
-                print("Error: \(error)")
+            })
+            Button("StopStreaming Shimmer3",action:{ Task {
+                do {
+                    await viewModel.sendStopStreamingCommandDev2()
+                } catch {
+                    print("Error: \(error)")
+                }
             }
-        }
-        })
-        Button("WriteInfoMem WRAccel Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemAccel()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem IMU Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemIMU()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem PPG+GSR Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemPPGGSR()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
+            })
+            if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+                Button("WriteInfoMem WRAccel Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemWRAccel()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("WriteInfoMem IMU Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemIMU()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("WriteInfoMem Pressure Temperature Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemPressureAndTemperature()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("WriteInfoMem PPG+GSR Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemPPGGSR()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
                 
-        Button("WriteInfoMem ECG 24-bit Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemECG24Bit()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem ECG 16-bit Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemECG16Bit()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem EMG Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemEMG()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem EXG Test Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemEXGTest()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem Respiration Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemRespiration()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem Pressure Temperature Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemPressureAndTemperature()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem Battery Voltage Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemBattery()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        
-
-        Picker("Select WR Range", selection: $viewModel.wrRangeIndex) {
-                        ForEach(0..<viewModel.wrRange.count, id: \.self) { index in
-                            Text(viewModel.wrRange[index])
-                        }
+                Button("WriteInfoMem ECG 24-bit Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemECG24Bit()
+                    } catch {
+                        print("Error: \(error)")
                     }
-                    .onChange(of: viewModel.wrRangeIndex) { newValue in
-                        // Update the ViewModel's wrRangeIndex property
-                        viewModel.wrRangeIndex = newValue
+                }
+                })
+                Button("WriteInfoMem ECG 16-bit Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemECG16Bit()
+                    } catch {
+                        print("Error: \(error)")
                     }
-        Picker("Select Gyro Range", selection: $viewModel.gyroRangeIndex) {
-                        ForEach(0..<viewModel.gyroRange.count, id: \.self) { index in
-                            Text(viewModel.gyroRange[index])
-                        }
+                }
+                })
+                Button("WriteInfoMem EMG Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemEMG()
+                    } catch {
+                        print("Error: \(error)")
                     }
-                    .onChange(of: viewModel.gyroRangeIndex) { newValue in
-                        // Update the ViewModel's gyroRangeIndex property
-                        viewModel.gyroRangeIndex = newValue
+                }
+                })
+                Button("WriteInfoMem EXG Test Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemEXGTest()
+                    } catch {
+                        print("Error: \(error)")
                     }
-        Picker("Select Pressure Resolution", selection: $viewModel.pressResIndex) {
-                               ForEach(0..<viewModel.pressResolution.count, id: \.self) { index in
-                                   Text(viewModel.pressResolution[index])
-                               }
-                           }
-                           .onChange(of: viewModel.pressResIndex) { newValue in
-                               // Update the ViewModel's pressResIndex property
-                               viewModel.pressResIndex = newValue
-                           }
-        Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
-                                       ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
-                                           Text(viewModel.exgGain[index])
-                                       }
-                                   }
-                                   .onChange(of: viewModel.exgGainIndex) { newValue in
-                                       // Update the ViewModel's exgGainIndex property
-                                       viewModel.exgGainIndex = newValue
-                                   }
-        Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
-                                       ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
-                                           Text(viewModel.exgResolution[index])
-                                       }
-                                   }
-                                   .onChange(of: viewModel.exgResIndex) { newValue in
-                                       // Update the ViewModel's exgResIndex property
-                                       viewModel.exgResIndex = newValue
-                                   }
-        
-        Button("WriteInfoMem Shimmer3",action:{ Task {
-            do {
-                await viewModel.sendInfoMemConfigUpdate()
-                //await viewModel.sendInfoMemGyroRange()
-                //await viewModel.sendInfoMemPPGGSR()
-                
-            } catch {
-                print("Error: \(error)")
+                }
+                })
+                Button("WriteInfoMem Respiration Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemRespiration()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("WriteInfoMem Battery Voltage Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemBattery()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+            } else if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+                Button("WriteInfoMem LNAccel Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RLNAccel()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
             }
-        }
-        })
+            Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
+                ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
+                    Text(viewModel.exgGain[index])
+                }
+            }
+            .onChange(of: viewModel.exgGainIndex) { newValue in
+                // Update the ViewModel's exgGainIndex property
+                viewModel.exgGainIndex = newValue
+            }
+            Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
+                ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
+                    Text(viewModel.exgResolution[index])
+                }
+            }
+            .onChange(of: viewModel.exgResIndex) { newValue in
+                // Update the ViewModel's exgResIndex property
+                viewModel.exgResIndex = newValue
+            }
+            if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+                Picker("Select WR Accel Range", selection: $viewModel.wrRangeIndex) {
+                    ForEach(0..<viewModel.wrRange.count, id: \.self) { index in
+                        Text(viewModel.wrRange[index])
+                    }
+                }
+                .onChange(of: viewModel.wrRangeIndex) { newValue in
+                    // Update the ViewModel's wrRangeIndex property
+                    viewModel.wrRangeIndex = newValue
+                }
+                Picker("Select Gyro Range", selection: $viewModel.gyroRangeIndex) {
+                    ForEach(0..<viewModel.gyroRange.count, id: \.self) { index in
+                        Text(viewModel.gyroRange[index])
+                    }
+                }
+                .onChange(of: viewModel.gyroRangeIndex) { newValue in
+                    // Update the ViewModel's gyroRangeIndex property
+                    viewModel.gyroRangeIndex = newValue
+                }
+                Picker("Select Pressure Resolution", selection: $viewModel.pressResIndex) {
+                    ForEach(0..<viewModel.pressResolution.count, id: \.self) { index in
+                        Text(viewModel.pressResolution[index])
+                    }
+                }
+                .onChange(of: viewModel.pressResIndex) { newValue in
+                    // Update the ViewModel's pressResIndex property
+                    viewModel.pressResIndex = newValue
+                }
+                Button("WriteInfoMem Shimmer3",action:{ Task {
+                    do {
+                        await viewModel.sendS3InfoMemConfigUpdate()
+                        //await viewModel.sendInfoMemGyroRange()
+                        //await viewModel.sendInfoMemPPGGSR()
+                        
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                    
+                })
+            } else if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+                Picker("Select LN Accel Range", selection: $viewModel.lnAccelRangeIndex) {
+                    ForEach(0..<viewModel.lnAccelRange.count, id: \.self) { index in
+                        Text(viewModel.lnAccelRange[index])
+                    }
+                }
+                .onChange(of: viewModel.lnAccelRangeIndex) { newValue in
+                    // Update the ViewModel's wrRangeIndex property
+                    viewModel.lnAccelRangeIndex = newValue
+                }
+                Button("WriteInfoMem Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendS3RInfoMemConfigUpdate()
+                        
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                    
+                })
+            }
             Picker("Sampling Rate", selection: $viewModel.samplingRateIndex) {
                 ForEach(0..<viewModel.samplingRate.count, id: \.self) { index in
                     Text(viewModel.samplingRate[index])

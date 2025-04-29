@@ -109,28 +109,29 @@ public class GyroSensor : IMUSensor , SensorProcessing{
     public func updateInfoMemGyroRange(infomem: [UInt8],range: Range) -> [UInt8]{
         var infomemtoupdate = infomem
         print("oriinfomem: \(infomemtoupdate)")
-    
-        var gyroRange = 0
-        if (range == Range.RANGE_250DPS){
-            gyroRange = 0
-        } else if (range == Range.RANGE_500DPS){
-            gyroRange = 1
-        } else if (range == Range.RANGE_1000DPS){
-            gyroRange = 2
-        } else if (range == Range.RANGE_2000DPS){
-            gyroRange = 3
+        if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+            var gyroRange = 0
+            if (range == Range.RANGE_250DPS){
+                gyroRange = 0
+            } else if (range == Range.RANGE_500DPS){
+                gyroRange = 1
+            } else if (range == Range.RANGE_1000DPS){
+                gyroRange = 2
+            } else if (range == Range.RANGE_2000DPS){
+                gyroRange = 3
+            }
+            let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
+            let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150GyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
+            let range = UInt8(gyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
+         
+            print("orivalue range: \(orivalue)")
+            print("value: \(value)")
+            print("range: \(range)")
+
+            infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] = value | range
+            print("updatedinfomem: \(infomemtoupdate)")
         }
-        let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
-        let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150GyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
-        let range = UInt8(gyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
-     
-        print("orivalue range: \(orivalue)")
-        print("value: \(value)")
-        print("range: \(range)")
-
-        infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] = value | range
-        print("updatedinfomem: \(infomemtoupdate)")
-
+       
         return infomemtoupdate
      
     }

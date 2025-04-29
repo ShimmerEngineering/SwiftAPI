@@ -59,6 +59,12 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     var SensitivityMatrix : [[Double]] = [[]]
     var OffsetVector : [Double] = []
     
+    var calibBytes_2G: [UInt8] = []
+    var calibBytes_4G: [UInt8] = []
+    var calibBytes_8G: [UInt8] = []
+    var calibBytes_16G: [UInt8] = []
+
+    
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         let x = Array(sensorPacket[packetIndexAccelX..<packetIndexAccelX+2])
         let y = Array(sensorPacket[packetIndexAccelY..<packetIndexAccelY+2])
@@ -87,16 +93,21 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
             var range = bytes[2]
             var calbytes = bytes
             calbytes.removeFirst(12)
+
             if range==0{
+                calibBytes_2G = calbytes
                 (AlignmentMatrix_2G,SensitivityMatrix_2G,OffsetVector_2G) = parseIMUCalibrationParameters(bytes: calbytes)
             }
             if range==2{
+                calibBytes_4G = calbytes
                 (AlignmentMatrix_4G,SensitivityMatrix_4G,OffsetVector_4G) = parseIMUCalibrationParameters(bytes: calbytes)
             }
             if range==3{
+                calibBytes_8G = calbytes
                 (AlignmentMatrix_8G,SensitivityMatrix_8G,OffsetVector_8G) = parseIMUCalibrationParameters(bytes: calbytes)
             }
             if range==1{
+                calibBytes_16G = calbytes
                 (AlignmentMatrix_16G,SensitivityMatrix_16G,OffsetVector_16G) = parseIMUCalibrationParameters(bytes: calbytes)
             }
             
@@ -105,23 +116,34 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     
     public func updateInfoMemAccelRange(infomem: [UInt8],range: Range) -> [UInt8]{
         var infomemtoupdate = infomem
-        var wrAccelRange = 0
-        if (range == Range.RANGE_2G){
-            wrAccelRange = 0
-        } else if (range == Range.RANGE_4G){
-            wrAccelRange = 2
-        } else if (range == Range.RANGE_8G){
-            wrAccelRange = 3
-        } else if (range == Range.RANGE_16G){
-            wrAccelRange = 1
+        if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+            var wrAccelRange = 0
+            var calibBytes = calibBytes_2G
+            if (range == Range.RANGE_2G){
+                wrAccelRange = 0
+                calibBytes = calibBytes_2G
+            } else if (range == Range.RANGE_4G){
+                wrAccelRange = 2
+                calibBytes = calibBytes_4G
+            } else if (range == Range.RANGE_8G){
+                wrAccelRange = 3
+                calibBytes = calibBytes_8G
+            } else if (range == Range.RANGE_16G){
+                wrAccelRange = 1
+                calibBytes = calibBytes_16G
+            }
+            
+            infomemtoupdate.replaceSubrange(
+                ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration..<ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+            
+            let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0]
+            let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
+            let range = UInt8(wrAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
+            
+            infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] = value | range
         }
-        let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0]
-        let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
-        let range = UInt8(wrAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
-        
-        infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] = value | range
         return infomemtoupdate
-        
     }
     
     public func getRange()->Range{
@@ -162,7 +184,6 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
             SensitivityMatrix = SensitivityMatrix_16G
             OffsetVector = OffsetVector_16G
         }
-
     }
     
     public func setLowPowerWRAccel(enable: Bool, isShimmer3withUpdatedSensors: Bool, samplingRate: Double, infomem: [UInt8])-> [UInt8]{

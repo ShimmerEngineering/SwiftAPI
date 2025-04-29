@@ -9,7 +9,7 @@ import Foundation
 
 public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
-    enum HardwareType: Int {
+    public enum HardwareType: Int {
         case UNKNOWN = -1
         case Shimmer3 = 3
         case Shimmer3R = 10
@@ -45,7 +45,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     
     public var EXPANSION_BOARD_REV_SPECIAL: Int = -1
 
-    var lnAccelSensor: LNAccelSensor = LNAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
+    public var lnAccelSensor: LNAccelSensor = LNAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var wrAccelSensor: WRAccelSensor = WRAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var timeSensor: TimeSensor = TimeSensor()
     public var magSensor: MagSensor = MagSensor(hwid: HardwareType.UNKNOWN.rawValue)
@@ -58,7 +58,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     var adcA15Sensor: ADCSensor = ADCSensor()
     var gsrSensor: GSRSensor = GSRSensor()
     public var exgSensor: EXGSensor = EXGSensor()
-    public var pressureTempSensor : PressureTempSensor = PressureTempSensor()
+    public var pressureTempSensor : PressureTempSensor = PressureTempSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var battVoltageSensor : BattVoltageSensor = BattVoltageSensor()
     public var RTCErrorEnabled = false;
     var infoMem: [UInt8] = []
@@ -320,7 +320,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             adcA15Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A15)
             gsrSensor = GSRSensor()
             exgSensor = EXGSensor()
-            pressureTempSensor = PressureTempSensor()
+            pressureTempSensor = PressureTempSensor(hwid: REV_HW_MAJOR)
             battVoltageSensor = BattVoltageSensor()
         } else if(REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
             lnAccelSensor = LNAccelSensor(hwid: REV_HW_MAJOR)

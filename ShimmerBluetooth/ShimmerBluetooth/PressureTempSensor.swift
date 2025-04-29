@@ -8,6 +8,11 @@
 import Foundation
 
 public class PressureTempSensor: Sensor , SensorProcessing{
+    public let HardwareVersion: Int
+    required init(hwid: Int) {
+            self.HardwareVersion = hwid
+            super.init()
+    }
     public enum Resolution: UInt8 {
             case RES_LOW = 0x0
             case RES_STANDARD = 0x1
@@ -113,31 +118,32 @@ public class PressureTempSensor: Sensor , SensorProcessing{
     }
     
     public func updateInfoMemPressureResolution(infomem: [UInt8],res: Resolution) -> [UInt8]{
-           var infomemtoupdate = infomem
-           print("oriinfomem: \(infomemtoupdate)")
-       
-           var pressReso = 0
-           if (res == Resolution.RES_LOW){
-               pressReso = 0
-           } else if (res == Resolution.RES_STANDARD){
-               pressReso = 1
-           } else if (res == Resolution.RES_HIGH){
-               pressReso = 2
-           } else if (res == Resolution.RES_ULTRAHIGH){
-               pressReso = 3
-           }
-           let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3]
-           let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3] & ~UInt8(ConfigByteLayoutShimmer3.maskBMPX80PressureResolution<<ConfigByteLayoutShimmer3.bitShiftBMPX80PressureResolution)
-           let resolution = UInt8(pressReso<<ConfigByteLayoutShimmer3.bitShiftBMPX80PressureResolution)
-        
-           print("orivalue range: \(orivalue)")
-           print("value: \(value)")
-           print("resolution: \(resolution)")
+        var infomemtoupdate = infomem
+        print("oriinfomem: \(infomemtoupdate)")
+        if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+            var pressReso = 0
+            if (res == Resolution.RES_LOW){
+                pressReso = 0
+            } else if (res == Resolution.RES_STANDARD){
+                pressReso = 1
+            } else if (res == Resolution.RES_HIGH){
+                pressReso = 2
+            } else if (res == Resolution.RES_ULTRAHIGH){
+                pressReso = 3
+            }
+            let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3]
+            let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3] & ~UInt8(ConfigByteLayoutShimmer3.maskBMPX80PressureResolution<<ConfigByteLayoutShimmer3.bitShiftBMPX80PressureResolution)
+            let resolution = UInt8(pressReso<<ConfigByteLayoutShimmer3.bitShiftBMPX80PressureResolution)
+         
+            print("orivalue range: \(orivalue)")
+            print("value: \(value)")
+            print("resolution: \(resolution)")
 
-           infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3] = value | resolution
-           print("updatedinfomem: \(infomemtoupdate)")
+            infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3] = value | resolution
+            print("updatedinfomem: \(infomemtoupdate)")
 
-           return infomemtoupdate
+        }
+       return infomemtoupdate
         
        }
         

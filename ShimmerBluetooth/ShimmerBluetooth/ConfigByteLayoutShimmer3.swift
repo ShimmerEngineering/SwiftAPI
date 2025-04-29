@@ -41,7 +41,7 @@ public class ConfigByteLayoutShimmer3{
     static let idxAnalogAccelCalibration = 31
     static let idxMPU9150GyroCalibration = 52
     static let idxLSM303DLHCMagCalibration = 73
-    static let idxLSM303DLHCAccelCalibration = 94 //94->114
+    //static let idxLSM303DLHCAccelCalibration = 94 //94->114
     static let idxSDExperimentConfig0 =             128+89;
     static let idxSDExperimentConfig1 =             128+90;
     
@@ -63,11 +63,19 @@ public class ConfigByteLayoutShimmer3{
     static let bitShiftLSM303DLHCMagRange =            5;
     static let maskLSM303DLHCMagRange =               0x07;
     
+    static let bitShiftMPU9150AccelRange =            6;
+    static let maskMPU9150AccelRange =               0x03;
+    
     static let bitShiftLSM303DLHCMagSamplingRate =         2;
     static let maskLSM303DLHCMagSamplingRate =          0x07;
     
     static let bitShiftLSM303DLHCAccelSamplingRate =         4;
     static let maskLSM303DLHCAccelSamplingRate =          0x0F;
+    
+    static let idxLSM6DSVAccelCalibration = 34;
+    static let idxLSM303DLHCAccelCalibration = 97;
+    
+    static let lengthGeneralCalibrationBytes = 21;
     
     static let bitShiftRTCError = 4;
     static let maskRTCError = 1;
