@@ -70,11 +70,9 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
         var rawDataY: Double = 0
         var rawDataZ: Double = 0
         if (HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
-            print("sensorData X : \(x) ,  sensorData Y : \(y),  sensorData Z : \(z)")
             rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.u12)!)
             rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.u12)!)
             rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.u12)!)
-            print("raw LN X : \(rawDataX) ,  raw LN Y : \(rawDataY),  raw LN Z : \(rawDataZ)")
         } else if (HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
             rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.i16)!)
             rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i16)!)
