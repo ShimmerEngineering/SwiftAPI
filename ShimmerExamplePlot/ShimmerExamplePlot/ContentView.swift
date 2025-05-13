@@ -263,6 +263,14 @@ struct ContentView: View {
                     }
                 }
                 })
+                Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RMag()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
             }
             Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
                 ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
@@ -331,6 +339,15 @@ struct ContentView: View {
                 .onChange(of: viewModel.lnAccelRangeIndex) { newValue in
                     // Update the ViewModel's wrRangeIndex property
                     viewModel.lnAccelRangeIndex = newValue
+                }
+                Picker("Select Mag Range", selection: $viewModel.magRange3RIndex) {
+                    ForEach(0..<viewModel.magRange3R.count, id: \.self) { index in
+                        Text(viewModel.magRange3R[index])
+                    }
+                }
+                .onChange(of: viewModel.magRange3RIndex) { newValue in
+                    // Update the ViewModel's wrRangeIndex property
+                    viewModel.magRange3RIndex = newValue
                 }
                 Button("WriteInfoMem Shimmer3R",action:{ Task {
                     do {
