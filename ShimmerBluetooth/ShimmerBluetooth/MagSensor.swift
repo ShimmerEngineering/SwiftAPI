@@ -103,22 +103,18 @@ public class MagSensor : IMUSensor , SensorProcessing{
                 if range==0{
                     calibBytes_4Ga = calbytes
                     (AlignmentMatrix_4Ga,SensitivityMatrix_4Ga,OffsetVector_4Ga) = parseIMUCalibrationParameters(bytes: calbytes)
-                    SensitivityMatrix_4Ga = ShimmerUtilities.divideMatrixElements(SensitivityMatrix_4Ga, 100)
                 }
                 if range==1{
                     calibBytes_8Ga = calbytes
                     (AlignmentMatrix_8Ga,SensitivityMatrix_8Ga,OffsetVector_8Ga) = parseIMUCalibrationParameters(bytes: calbytes)
-                    SensitivityMatrix_8Ga = ShimmerUtilities.divideMatrixElements(SensitivityMatrix_8Ga, 100)
                 }
                 if range==2{
                     calibBytes_12Ga = calbytes
                     (AlignmentMatrix_12Ga,SensitivityMatrix_12Ga,OffsetVector_12Ga) = parseIMUCalibrationParameters(bytes: calbytes)
-                    SensitivityMatrix_12Ga = ShimmerUtilities.divideMatrixElements(SensitivityMatrix_12Ga, 100)
                 }
                 if range==3{
                     calibBytes_16Ga = calbytes
                     (AlignmentMatrix_16Ga,SensitivityMatrix_16Ga,OffsetVector_16Ga) = parseIMUCalibrationParameters(bytes: calbytes)
-                    SensitivityMatrix_16Ga = ShimmerUtilities.divideMatrixElements(SensitivityMatrix_16Ga, 100)
                 }
             }
         }
