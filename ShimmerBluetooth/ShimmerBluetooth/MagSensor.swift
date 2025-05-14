@@ -165,63 +165,90 @@ public class MagSensor : IMUSensor , SensorProcessing{
     public func setLowPowerMag(enable: Bool, isShimmer3withUpdatedSensors: Bool, isShimmer3Sensor: Bool, samplingRate: Double, infomem: [UInt8])-> [UInt8]{
         let LowPowerMagEnabled = enable
         var infomemtoupdate = infomem
-        if(isShimmer3Sensor){
+        if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
             if(!LowPowerMagEnabled){
-                if(isShimmer3withUpdatedSensors){
-                    if(samplingRate >= 100){
-                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:3)
-                    }else if(samplingRate >= 50){
-                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:2)
-                    }else if(samplingRate >= 20){
-                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
-                    }else if(samplingRate >= 10){
+                if(samplingRate > 560){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x01)
+                }else if(samplingRate > 300){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x11)
+                }else if(samplingRate > 155){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x21)
+                }else if(samplingRate > 100){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x31)
+                }else if(samplingRate > 50){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x31)
+                }else if(samplingRate > 20){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x3E)
+                }else if(samplingRate > 10){
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x3A)
+                }else{
+                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x08)
+                }
+            }else{
+                infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0x08)
+            }
+        }else {
+            if(isShimmer3Sensor){
+                if(!LowPowerMagEnabled){
+                    if(isShimmer3withUpdatedSensors){
+                        if(samplingRate >= 100){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:3)
+                        }else if(samplingRate >= 50){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:2)
+                        }else if(samplingRate >= 20){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
+                        }else if(samplingRate >= 10){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0)
+                        }else{
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0)
+                        }
+                    }else{
+                        if(samplingRate >= 50){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:6)
+                        }else if(samplingRate >= 20){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:5)
+                        }else if(samplingRate >= 10){
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
+                        }else{
+                            infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:3)
+                        }
+                    }
+                }else //low power mag for shimmer3 enabled
+                {
+                    if(isShimmer3withUpdatedSensors){
                         infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0)
                     }else{
-                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0)
+                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
                     }
-                }else{
-                    if(samplingRate >= 50){
-                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:6)
-                    }else if(samplingRate >= 20){
+                }
+            }else //Shimmer2
+            {
+                if(!LowPowerMagEnabled){
+                    if(samplingRate <= 1){
+                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
+                    }else if(samplingRate <= 15){
+                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
+                    }else if(samplingRate <= 30){
                         infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:5)
-                    }else if(samplingRate >= 10){
+                    }else if(samplingRate <= 75){
+                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:6)
+                    }else{
+                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:7)
+                    }
+                    
+                }else
+                {
+                    if(samplingRate >= 10){
                         infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
                     }else{
-                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:3)
+                        infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
                     }
-                }
-            }else //low power mag for shimmer3 enabled
-            {
-                if(isShimmer3withUpdatedSensors){
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0)
-                }else{
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
-                }
-            }
-        }else //Shimmer2
-        {
-            if(!LowPowerMagEnabled){
-                if(samplingRate <= 1){
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
-                }else if(samplingRate <= 15){
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
-                }else if(samplingRate <= 30){
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:5)
-                }else if(samplingRate <= 75){
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:6)
-                }else{
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:7)
-                }
-                
-            }else
-            {
-                if(samplingRate >= 10){
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:4)
-                }else{
-                    infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
                 }
             }
         }
+
+       
+        
        
         return infomemtoupdate
     }
