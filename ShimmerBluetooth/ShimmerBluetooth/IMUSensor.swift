@@ -8,6 +8,11 @@
 import Foundation
 
 public class IMUSensor: Sensor, IMUProcessing {
+    let HardwareVersion: Int
+    required init(hwid: Int) {
+            self.HardwareVersion = hwid
+            super.init()
+    }
     
     public static func calibrateInertialSensorData(_ data: [Double], _ AM: [[Double]], _ SM: [[Double]], _ OV: [Double]) -> [Double]? {
         /* Based on the theory outlined by Ferraris F, Grimaldi U, and Parvis M.
