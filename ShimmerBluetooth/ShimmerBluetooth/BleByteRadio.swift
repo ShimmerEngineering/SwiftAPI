@@ -270,7 +270,7 @@ extension BleByteRadio : CBPeripheralDelegate {
         if characteristic.uuid.uuidString == RBL_CHAR_RX_UUID {
             if let data = characteristic.value {
                 //self.processData(data)
-                print(data)
+//                print(data)
                 self.delegate?.byteCommunicationDataReceived(data: data, deviceName: (deviceName ?? ""))
             }
         }
