@@ -263,6 +263,15 @@ struct ContentView: View {
                     }
                 }
                 })
+                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
+                                    do {
+                                        await viewModel.sendInfoMemS3RAltMag()
+                                    } catch {
+                                        print("Error: \(error)")
+                                    }
+                                }
+                                })
+                            }
             }
             Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
                 ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
@@ -332,6 +341,17 @@ struct ContentView: View {
                     // Update the ViewModel's wrRangeIndex property
                     viewModel.lnAccelRangeIndex = newValue
                 }
+                
+                Picker("Select Alt Mag Range", selection: $viewModel.altMagRange3RIndex) {
+                                    ForEach(0..<viewModel.altMagRange3R.count, id: \.self) { index in
+                                        Text(viewModel.altMagRange3R[index])
+                                    }
+                                }
+                                .onChange(of: viewModel.altMagRange3RIndex) { newValue in
+                                    // Update the ViewModel's wrRangeIndex property
+                                    viewModel.altMagRange3RIndex = newValue
+                                }
+                
                 Button("WriteInfoMem Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendS3RInfoMemConfigUpdate()
@@ -340,9 +360,7 @@ struct ContentView: View {
                         print("Error: \(error)")
                     }
                 }
-                    
                 })
-            }
             Picker("Sampling Rate", selection: $viewModel.samplingRateIndex) {
                 ForEach(0..<viewModel.samplingRate.count, id: \.self) { index in
                     Text(viewModel.samplingRate[index])

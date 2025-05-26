@@ -41,6 +41,8 @@ public class ConfigByteLayoutShimmer3{
     static let idxAnalogAccelCalibration = 31
     static let idxMPU9150GyroCalibration = 52
     static let idxLSM303DLHCMagCalibration = 73
+    static let idxLIS3MDLAltMagCalibration = 285            
+
     //static let idxLSM303DLHCAccelCalibration = 94 //94->114
     static let idxSDExperimentConfig0 =             128+89;
     static let idxSDExperimentConfig1 =             128+90;
