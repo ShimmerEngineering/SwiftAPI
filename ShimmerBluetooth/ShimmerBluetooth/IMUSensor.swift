@@ -8,7 +8,7 @@
 import Foundation
 
 public class IMUSensor: Sensor, IMUProcessing {
-    let HardwareVersion: Int
+    public let HardwareVersion: Int
     required init(hwid: Int) {
             self.HardwareVersion = hwid
             super.init()
