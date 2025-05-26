@@ -10,6 +10,7 @@ public class BleByteRadio : NSObject, ByteCommunication {
     public static let VERISENSE = "Verisense"
     public static let SHIMMER3 = "Shimmer3"
     public static let SHIMMER3R = "Shimmer3R"
+    public static let SHIMMER3R_LOWERCASE = "Shimmer3r"
     private var continuation: CheckedContinuation<Bool?, Never>?
     public static let VERISENSE_RBL_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
     public static let VERISENSE_RBL_CHAR_RX_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -49,6 +50,10 @@ public class BleByteRadio : NSObject, ByteCommunication {
             RBL_SERVICE_UUID = BleByteRadio.SHIMMER3R_RBL_SERVICE_UUID
             RBL_CHAR_RX_UUID = BleByteRadio.SHIMMER3R_RBL_CHAR_RX_UUID
             RBL_CHAR_TX_UUID = BleByteRadio.SHIMMER3R_RBL_CHAR_TX_UUID
+        } else if let isActive = self.activePeripheral?.name?.contains(BleByteRadio.SHIMMER3R_LOWERCASE), isActive {
+              RBL_SERVICE_UUID = BleByteRadio.SHIMMER3R_RBL_SERVICE_UUID
+              RBL_CHAR_RX_UUID = BleByteRadio.SHIMMER3R_RBL_CHAR_RX_UUID
+              RBL_CHAR_TX_UUID = BleByteRadio.SHIMMER3R_RBL_CHAR_TX_UUID
         } else if let isActive = self.activePeripheral?.name?.contains(BleByteRadio.SHIMMER3), isActive {
             RBL_SERVICE_UUID = BleByteRadio.SHIMMER3_RBL_SERVICE_UUID
             RBL_CHAR_RX_UUID = BleByteRadio.SHIMMER3_RBL_CHAR_RX_UUID
