@@ -263,9 +263,19 @@ struct ContentView: View {
                     }
                 }
                 })
+              
                 Button("WriteInfoMem Gyro Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendInfoMemS3RGyro()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+
+                Button("WriteInfoMem WRAccel Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RWRAccel()
                     } catch {
                         print("Error: \(error)")
                     }
@@ -290,16 +300,17 @@ struct ContentView: View {
                 // Update the ViewModel's exgResIndex property
                 viewModel.exgResIndex = newValue
             }
+            Picker("Select WR Accel Range", selection: $viewModel.wrRangeIndex) {
+                ForEach(0..<viewModel.wrRange.count, id: \.self) { index in
+                    Text(viewModel.wrRange[index])
+                }
+            }
+            .onChange(of: viewModel.wrRangeIndex) { newValue in
+                // Update the ViewModel's wrRangeIndex property
+                viewModel.wrRangeIndex = newValue
+            }
             if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
-                Picker("Select WR Accel Range", selection: $viewModel.wrRangeIndex) {
-                    ForEach(0..<viewModel.wrRange.count, id: \.self) { index in
-                        Text(viewModel.wrRange[index])
-                    }
-                }
-                .onChange(of: viewModel.wrRangeIndex) { newValue in
-                    // Update the ViewModel's wrRangeIndex property
-                    viewModel.wrRangeIndex = newValue
-                }
+                
                 Picker("Select Gyro Range", selection: $viewModel.gyroRangeIndex) {
                     ForEach(0..<viewModel.gyroRange.count, id: \.self) { index in
                         Text(viewModel.gyroRange[index])
