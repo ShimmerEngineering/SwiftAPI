@@ -158,13 +158,13 @@ public class MagSensor : IMUSensor , SensorProcessing{
 
         let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
         let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCMagSamplingRate<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCMagSamplingRate)
-        let range = UInt8(magRate<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCMagSamplingRate)
+        let rate = UInt8(magRate<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCMagSamplingRate)
         
         print("orivalue range : \(orivalue)")
         print("value : \(value)")
-        print("range : \(range)")
+        print("rate : \(rate)")
 
-        infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] = value | range
+        infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] = value | rate
         
         return infomemtoupdate
     }
