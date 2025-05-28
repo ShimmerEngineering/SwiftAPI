@@ -73,11 +73,11 @@ public class MagSensor : IMUSensor , SensorProcessing{
         var infomemtoupdate = infomem
         if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
             if(!LowPowerMagEnabled){
-                if(samplingRate < 10){
+                if(samplingRate <= 10){
                     infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:0)
-                }else if(samplingRate < 20){
+                }else if(samplingRate <= 20){
                     infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:1)
-                }else if(samplingRate < 50){
+                }else if(samplingRate <= 50){
                     infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:2)
                 }else{
                     infomemtoupdate = updateInfoMemMagRate(infomem: infomem, magRate:3)
