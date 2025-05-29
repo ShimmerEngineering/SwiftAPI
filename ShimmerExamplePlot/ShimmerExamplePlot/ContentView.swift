@@ -263,6 +263,14 @@ struct ContentView: View {
                     }
                 }
                 })
+                Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RMag()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
               
                 Button("WriteInfoMem Gyro Shimmer3R",action:{ Task {
                     do {
@@ -351,6 +359,7 @@ struct ContentView: View {
                     // Update the ViewModel's wrRangeIndex property
                     viewModel.lnAccelRangeIndex = newValue
                 }
+               
                 Picker("Select Gyro Range", selection: $viewModel.gyroRange3RIndex) {
                     ForEach(0..<viewModel.gyroRange3R.count, id: \.self) { index in
                         Text(viewModel.gyroRange3R[index])
@@ -360,6 +369,7 @@ struct ContentView: View {
                     // Update the ViewModel's wrRangeIndex property
                     viewModel.gyroRange3RIndex = newValue
                 }
+                
                 Button("WriteInfoMem Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendS3RInfoMemConfigUpdate()
