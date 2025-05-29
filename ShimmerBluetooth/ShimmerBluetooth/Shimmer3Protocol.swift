@@ -326,6 +326,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             battVoltageSensor = BattVoltageSensor()
         } else if(REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
             lnAccelSensor = LNAccelSensor(hwid: REV_HW_MAJOR)
+            magSensor = MagSensor(hwid: REV_HW_MAJOR)
             gyroSensor = GyroSensor(hwid: REV_HW_MAJOR)
             wrAccelSensor = WRAccelSensor(hwid: REV_HW_MAJOR)
             timeSensor = TimeSensor()
@@ -355,6 +356,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             timeSensor.setInfoMem(infomem: infoMem)
             lnAccelSensor.setInfoMem(infomem: infoMem)
             altMagSensor.setInfoMem(infomem: infoMem)
+            magSensor.setInfoMem(infomem: infoMem)
             gyroSensor.setInfoMem(infomem: infoMem)
             wrAccelSensor.setInfoMem(infomem: infoMem)
         }
