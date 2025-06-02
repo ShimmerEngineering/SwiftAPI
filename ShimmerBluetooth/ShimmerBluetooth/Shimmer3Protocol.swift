@@ -50,6 +50,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     var timeSensor: TimeSensor = TimeSensor()
     public var magSensor: MagSensor = MagSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var gyroSensor: GyroSensor = GyroSensor(hwid: HardwareType.UNKNOWN.rawValue)
+    public var altMagSensor: AltMagSensor = AltMagSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var adcA13Sensor: ADCSensor = ADCSensor()
     var adcA12Sensor: ADCSensor = ADCSensor()
     var adcA1Sensor: ADCSensor = ADCSensor()
@@ -302,6 +303,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             gyroSensor.parseSensorCalibrationDump(bytes: sensorcalibrationdump)
             wrAccelSensor.parseSensorCalibrationDump(bytes: sensorcalibrationdump)
             magSensor.parseSensorCalibrationDump(bytes: sensorcalibrationdump)
+            altMagSensor.parseSensorCalibrationDump(bytes: sensorcalibrationdump)
         }
     }
     
@@ -328,6 +330,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             gyroSensor = GyroSensor(hwid: REV_HW_MAJOR)
             wrAccelSensor = WRAccelSensor(hwid: REV_HW_MAJOR)
             timeSensor = TimeSensor()
+            altMagSensor = AltMagSensor(hwid: REV_HW_MAJOR)
         }
     }
     
@@ -352,6 +355,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         } else  if (REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
             timeSensor.setInfoMem(infomem: infoMem)
             lnAccelSensor.setInfoMem(infomem: infoMem)
+            altMagSensor.setInfoMem(infomem: infoMem)
             magSensor.setInfoMem(infomem: infoMem)
             gyroSensor.setInfoMem(infomem: infoMem)
             wrAccelSensor.setInfoMem(infomem: infoMem)
@@ -388,6 +392,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         }
         if magSensor.sensorEnabled {
             ojc = magSensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        }
+        if altMagSensor.sensorEnabled {
+            ojc = altMagSensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
         if gyroSensor.sensorEnabled {
             ojc = gyroSensor.processData(sensorPacket: bytes, objectCluster: ojc)
@@ -903,6 +910,18 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 magSensor.packetIndexMagZ = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LSM303DLHC_MAG.rawValue)
+            case ChannelContentsShimmer3.AlternativeXMag.rawValue: //AlternativeXMag
+                altMagSensor.packetIndexAltMagX = packetSize
+                packetSize += 2
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LIS3MDL_ALT_MAG.rawValue)
+            case ChannelContentsShimmer3.AlternativeYMag.rawValue:
+                altMagSensor.packetIndexAltMagY = packetSize
+                packetSize += 2
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LIS3MDL_ALT_MAG.rawValue)
+            case ChannelContentsShimmer3.AlternativeZMag.rawValue:
+                altMagSensor.packetIndexAltMagZ = packetSize
+                packetSize += 2
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_LIS3MDL_ALT_MAG.rawValue)
             case ChannelContentsShimmer3.XGyro.rawValue:
                 gyroSensor.packetIndexGyroX = packetSize
                 packetSize += 2
@@ -1607,6 +1626,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case SENSOR_EXG1_16BIT = 0x100000
         case SENSOR_EXG2_16BIT = 0x080000
         case SENSOR_BRIDGE_AMP = 0x8000
+        case SENSOR_LIS3MDL_ALT_MAG = 0x200000
     }
     
     enum ChannelContentsShimmer3: UInt8 {

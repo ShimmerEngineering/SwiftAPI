@@ -263,6 +263,16 @@ struct ContentView: View {
                     }
                 }
                 })
+                
+                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RAltMag()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+
                 Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendInfoMemS3RMag()
@@ -271,7 +281,7 @@ struct ContentView: View {
                     }
                 }
                 })
-              
+                
                 Button("WriteInfoMem Gyro Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendInfoMemS3RGyro()
@@ -280,7 +290,7 @@ struct ContentView: View {
                     }
                 }
                 })
-
+                
                 Button("WriteInfoMem WRAccel Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendInfoMemS3RWRAccel()
@@ -359,7 +369,17 @@ struct ContentView: View {
                     // Update the ViewModel's wrRangeIndex property
                     viewModel.lnAccelRangeIndex = newValue
                 }
-               
+                
+                Picker("Select Alt Mag Range", selection: $viewModel.altMagRange3RIndex) {
+                    ForEach(0..<viewModel.altMagRange3R.count, id: \.self) { index in
+                        Text(viewModel.altMagRange3R[index])
+                    }
+                }
+                .onChange(of: viewModel.altMagRange3RIndex) { newValue in
+                    // Update the ViewModel's wrRangeIndex property
+                    viewModel.altMagRange3RIndex = newValue
+                }
+                
                 Picker("Select Gyro Range", selection: $viewModel.gyroRange3RIndex) {
                     ForEach(0..<viewModel.gyroRange3R.count, id: \.self) { index in
                         Text(viewModel.gyroRange3R[index])
@@ -378,7 +398,6 @@ struct ContentView: View {
                         print("Error: \(error)")
                     }
                 }
-                    
                 })
             }
             Picker("Sampling Rate", selection: $viewModel.samplingRateIndex) {
@@ -414,3 +433,4 @@ extension ContentView: ViewModelDelegate {
 #Preview {
     ContentView()
 }
+
