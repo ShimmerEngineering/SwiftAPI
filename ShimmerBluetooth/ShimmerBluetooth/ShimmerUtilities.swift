@@ -173,6 +173,8 @@ public class ShimmerUtilities{
             let msb = Int(sensorData[1] & 0xFF) << 8
             let lsb = Int(sensorData[2] & 0xFF)
             return calculateTwosComplement(signedData: (Int(xmsb + msb + lsb)), bitLength: 24)
+        }else if dataType == SensorDataType.i12MSB{
+            return calculateTwosComplement(signedData: Int(Int(sensorData[0] & 0xFF) << 4 | Int(sensorData[1] & 0xFF) >> 4), bitLength: 12)
         }
         
         return nil
