@@ -8,7 +8,8 @@ public class BleByteRadio : NSObject, ByteCommunication {
     var RBL_CHAR_TX_UUID = "6E400002-B5A3-F393-E0A9-E50E24DCCA9E"
     private var bluetoothManager: BluetoothManager?
     public static let VERISENSE = "Verisense"
-    public static let SHIMMER = "Shimmer"
+    public static let SHIMMER3 = "Shimmer3"
+    public static let SHIMMER3R = "Shimmer3R"
     private var continuation: CheckedContinuation<Bool?, Never>?
     public static let VERISENSE_RBL_SERVICE_UUID = "6E400001-B5A3-F393-E0A9-E50E24DCCA9E"
     public static let VERISENSE_RBL_CHAR_RX_UUID = "6E400003-B5A3-F393-E0A9-E50E24DCCA9E"
@@ -17,6 +18,12 @@ public class BleByteRadio : NSObject, ByteCommunication {
     public static let SHIMMER3_RBL_SERVICE_UUID = "49535343-FE7D-4AE5-8FA9-9FAFD205E455"
     public static let SHIMMER3_RBL_CHAR_RX_UUID = "49535343-1E4D-4BD9-BA61-23C647249616"
     public static let SHIMMER3_RBL_CHAR_TX_UUID = "49535343-8841-43F4-A8D4-ECBE34729BB3"
+    
+    public static let SHIMMER3R_RBL_SERVICE_UUID = "65333333-A115-11E2-9E9A-0800200CA100"
+    public static let SHIMMER3R_RBL_CHAR_RX_UUID = "65333333-A115-11E2-9E9A-0800200CA102"
+    public static let SHIMMER3R_RBL_CHAR_TX_UUID = "65333333-A115-11E2-9E9A-0800200CA101"
+    
+    
     public var deviceName: String?
     public var delegate: ByteCommunicationDelegate?
 
@@ -38,7 +45,11 @@ public class BleByteRadio : NSObject, ByteCommunication {
             RBL_SERVICE_UUID = BleByteRadio.VERISENSE_RBL_SERVICE_UUID
             RBL_CHAR_RX_UUID = BleByteRadio.VERISENSE_RBL_CHAR_RX_UUID
             RBL_CHAR_TX_UUID = BleByteRadio.VERISENSE_RBL_CHAR_TX_UUID
-        } else if let isActive = self.activePeripheral?.name?.contains(BleByteRadio.SHIMMER), isActive {
+        } else if let isActive = self.activePeripheral?.name?.contains(BleByteRadio.SHIMMER3R), isActive {
+            RBL_SERVICE_UUID = BleByteRadio.SHIMMER3R_RBL_SERVICE_UUID
+            RBL_CHAR_RX_UUID = BleByteRadio.SHIMMER3R_RBL_CHAR_RX_UUID
+            RBL_CHAR_TX_UUID = BleByteRadio.SHIMMER3R_RBL_CHAR_TX_UUID
+        } else if let isActive = self.activePeripheral?.name?.contains(BleByteRadio.SHIMMER3), isActive {
             RBL_SERVICE_UUID = BleByteRadio.SHIMMER3_RBL_SERVICE_UUID
             RBL_CHAR_RX_UUID = BleByteRadio.SHIMMER3_RBL_CHAR_RX_UUID
             RBL_CHAR_TX_UUID = BleByteRadio.SHIMMER3_RBL_CHAR_TX_UUID
