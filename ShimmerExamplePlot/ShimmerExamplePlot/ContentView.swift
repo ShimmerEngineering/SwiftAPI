@@ -263,15 +263,6 @@ struct ContentView: View {
                     }
                 }
                 })
-                
-                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RAltMag()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
 
                 Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
                     do {
@@ -294,6 +285,22 @@ struct ContentView: View {
                 Button("WriteInfoMem WRAccel Shimmer3R",action:{ Task {
                     do {
                         await viewModel.sendInfoMemS3RWRAccel()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RAltMag()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("WriteInfoMem HighG Accel Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.sendInfoMemS3RHighGAccel()
                     } catch {
                         print("Error: \(error)")
                     }
