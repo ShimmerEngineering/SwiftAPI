@@ -38,6 +38,7 @@
 		3AED20712B0C4BA60066A0F8 /* MagSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED20702B0C4BA60066A0F8 /* MagSensor.swift */; };
 		3AED20732B0C587B0066A0F8 /* GyroSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3AED20722B0C587B0066A0F8 /* GyroSensor.swift */; };
 		451EC81A2DACCFFE00D8F269 /* ConcurrentQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451EC8192DACCFF900D8F269 /* ConcurrentQueue.swift */; };
+		92150EF52DE461CE00FEA53B /* AltMagSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92150EF42DE461CE00FEA53B /* AltMagSensor.swift */; };
 		9299E50E2B85054E001EEFE0 /* PressureTempSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E50D2B85054E001EEFE0 /* PressureTempSensor.swift */; };
 		9299E5102B850571001EEFE0 /* BattVoltageSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9299E50F2B850571001EEFE0 /* BattVoltageSensor.swift */; };
 		92B1067A2B7DAFBC00AB9952 /* EXGSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92B106792B7DAFBC00AB9952 /* EXGSensor.swift */; };
@@ -86,6 +87,7 @@
 		3AED20702B0C4BA60066A0F8 /* MagSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagSensor.swift; sourceTree = "<group>"; };
 		3AED20722B0C587B0066A0F8 /* GyroSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyroSensor.swift; sourceTree = "<group>"; };
 		451EC8192DACCFF900D8F269 /* ConcurrentQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConcurrentQueue.swift; sourceTree = "<group>"; };
+		92150EF42DE461CE00FEA53B /* AltMagSensor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AltMagSensor.swift; sourceTree = "<group>"; };
 		9299E50D2B85054E001EEFE0 /* PressureTempSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PressureTempSensor.swift; sourceTree = "<group>"; };
 		9299E50F2B850571001EEFE0 /* BattVoltageSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BattVoltageSensor.swift; sourceTree = "<group>"; };
 		92B106792B7DAFBC00AB9952 /* EXGSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXGSensor.swift; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				451EC8192DACCFF900D8F269 /* ConcurrentQueue.swift */,
+				92150EF42DE461CE00FEA53B /* AltMagSensor.swift */,
 				3AEB12F82BCE6F7E00B5F6F1 /* Shimmer3SpeedTestProtocol.swift */,
 				3A780C882AE12BEB00EAF050 /* ShimmerBluetooth.h */,
 				3A780C892AE12BEB00EAF050 /* ShimmerBluetooth.docc */,
@@ -303,6 +306,7 @@
 				3AB320E62B070830003D94F8 /* Sensor.swift in Sources */,
 				3A0B4B672B0EE42700786295 /* IMUSensor.swift in Sources */,
 				3A1CBAD32AE2DD1C00BC1E54 /* BleByteRadio.swift in Sources */,
+				92150EF52DE461CE00FEA53B /* AltMagSensor.swift in Sources */,
 				3A7712912AE26805006213A8 /* BLEByteRadioold.swift in Sources */,
 				3A77128D2AE177A4006213A8 /* ShimmerDevice.swift in Sources */,
 				3AA359152AF37943008AD334 /* ConfigByteLayoutShimmer3.swift in Sources */,

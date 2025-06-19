@@ -41,7 +41,7 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     public static let WIDE_RANGE_ACCELEROMETER_Y = "Wide Range Accelerometer Y"
     public static let WIDE_RANGE_ACCELEROMETER_Z = "Wide Range Accelerometer Z"
     
-    let CALIBRATION_ID = 31
+    var CalibrationID = 31
     var AlignmentMatrix_2G:[[Double]] = [[]]
     var SensitivityMatrix_2G:[[Double]] = [[]]
     var OffsetVector_2G:[Double]=[]
@@ -58,6 +58,12 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     var AlignmentMatrix : [[Double]] = [[]]
     var SensitivityMatrix : [[Double]] = [[]]
     var OffsetVector : [Double] = []
+    
+    var calibBytes_2G: [UInt8] = []
+    var calibBytes_4G: [UInt8] = []
+    var calibBytes_8G: [UInt8] = []
+    var calibBytes_16G: [UInt8] = []
+
     
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         let x = Array(sensorPacket[packetIndexAccelX..<packetIndexAccelX+2])
@@ -82,22 +88,51 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     }
     
     public override func parseSensorCalibrationDump(bytes: [UInt8]){
+        if(HardwareVersion==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+            CalibrationID = 39
+        }
         var sensorID = Int(bytes[0]) + (Int(bytes[1])<<8)
-        if bytes[0] == CALIBRATION_ID {
+        if bytes[0] == CalibrationID {
             var range = bytes[2]
             var calbytes = bytes
             calbytes.removeFirst(12)
-            if range==0{
-                (AlignmentMatrix_2G,SensitivityMatrix_2G,OffsetVector_2G) = parseIMUCalibrationParameters(bytes: calbytes)
-            }
-            if range==2{
-                (AlignmentMatrix_4G,SensitivityMatrix_4G,OffsetVector_4G) = parseIMUCalibrationParameters(bytes: calbytes)
-            }
-            if range==3{
-                (AlignmentMatrix_8G,SensitivityMatrix_8G,OffsetVector_8G) = parseIMUCalibrationParameters(bytes: calbytes)
-            }
-            if range==1{
-                (AlignmentMatrix_16G,SensitivityMatrix_16G,OffsetVector_16G) = parseIMUCalibrationParameters(bytes: calbytes)
+
+            if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+               
+                if range==0{
+                    calibBytes_2G = calbytes
+                    (AlignmentMatrix_2G,SensitivityMatrix_2G,OffsetVector_2G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+                if range==2{
+                    calibBytes_4G = calbytes
+                    (AlignmentMatrix_4G,SensitivityMatrix_4G,OffsetVector_4G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+                if range==3{
+                    calibBytes_8G = calbytes
+                    (AlignmentMatrix_8G,SensitivityMatrix_8G,OffsetVector_8G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+                if range==1{
+                    calibBytes_16G = calbytes
+                    (AlignmentMatrix_16G,SensitivityMatrix_16G,OffsetVector_16G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+            }else if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+                
+                if range==0{
+                    calibBytes_2G = calbytes
+                    (AlignmentMatrix_2G,SensitivityMatrix_2G,OffsetVector_2G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+                if range==1{
+                    calibBytes_4G = calbytes
+                    (AlignmentMatrix_4G,SensitivityMatrix_4G,OffsetVector_4G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+                if range==2{
+                    calibBytes_8G = calbytes
+                    (AlignmentMatrix_8G,SensitivityMatrix_8G,OffsetVector_8G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
+                if range==3{
+                    calibBytes_16G = calbytes
+                    (AlignmentMatrix_16G,SensitivityMatrix_16G,OffsetVector_16G) = parseIMUCalibrationParameters(bytes: calbytes)
+                }
             }
             
         }
@@ -106,22 +141,48 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     public func updateInfoMemAccelRange(infomem: [UInt8],range: Range) -> [UInt8]{
         var infomemtoupdate = infomem
         var wrAccelRange = 0
-        if (range == Range.RANGE_2G){
-            wrAccelRange = 0
-        } else if (range == Range.RANGE_4G){
-            wrAccelRange = 2
-        } else if (range == Range.RANGE_8G){
-            wrAccelRange = 3
-        } else if (range == Range.RANGE_16G){
-            wrAccelRange = 1
+        var calibBytes = calibBytes_2G
+        if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+            if (range == Range.RANGE_2G){
+                wrAccelRange = 0
+                calibBytes = calibBytes_2G
+            } else if (range == Range.RANGE_4G){
+                wrAccelRange = 2
+                calibBytes = calibBytes_4G
+            } else if (range == Range.RANGE_8G){
+                wrAccelRange = 3
+                calibBytes = calibBytes_8G
+            } else if (range == Range.RANGE_16G){
+                wrAccelRange = 1
+                calibBytes = calibBytes_16G
+            }
+        }else if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+            if (range == Range.RANGE_2G){
+                wrAccelRange = 0
+                calibBytes = calibBytes_2G
+            } else if (range == Range.RANGE_4G){
+                wrAccelRange = 1
+                calibBytes = calibBytes_4G
+            } else if (range == Range.RANGE_8G){
+                wrAccelRange = 2
+                calibBytes = calibBytes_8G
+            } else if (range == Range.RANGE_16G){
+                wrAccelRange = 3
+                calibBytes = calibBytes_16G
+            }
         }
-        let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0]
-        let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
-        let range = UInt8(wrAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
+            
+            infomemtoupdate.replaceSubrange(
+                ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration..<ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+            
+            let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0]
+            let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
+            let range = UInt8(wrAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
+            
+            infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] = value | range
         
-        infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] = value | range
         return infomemtoupdate
-        
     }
     
     public func getRange()->Range{
@@ -138,31 +199,58 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
         }
         
         wrAccelRange = (Int(infomem[ConfigByteLayoutShimmer3.idxConfigSetupByte0]>>ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange) & ConfigByteLayoutShimmer3.maskLSM303DLHCAccelRange)
-        if (wrAccelRange == 0){
-            CurrentRange = Range.RANGE_2G
-            AlignmentMatrix = AlignmentMatrix_2G
-            SensitivityMatrix = SensitivityMatrix_2G
-            OffsetVector = OffsetVector_2G
+        
+        if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
+            if (wrAccelRange == 0){
+                CurrentRange = Range.RANGE_2G
+                AlignmentMatrix = AlignmentMatrix_2G
+                SensitivityMatrix = SensitivityMatrix_2G
+                OffsetVector = OffsetVector_2G
+            }
+            if (wrAccelRange == 2){
+                CurrentRange = Range.RANGE_4G
+                AlignmentMatrix = AlignmentMatrix_4G
+                SensitivityMatrix = SensitivityMatrix_4G
+                OffsetVector = OffsetVector_4G
+            }
+            if (wrAccelRange == 3){
+                CurrentRange = Range.RANGE_8G
+                AlignmentMatrix = AlignmentMatrix_8G
+                SensitivityMatrix = SensitivityMatrix_8G
+                OffsetVector = OffsetVector_8G
+            }
+            if (wrAccelRange == 1){
+                CurrentRange = Range.RANGE_16G
+                AlignmentMatrix = AlignmentMatrix_16G
+                SensitivityMatrix = SensitivityMatrix_16G
+                OffsetVector = OffsetVector_16G
+            }
+        }else if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+            if (wrAccelRange == 0){
+                CurrentRange = Range.RANGE_2G
+                AlignmentMatrix = AlignmentMatrix_2G
+                SensitivityMatrix = SensitivityMatrix_2G
+                OffsetVector = OffsetVector_2G
+            }
+            if (wrAccelRange == 1){
+                CurrentRange = Range.RANGE_4G
+                AlignmentMatrix = AlignmentMatrix_4G
+                SensitivityMatrix = SensitivityMatrix_4G
+                OffsetVector = OffsetVector_4G
+            }
+            if (wrAccelRange == 2){
+                CurrentRange = Range.RANGE_8G
+                AlignmentMatrix = AlignmentMatrix_8G
+                SensitivityMatrix = SensitivityMatrix_8G
+                OffsetVector = OffsetVector_8G
+            }
+            if (wrAccelRange == 3){
+                CurrentRange = Range.RANGE_16G
+                AlignmentMatrix = AlignmentMatrix_16G
+                SensitivityMatrix = SensitivityMatrix_16G
+                OffsetVector = OffsetVector_16G
+            }
         }
-        if (wrAccelRange == 2){
-            CurrentRange = Range.RANGE_4G
-            AlignmentMatrix = AlignmentMatrix_4G
-            SensitivityMatrix = SensitivityMatrix_4G
-            OffsetVector = OffsetVector_4G
-        }
-        if (wrAccelRange == 3){
-            CurrentRange = Range.RANGE_8G
-            AlignmentMatrix = AlignmentMatrix_8G
-            SensitivityMatrix = SensitivityMatrix_8G
-            OffsetVector = OffsetVector_8G
-        }
-        if (wrAccelRange == 1){
-            CurrentRange = Range.RANGE_16G
-            AlignmentMatrix = AlignmentMatrix_16G
-            SensitivityMatrix = SensitivityMatrix_16G
-            OffsetVector = OffsetVector_16G
-        }
-
     }
     
     public func setLowPowerWRAccel(enable: Bool, isShimmer3withUpdatedSensors: Bool, samplingRate: Double, infomem: [UInt8])-> [UInt8]{
