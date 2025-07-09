@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:ShimmerBLEGrpc/ShimmerBLEGrpc.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:ShimmerExamplePlot/ShimmerExamplePlot.xcodeproj">
    </FileRef>
    <FileRef

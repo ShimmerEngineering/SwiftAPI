@@ -146,7 +146,7 @@ extension VerisenseProtocol : ByteCommunicationDelegate {
     
     }
     
-    public func byteCommunicationDataReceived(data: Data?) {
+    public func byteCommunicationDataReceived(data: Data?, deviceName: String) {
         self.processData(data!)
         self.continuation?.resume(returning: true)
         self.continuation = nil

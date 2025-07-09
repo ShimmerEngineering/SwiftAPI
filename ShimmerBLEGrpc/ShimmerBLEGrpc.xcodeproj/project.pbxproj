@@ -1,0 +1,473 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		45345ACA2DA62FA100EA7B41 /* ShimmerBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45345AC92DA62FA100EA7B41 /* ShimmerBluetooth.framework */; };
+		45345ACB2DA62FA100EA7B41 /* ShimmerBluetooth.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 45345AC92DA62FA100EA7B41 /* ShimmerBluetooth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		45345ACF2DA6361500EA7B41 /* SwiftProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 45345ACE2DA6361500EA7B41 /* SwiftProtobuf */; };
+		45345AD12DA6361500EA7B41 /* SwiftProtobufPluginLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AD02DA6361500EA7B41 /* SwiftProtobufPluginLibrary */; };
+		45345AEA2DA6399900EA7B41 /* GRPCCodeGen in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AE92DA6399900EA7B41 /* GRPCCodeGen */; };
+		45345AEC2DA6399900EA7B41 /* GRPCCore in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AEB2DA6399900EA7B41 /* GRPCCore */; };
+		45345AEE2DA6399900EA7B41 /* GRPCInProcessTransport in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AED2DA6399900EA7B41 /* GRPCInProcessTransport */; };
+		45345AF12DA639C300EA7B41 /* GRPCProtobuf in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AF02DA639C300EA7B41 /* GRPCProtobuf */; };
+		45345AF42DA639F300EA7B41 /* GRPCNIOTransportHTTP2 in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AF32DA639F300EA7B41 /* GRPCNIOTransportHTTP2 */; };
+		45345AF62DA639F300EA7B41 /* GRPCNIOTransportHTTP2Posix in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AF52DA639F300EA7B41 /* GRPCNIOTransportHTTP2Posix */; };
+		45345AF82DA639F300EA7B41 /* GRPCNIOTransportHTTP2TransportServices in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AF72DA639F300EA7B41 /* GRPCNIOTransportHTTP2TransportServices */; };
+		45345AFB2DA63A1100EA7B41 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 45345AFA2DA63A1100EA7B41 /* ArgumentParser */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		45345ACC2DA62FA100EA7B41 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				45345ACB2DA62FA100EA7B41 /* ShimmerBluetooth.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		456851932DA395630047A883 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		45345AB62DA4F12500EA7B41 /* Readme.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Readme.md; sourceTree = "<group>"; };
+		45345AC22DA62CD700EA7B41 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
+		45345AC92DA62FA100EA7B41 /* ShimmerBluetooth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ShimmerBluetooth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		456851952DA395630047A883 /* ShimmerBLEGrpc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ShimmerBLEGrpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		45A656212DBB4F2E001F8C55 /* ShimmerBLEGrpc.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ShimmerBLEGrpc.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		45345AAF2DA4F0EF00EA7B41 /* Sources */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		456851922DA395630047A883 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				45345ACA2DA62FA100EA7B41 /* ShimmerBluetooth.framework in Frameworks */,
+				45345AF12DA639C300EA7B41 /* GRPCProtobuf in Frameworks */,
+				45345AFB2DA63A1100EA7B41 /* ArgumentParser in Frameworks */,
+				45345AEA2DA6399900EA7B41 /* GRPCCodeGen in Frameworks */,
+				45345AD12DA6361500EA7B41 /* SwiftProtobufPluginLibrary in Frameworks */,
+				45345AEC2DA6399900EA7B41 /* GRPCCore in Frameworks */,
+				45345AF62DA639F300EA7B41 /* GRPCNIOTransportHTTP2Posix in Frameworks */,
+				45345ACF2DA6361500EA7B41 /* SwiftProtobuf in Frameworks */,
+				45345AF42DA639F300EA7B41 /* GRPCNIOTransportHTTP2 in Frameworks */,
+				45345AF82DA639F300EA7B41 /* GRPCNIOTransportHTTP2TransportServices in Frameworks */,
+				45345AEE2DA6399900EA7B41 /* GRPCInProcessTransport in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		45345AC82DA62FA100EA7B41 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				45345AC92DA62FA100EA7B41 /* ShimmerBluetooth.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4568518C2DA395630047A883 = {
+			isa = PBXGroup;
+			children = (
+				45A656212DBB4F2E001F8C55 /* ShimmerBLEGrpc.entitlements */,
+				45345AC22DA62CD700EA7B41 /* Package.swift */,
+				45345AB62DA4F12500EA7B41 /* Readme.md */,
+				45345AAF2DA4F0EF00EA7B41 /* Sources */,
+				45345AC82DA62FA100EA7B41 /* Frameworks */,
+				456851962DA395630047A883 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		456851962DA395630047A883 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				456851952DA395630047A883 /* ShimmerBLEGrpc */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		456851942DA395630047A883 /* ShimmerBLEGrpc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4568519C2DA395630047A883 /* Build configuration list for PBXNativeTarget "ShimmerBLEGrpc" */;
+			buildPhases = (
+				456851912DA395630047A883 /* Sources */,
+				456851922DA395630047A883 /* Frameworks */,
+				456851932DA395630047A883 /* CopyFiles */,
+				45345ACC2DA62FA100EA7B41 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				45345AAF2DA4F0EF00EA7B41 /* Sources */,
+			);
+			name = ShimmerBLEGrpc;
+			packageProductDependencies = (
+				45345ACE2DA6361500EA7B41 /* SwiftProtobuf */,
+				45345AD02DA6361500EA7B41 /* SwiftProtobufPluginLibrary */,
+				45345AE92DA6399900EA7B41 /* GRPCCodeGen */,
+				45345AEB2DA6399900EA7B41 /* GRPCCore */,
+				45345AED2DA6399900EA7B41 /* GRPCInProcessTransport */,
+				45345AF02DA639C300EA7B41 /* GRPCProtobuf */,
+				45345AF32DA639F300EA7B41 /* GRPCNIOTransportHTTP2 */,
+				45345AF52DA639F300EA7B41 /* GRPCNIOTransportHTTP2Posix */,
+				45345AF72DA639F300EA7B41 /* GRPCNIOTransportHTTP2TransportServices */,
+				45345AFA2DA63A1100EA7B41 /* ArgumentParser */,
+			);
+			productName = ShimmerBLEGrpc;
+			productReference = 456851952DA395630047A883 /* ShimmerBLEGrpc */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4568518D2DA395630047A883 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1610;
+				LastUpgradeCheck = 1610;
+				TargetAttributes = {
+					456851942DA395630047A883 = {
+						CreatedOnToolsVersion = 16.1;
+					};
+				};
+			};
+			buildConfigurationList = 456851902DA395630047A883 /* Build configuration list for PBXProject "ShimmerBLEGrpc" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4568518C2DA395630047A883;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				45345ACD2DA6361500EA7B41 /* XCRemoteSwiftPackageReference "swift-protobuf" */,
+				45345AE82DA6399900EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift" */,
+				45345AEF2DA639C300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */,
+				45345AF22DA639F300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */,
+				45345AF92DA63A1100EA7B41 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 456851962DA395630047A883 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				456851942DA395630047A883 /* ShimmerBLEGrpc */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		456851912DA395630047A883 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		4568519A2DA395630047A883 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		4568519B2DA395630047A883 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		4568519D2DA395630047A883 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShimmerBLEGrpc.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = "@executable_path";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBLEGrpc;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		4568519E2DA395630047A883 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = ShimmerBLEGrpc.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				"LD_RUNPATH_SEARCH_PATHS[arch=*]" = "@executable_path";
+				PRODUCT_BUNDLE_IDENTIFIER = com.shimmersensing.ShimmerBLEGrpc;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		456851902DA395630047A883 /* Build configuration list for PBXProject "ShimmerBLEGrpc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4568519A2DA395630047A883 /* Debug */,
+				4568519B2DA395630047A883 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4568519C2DA395630047A883 /* Build configuration list for PBXNativeTarget "ShimmerBLEGrpc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4568519D2DA395630047A883 /* Debug */,
+				4568519E2DA395630047A883 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		45345ACD2DA6361500EA7B41 /* XCRemoteSwiftPackageReference "swift-protobuf" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-protobuf.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.29.0;
+			};
+		};
+		45345AE82DA6399900EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/grpc/grpc-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
+		45345AEF2DA639C300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/grpc/grpc-swift-protobuf.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+		45345AF22DA639F300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/grpc/grpc-swift-nio-transport.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.3;
+			};
+		};
+		45345AF92DA63A1100EA7B41 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		45345ACE2DA6361500EA7B41 /* SwiftProtobuf */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345ACD2DA6361500EA7B41 /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobuf;
+		};
+		45345AD02DA6361500EA7B41 /* SwiftProtobufPluginLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345ACD2DA6361500EA7B41 /* XCRemoteSwiftPackageReference "swift-protobuf" */;
+			productName = SwiftProtobufPluginLibrary;
+		};
+		45345AE92DA6399900EA7B41 /* GRPCCodeGen */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AE82DA6399900EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = GRPCCodeGen;
+		};
+		45345AEB2DA6399900EA7B41 /* GRPCCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AE82DA6399900EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = GRPCCore;
+		};
+		45345AED2DA6399900EA7B41 /* GRPCInProcessTransport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AE82DA6399900EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift" */;
+			productName = GRPCInProcessTransport;
+		};
+		45345AF02DA639C300EA7B41 /* GRPCProtobuf */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AEF2DA639C300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-protobuf" */;
+			productName = GRPCProtobuf;
+		};
+		45345AF32DA639F300EA7B41 /* GRPCNIOTransportHTTP2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AF22DA639F300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
+			productName = GRPCNIOTransportHTTP2;
+		};
+		45345AF52DA639F300EA7B41 /* GRPCNIOTransportHTTP2Posix */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AF22DA639F300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
+			productName = GRPCNIOTransportHTTP2Posix;
+		};
+		45345AF72DA639F300EA7B41 /* GRPCNIOTransportHTTP2TransportServices */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AF22DA639F300EA7B41 /* XCRemoteSwiftPackageReference "grpc-swift-nio-transport" */;
+			productName = GRPCNIOTransportHTTP2TransportServices;
+		};
+		45345AFA2DA63A1100EA7B41 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 45345AF92DA63A1100EA7B41 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 4568518D2DA395630047A883 /* Project object */;
+}
