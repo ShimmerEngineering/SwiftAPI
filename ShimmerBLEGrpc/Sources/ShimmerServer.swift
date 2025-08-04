@@ -30,6 +30,7 @@ struct ShimmerServer: AsyncParsableCommand {
         group.addTask { try await server.serve() }
         if let address = try await server.listeningAddress {
           print("Shimmer BLE gRPC listening on \(address)")
+            print("Server Version: v1.0.0")
         }
       }
     }
