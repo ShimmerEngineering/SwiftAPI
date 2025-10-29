@@ -24,9 +24,6 @@ struct ShimmerServer: AsyncParsableCommand {
       // Disable buffering so logs aren’t batched when stdout/stderr are pipes
       setbuf(stdout, nil)
       setbuf(stderr, nil)
-
-      // Ignore SIGPIPE so a closed pipe doesn’t terminate the process
-      signal(SIGPIPE, SIG_IGN)
       installSignalHandlers()
         
       let server = await GRPCServer(
