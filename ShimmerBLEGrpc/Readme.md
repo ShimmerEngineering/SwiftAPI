@@ -9,3 +9,7 @@ Then, run ShimmerGRPC.java
 # Changelog
 v1.0.0
 - Initial Release
+
+v1.0.1
+- Improve logging in ShimmerServer
+- Improve thread safety in ShimmerBLEService
