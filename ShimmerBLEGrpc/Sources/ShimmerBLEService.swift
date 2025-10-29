@@ -13,7 +13,7 @@ import GRPCCore
 import GRPCNIOTransportHTTP2
 import GRPCProtobuf
 
-@MainActor // CHANGE: serialize all shared mutable state on the main actor
+@MainActor
 final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleServiceProtocol {
     
     private var centralManager: CBCentralManager?
