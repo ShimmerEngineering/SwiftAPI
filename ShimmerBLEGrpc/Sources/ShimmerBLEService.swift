@@ -40,7 +40,7 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     func writeBytesShimmer(request: ShimmerBLEGRPC_WriteBytes, context: GRPCCore.ServerContext) async throws -> ShimmerBLEGRPC_Reply {
-        // CHANGE: avoid force-unwrap and handle when device not connected
+        //Avoid force-unwrap and handle when device not connected
         guard let radio = radioMap[request.address] else {
             return ShimmerBLEGRPC_Reply.with {
                 $0.message = "Write failed: device \( request.address) not connected"
@@ -144,7 +144,7 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     func startConnectShimmer() async {
-        // CHANGE: always reset isConnecting at the end
+        //Always reset isConnecting at the end
         defer { isConnecting = false }
         
         guard let peripheral = bluetoothManager?.getPeripheral(deviceName: deviceNameToConnect) else {
@@ -154,7 +154,7 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
             return
         }
         
-        // CHANGE: create radio first, connect, and only then register in maps
+        //Create radio first, connect, and only after that register in maps
         let radio = BleByteRadio(deviceName: deviceNameToConnect,
                                  cbperipheral: peripheral,
                                  bluetoothManager: bluetoothManager!)
@@ -176,7 +176,7 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     func startDisconnectShimmer(name: String) {
-        // CHANGE: run the disconnect and cleanup on the main actor
+        //Run the disconnect and cleanup on the main actor
         Task { @MainActor in
             if let radio = radioMap[name] {
                 await radio.disconnect()
@@ -216,7 +216,7 @@ extension ShimmerBLEService : ByteCommunicationDelegate {
     }
     
     func byteCommunicationDataReceived(data: Data?, deviceName: String) {
-        // CHANGE: avoid optional chaining and ignore nil data
+        //Avoid optional chaining and ignore nil data
         guard let data = data, let queue = queueMap[deviceName] else { return }
         queue.enqueue(data)
     }
