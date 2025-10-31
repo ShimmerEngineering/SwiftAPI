@@ -13,6 +13,7 @@ import GRPCCore
 import GRPCNIOTransportHTTP2
 import GRPCProtobuf
 
+@MainActor
 final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleServiceProtocol {
     
     private var centralManager: CBCentralManager?
@@ -27,7 +28,7 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     private var radioMap = [String: BleByteRadio]()
     
     init() {
-        self.centralManager = CBCentralManager()
+        self.centralManager = CBCentralManager() // main queue by default
         self.bluetoothManager = BluetoothManager(centralmanager: self.centralManager!)
         bluetoothManager?.delegate = self
     }
@@ -39,7 +40,13 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     func writeBytesShimmer(request: ShimmerBLEGRPC_WriteBytes, context: GRPCCore.ServerContext) async throws -> ShimmerBLEGRPC_Reply {
-        radioMap[request.address]!.writeData(data: request.byteToWrite)
+        //Avoid force-unwrap and handle when device not connected
+        guard let radio = radioMap[request.address] else {
+            return ShimmerBLEGRPC_Reply.with {
+                $0.message = "Write failed: device \( request.address) not connected"
+            }
+        }
+        radio.writeData(data: request.byteToWrite)
         return ShimmerBLEGRPC_Reply.with {
             $0.message = "Written " + request.address
         }
@@ -55,24 +62,33 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     
     //Initiates a BLE scan first, before completing the process in startConnectShimmer()
     func connectShimmer(request: ShimmerBLEGRPC_Request, response: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>, context: GRPCCore.ServerContext) async throws {
-        if(!isConnecting) {
+        if !isConnecting {
             deviceNameToConnect = request.name
             isConnecting = true
             print("Received connectShimmer request for: " + deviceNameToConnect)
-            var res = self.bluetoothManager?.startScanning(deviceName: self.deviceNameToConnect, timeout: 3)
             
+            // register the writer up front
             connectStreamMap[deviceNameToConnect] = response
-            await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.connecting, message: "Connecting")
+            
+            await writeStatusResponse(deviceName: deviceNameToConnect,
+                                      state: ShimmerBLEGRPC_BluetoothState.connecting,
+                                      message: "Connecting")
+            
+            _ = bluetoothManager?.startScanning(deviceName: self.deviceNameToConnect, timeout: 3)
             
             try await Task.sleep(for: .seconds(4))
-            while(bluetoothDeviceMap.keys.contains(deviceNameToConnect)) {
-                //this keeps the response GRPCCore.RPCWriter<> open
+            // Keep the writer open while the device stays connected (exists in map)
+            while bluetoothDeviceMap[deviceNameToConnect] != nil {
                 try await Task.sleep(for: .seconds(0.1)) //sleep 100ms
             }
         } else {
             print("Received connectShimmer request for: " + deviceNameToConnect)
             print("Error: connection attempt already in progress!")
-            await writeStatusResponseWithRPCWriter(state: ShimmerBLEGRPC_BluetoothState.disconnected, message: "Connection failed! Existing connection attempt in progress", writer: response)
+            await writeStatusResponseWithRPCWriter(
+                state: ShimmerBLEGRPC_BluetoothState.disconnected,
+                message: "Connection failed! Existing connection attempt in progress",
+                writer: response
+            )
         }
     }
     
@@ -82,16 +98,15 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
     
     private func writeStatusResponseWithRPCWriter(state: ShimmerBLEGRPC_BluetoothState, message: String, writer: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>?) async {
-        if(writer != nil) {
-            let status = ShimmerBLEGRPC_StateStatus.with {
-                $0.state = state
-                $0.message = message
-            }
-            do {
-                try await writer?.write(status)
-            } catch let error {
-                print(error)
-            }
+        guard let writer = writer else { return }
+        let status = ShimmerBLEGRPC_StateStatus.with {
+            $0.state = state
+            $0.message = message
+        }
+        do {
+            try await writer.write(status)
+        } catch {
+            print("writeStatusResponse error:", error)
         }
     }
     
@@ -108,52 +123,64 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     
     func getDataStream(request: ShimmerBLEGRPC_StreamRequest, response: GRPCCore.RPCWriter<ShimmerBLEGRPC_ObjectClusterByteArray>, context: GRPCCore.ServerContext) async throws {
         print("Received getDataStream request for: " + request.message)
-        while(bluetoothDeviceMap.keys.contains(request.message)) {
-            if(queueMap.keys.contains(request.message)) {
+        while bluetoothDeviceMap[request.message] != nil {
+            if let q = queueMap[request.message] {
                 var data = Data()
-                while(!queueMap[request.message]!.isEmpty) {
-                    data.append(queueMap[request.message]?.dequeue() ?? Data())
+                while !q.isEmpty {
+                    data.append(q.dequeue() ?? Data())
                 }
-                                
-                let res = ShimmerBLEGRPC_ObjectClusterByteArray.with {
-                    $0.bluetoothAddress = request.message
-                    $0.binaryData = data
-                    $0.calibratedTimeStamp = Double(Date().timeIntervalSince1970 * 1_000) //Unix timestamp in milliseconds
+                
+                if !data.isEmpty {
+                    let res = ShimmerBLEGRPC_ObjectClusterByteArray.with {
+                        $0.bluetoothAddress = request.message
+                        $0.binaryData = data
+                        $0.calibratedTimeStamp = Double(Date().timeIntervalSince1970 * 1_000) //Unix timestamp in milliseconds
+                    }
+                    try await response.write(res)
                 }
-                try await response.write(res)
             }
-            
             try await Task.sleep(for: .seconds(0.001)) //sleep 1ms
         }
-
     }
     
     func startConnectShimmer() async {
-        let peripheral = bluetoothManager?.getPeripheral(deviceName: deviceNameToConnect)
-        if(peripheral != nil) {
-            bluetoothDeviceMap[deviceNameToConnect] = peripheral
-            queueMap[deviceNameToConnect] = ConcurrentQueue<Data>()
-            
-            let radio = BleByteRadio(deviceName: deviceNameToConnect,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
-            radio.delegate = self
-            
-            let success = await radio.connect()
-            if(success ?? false) {
-                radioMap[deviceNameToConnect] = radio
-                await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.connected, message: "Success")
-            } else {
-                await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.disconnected, message: "Radio failed to connect")
-            }
-        } else {
-            await writeStatusResponse(deviceName: deviceNameToConnect, state: ShimmerBLEGRPC_BluetoothState.disconnected, message: "Failed to discover device")
+        //Always reset isConnecting at the end
+        defer { isConnecting = false }
+        
+        guard let peripheral = bluetoothManager?.getPeripheral(deviceName: deviceNameToConnect) else {
+            await writeStatusResponse(deviceName: deviceNameToConnect,
+                                      state: ShimmerBLEGRPC_BluetoothState.disconnected,
+                                      message: "Failed to discover device")
+            return
         }
         
-        isConnecting = false
+        //Create radio first, connect, and only after that register in maps
+        let radio = BleByteRadio(deviceName: deviceNameToConnect,
+                                 cbperipheral: peripheral,
+                                 bluetoothManager: bluetoothManager!)
+        radio.delegate = self
+        
+        let success = await radio.connect()
+        if success ?? false {
+            bluetoothDeviceMap[deviceNameToConnect] = peripheral
+            queueMap[deviceNameToConnect] = ConcurrentQueue<Data>()
+            radioMap[deviceNameToConnect] = radio
+            await writeStatusResponse(deviceName: deviceNameToConnect,
+                                      state: ShimmerBLEGRPC_BluetoothState.connected,
+                                      message: "Success")
+        } else {
+            await writeStatusResponse(deviceName: deviceNameToConnect,
+                                      state: ShimmerBLEGRPC_BluetoothState.disconnected,
+                                      message: "Radio failed to connect")
+        }
     }
     
     func startDisconnectShimmer(name: String) {
-        Task {
-            await radioMap[name]?.disconnect()
+        //Run the disconnect and cleanup on the main actor
+        Task { @MainActor in
+            if let radio = radioMap[name] {
+                await radio.disconnect()
+            }
             bluetoothDeviceMap.removeValue(forKey: name)
             connectStreamMap.removeValue(forKey: name)
             queueMap.removeValue(forKey: name)
@@ -165,9 +192,9 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
 
 extension ShimmerBLEService : BluetoothManagerDelegate {
     func scanCompleted() {
-        if(isConnecting) {
+        if isConnecting {
             Task {
-                await startConnectShimmer()
+                await startConnectShimmer() // will hop onto the main actor
             }
         }
     }
@@ -189,9 +216,9 @@ extension ShimmerBLEService : ByteCommunicationDelegate {
     }
     
     func byteCommunicationDataReceived(data: Data?, deviceName: String) {
-        let queue = queueMap[deviceName]
-        if(data != nil) {
-            queue?.enqueue(data ?? Data())
-        }
+        //Avoid optional chaining and ignore nil data
+        guard let data = data, let queue = queueMap[deviceName] else { return }
+        queue.enqueue(data)
     }
 }
+

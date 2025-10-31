@@ -26,7 +26,7 @@ struct Serve: AsyncParsableCommand {
   var port: Int = 50052
 
   func run() async throws {
-    let server = GRPCServer(
+      let server = await GRPCServer(
       transport: .http2NIOPosix(
         address: .ipv4(host: "127.0.0.1", port: self.port),
         transportSecurity: .plaintext
