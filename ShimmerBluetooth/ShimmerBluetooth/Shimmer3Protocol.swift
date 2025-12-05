@@ -1828,7 +1828,7 @@ extension Shimmer3Protocol : ByteCommunicationDelegate {
         print("Current State: \(BTState)")
     }
     
-    public func byteCommunicationDataReceived(data: Data?) {
+    public func byteCommunicationDataReceived(data: Data?, deviceName: String) {
         self.processData(data!)
     }
     

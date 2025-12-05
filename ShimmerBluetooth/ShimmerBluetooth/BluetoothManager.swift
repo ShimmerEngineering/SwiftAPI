@@ -33,12 +33,11 @@ public class BluetoothManager: NSObject {
     }
     
     @objc private func scanTimeout() {
-
         print("[DEBUG] Scanning stopped")
         self.centralManager.stopScan()
         self.delegate?.scanCompleted()
     }
-    
+        
     public func startScanning(uuid:String, timeout: Double) -> Bool {
         deviceName = ""
         if self.centralManager.state != .poweredOn {
@@ -50,7 +49,9 @@ public class BluetoothManager: NSObject {
         print("[DEBUG] Scanning started")
         
         // CBCentralManagerScanOptionAllowDuplicatesKey
-        timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
+        DispatchQueue.main.async {
+            self.timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
+        }
         self.centralManager.scanForPeripherals(withServices: [CBUUID(string: uuid)], options: nil)
         //self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         print(self.centralManager.isScanning)
@@ -68,7 +69,9 @@ public class BluetoothManager: NSObject {
         print("[DEBUG] Scanning started")
         
         // CBCentralManagerScanOptionAllowDuplicatesKey
-        timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
+        DispatchQueue.main.async {
+            self.timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
+        }
         //self.centralManager.scanForPeripherals(withServices: [CBUUID(string: uuid)], options: nil)
         self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         print(self.centralManager.isScanning)
@@ -86,7 +89,9 @@ public class BluetoothManager: NSObject {
         print("[DEBUG] Scanning started")
         
         // CBCentralManagerScanOptionAllowDuplicatesKey
-        timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
+        DispatchQueue.main.async {
+            self.timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
+        }
         //self.centralManager.scanForPeripherals(withServices: [CBUUID(string: uuid)], options: nil)
         self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         print(self.centralManager.isScanning)
