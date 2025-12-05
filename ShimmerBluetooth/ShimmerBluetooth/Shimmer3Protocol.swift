@@ -51,7 +51,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     public var magSensor: MagSensor = MagSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var gyroSensor: GyroSensor = GyroSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var altMagSensor: AltMagSensor = AltMagSensor(hwid: HardwareType.UNKNOWN.rawValue)
-    public var highGAccelSensor: HighGAccelSesor = HighGAccelSesor(hwid: HardwareType.UNKNOWN.rawValue)
+    public var highGAccelSensor: HighGAccelSensor = HighGAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var adcA13Sensor: ADCSensor = ADCSensor()
     var adcA12Sensor: ADCSensor = ADCSensor()
     var adcA1Sensor: ADCSensor = ADCSensor()
@@ -333,7 +333,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             wrAccelSensor = WRAccelSensor(hwid: REV_HW_MAJOR)
             timeSensor = TimeSensor()
             altMagSensor = AltMagSensor(hwid: REV_HW_MAJOR)
-            highGAccelSensor = HighGAccelSesor(hwid: REV_HW_MAJOR)
+            highGAccelSensor = HighGAccelSensor(hwid: REV_HW_MAJOR)
         }
     }
     

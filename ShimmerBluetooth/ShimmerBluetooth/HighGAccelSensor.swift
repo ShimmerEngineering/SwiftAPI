@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class HighGAccelSesor : IMUSensor , SensorProcessing{
+public class HighGAccelSensor : IMUSensor , SensorProcessing{
     
     
     public var packetIndexHighGAccelX:Int = -1
@@ -33,15 +33,15 @@ public class HighGAccelSesor : IMUSensor , SensorProcessing{
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
 
             let(calData)=IMUSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)
-            objectCluster.addData(sensorName: HighGAccelSesor.HIGHG_ACCEL_X, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.localflux.rawValue, value: calData![0])
-            objectCluster.addData(sensorName: HighGAccelSesor.HIGHG_ACCEL_Y, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.localflux.rawValue, value: calData![1])
-            objectCluster.addData(sensorName: HighGAccelSesor.HIGHG_ACCEL_Z, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.localflux.rawValue, value: calData![2])
+            objectCluster.addData(sensorName: HighGAccelSensor.HIGHG_ACCEL_X, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: calData![0])
+            objectCluster.addData(sensorName: HighGAccelSensor.HIGHG_ACCEL_Y, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: calData![1])
+            objectCluster.addData(sensorName: HighGAccelSensor.HIGHG_ACCEL_Z, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: calData![2])
             print("HG X : \(calData![0]) ,  HG Y : \(calData![1]),  HG Z : \(calData![2])")
         }
         print("HGR X : \(rawDataX) ,  HGR Y : \(rawDataY),  HGR Z : \(rawDataZ)")
-        objectCluster.addData(sensorName: HighGAccelSesor.HIGHG_ACCEL_X, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.localflux.rawValue, value: rawDataX)
-        objectCluster.addData(sensorName: HighGAccelSesor.HIGHG_ACCEL_Y, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.localflux.rawValue, value: rawDataY)
-        objectCluster.addData(sensorName: HighGAccelSesor.HIGHG_ACCEL_Z, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.localflux.rawValue, value: rawDataZ)
+        objectCluster.addData(sensorName: HighGAccelSensor.HIGHG_ACCEL_X, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: rawDataX)
+        objectCluster.addData(sensorName: HighGAccelSensor.HIGHG_ACCEL_Y, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: rawDataY)
+        objectCluster.addData(sensorName: HighGAccelSensor.HIGHG_ACCEL_Z, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: rawDataZ)
         
         return objectCluster
     }
