@@ -99,7 +99,7 @@ public class PressureTempSensor: Sensor , SensorProcessing{
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         if self.HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue {
             let idxT = packetIndexTemp
-            let idxP = packetIndexTemp
+            let idxP = packetIndexPressure
 
             let rawT = u24(sensorPacket[idxT],
                            sensorPacket[idxT+1],
@@ -231,7 +231,7 @@ public class PressureTempSensor: Sensor , SensorProcessing{
                     // Quantized conversions — EXACT C#/Java scaling
 
                     // 1 / 2^8
-                    par_T1 = Double(regT1) / 0.00390625            // ✅ divide (same as C#)
+                    par_T1 = Double(regT1) / 0.00390625
                     // 2^30
                     par_T2 = Double(regT2) / 1073741824.0
                     // 2^48
