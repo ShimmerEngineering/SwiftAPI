@@ -264,43 +264,43 @@ struct ContentView: View {
                 }
                 })
 
-                Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
+                Button("Enable Mag Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RMag()
+                        await viewModel.enableS3RMag()
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
                 
-                Button("WriteInfoMem Gyro Shimmer3R",action:{ Task {
+                Button("Enable Gyro Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RGyro()
+                        await viewModel.enableS3RGyro()
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
                 
-                Button("WriteInfoMem WRAccel Shimmer3R",action:{ Task {
+                Button("Enable WRAccel Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RWRAccel()
+                        await viewModel.enableS3RWRAccel()
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
-                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
+                Button("Enable Alt Mag Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RAltMag()
+                        await viewModel.enableS3RAltMag()
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
-                Button("WriteInfoMem HighG Accel Shimmer3R",action:{ Task {
+                Button("Enable HighG Accel Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RHighGAccel()
+                        await viewModel.enableS3RHighGAccel()
                     } catch {
                         print("Error: \(error)")
                     }
