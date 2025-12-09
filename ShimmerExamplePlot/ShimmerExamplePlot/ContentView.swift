@@ -255,9 +255,9 @@ struct ContentView: View {
                 }
                 })
             } else if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
-                Button("WriteInfoMem LNAccel Shimmer3R",action:{ Task {
+                Button("Enable LNAccel Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RLNAccel()
+                        await viewModel.enableS3RLNAccel();
                     } catch {
                         print("Error: \(error)")
                     }
