@@ -376,6 +376,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             wrAccelSensor = WRAccelSensor(hwid: REV_HW_MAJOR)
             timeSensor = TimeSensor()
             altMagSensor = AltMagSensor(hwid: REV_HW_MAJOR)
+            pressureTempSensor = PressureTempSensor(hwid: REV_HW_MAJOR)
             highGAccelSensor = HighGAccelSensor(hwid: REV_HW_MAJOR)
         }
     }
@@ -440,6 +441,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             highGAccelSensor.setInfoMem(infomem: infoMem)
             exgSensor.setInfoMem(infomem: infoMem)
             gsrSensor.setInfoMem(infomem: infoMem)
+            pressureTempSensor.setInfoMom(infomem: infoMem)
         }
     }
 
@@ -908,9 +910,26 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                             }
                             print("Command ACK Received and Processed: \(self.commandSent!)")
                             //self.receivedBytes.removeAll()
-
-                               
                             
+                        } else if (self.commandSent == PacketTypeShimmer.getpressureCalibrationCoefficientsCommand) {
+                            if self.receivedBytes[1] == PacketTypeShimmer.pressureCalibrationCoefficientsResponse.rawValue {
+
+                                // Remove ACK + response type
+                                var data = self.receivedBytes
+                                data.removeFirst(2)
+
+                                // Remove CRC
+                                if self.CRCMode != .OFF {
+                                    data.removeLast(Int(self.CRCMode.rawValue))
+                                }
+
+                                // Forward to same PressureTempSensor
+                                self.pressureTempSensor.parseCalParamByteArray(pressureResoRes: data)
+
+                                self.continuation?.resume(returning: true)
+                                self.continuation = nil
+                                self.receivedBytes.removeAll()
+                            }
                         }
                         else if (self.commandSent == PacketTypeShimmer.setSensorsCommand) {
                             print("Set Sensors Command ACK Received")
@@ -936,7 +955,6 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
 
                             print("Command ACK Received and Processed: \(self.commandSent!)")
                         }
-
                     }
                 }
                 
@@ -1129,9 +1147,11 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A7.rawValue)
             case ChannelContentsShimmer3.Temperature.rawValue:
                 pressureTempSensor.sensorEnabled = true
-                packetSize += 2
+                pressureTempSensor.packetIndexTemp = packetSize
+                packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_PRESSURE.rawValue)
             case ChannelContentsShimmer3.Pressure.rawValue:
+                pressureTempSensor.packetIndexPressure = packetSize
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_PRESSURE.rawValue)
             default:
@@ -1415,8 +1435,16 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     }
     
     private func sendPressureCalibCoefficientsCommand() async -> Bool?{
-        return true;
+        let bytes: [UInt8] = [PacketTypeShimmer.getpressureCalibrationCoefficientsCommand.rawValue]
+        commandSent = PacketTypeShimmer.getpressureCalibrationCoefficientsCommand
+        radio!.writeBytes(bytes: bytes)
+        return await withCheckedContinuation { continuation in
+            if self.continuation == nil {
+                self.continuation = continuation
+            }
+        }
     }
+    
     
     public func sendSetSamplingRateCommand(samplingRate: Double) async -> Bool?{
         var samplingByteValue = (Int)(32768/samplingRate)
