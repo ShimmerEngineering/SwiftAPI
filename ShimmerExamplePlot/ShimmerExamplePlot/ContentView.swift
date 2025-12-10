@@ -94,6 +94,20 @@ struct ContentView: View {
             }.onChange(of: signalSelection) { _ in
                 print(signalSelection)
                 viewModel.startIndex = signalSelection
+
+                // Clear ViewModel signals
+                viewModel.signal1 = []
+                viewModel.signal2 = []
+                viewModel.signal3 = []
+
+                // Clear local arrays used by Chart
+                numbers1 = []
+                numbers2 = []
+                numbers3 = []
+
+                // Reset min/max so chart rescales
+                min = 0
+                max = 0
             }
             
             Chart {
