@@ -406,6 +406,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             gyroSensor.sensorEnabled = false
             wrAccelSensor.sensorEnabled = false
             highGAccelSensor.sensorEnabled = false
+            gsrSensor.sensorEnabled = false
+            exgSensor.sensorEnabled = false
+            pressureTempSensor.sensorEnabled = false
         }
     }
     
@@ -435,6 +438,8 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             gyroSensor.setInfoMem(infomem: infoMem)
             wrAccelSensor.setInfoMem(infomem: infoMem)
             highGAccelSensor.setInfoMem(infomem: infoMem)
+            exgSensor.setInfoMem(infomem: infoMem)
+            gsrSensor.setInfoMem(infomem: infoMem)
         }
     }
 
@@ -1065,6 +1070,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             case ChannelContentsShimmer3.Exg1_Status.rawValue:
                 packetSize += 1
             case ChannelContentsShimmer3.Exg1_CH1.rawValue:
+                exgSensor.sensorEnabled = true
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue)
             case ChannelContentsShimmer3.Exg1_CH2.rawValue:
@@ -1073,6 +1079,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             case ChannelContentsShimmer3.Exg2_Status.rawValue:
                 packetSize += 1
             case ChannelContentsShimmer3.Exg2_CH1.rawValue:
+                exgSensor.sensorEnabled = true
                 packetSize += 3
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG2_24BIT.rawValue)
             case ChannelContentsShimmer3.Exg2_CH2.rawValue:
@@ -1430,6 +1437,62 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             }
         }
     }
+    
+    public func sendSetEXGConfigurations(valuesChip1: [UInt8], valuesChip2: [UInt8]) async -> Bool {
+
+        // Safety: require exactly 10 registers each (as per Shimmer3 EXG register map)
+        guard valuesChip1.count == 10, valuesChip2.count == 10 else {
+            print("ERROR: EXG register arrays must be exactly 10 bytes each.")
+            return false
+        }
+
+        var bytes: [UInt8] = []
+
+        // Write chip 1 block
+        bytes.append(PacketTypeShimmer.setExgRegsCommand.rawValue)
+        bytes.append(0x00)  // chip1
+        bytes.append(0x00)  // starting register index
+        bytes.append(0x0A)  // number of registers
+        bytes.append(contentsOf: valuesChip1)
+        commandSent = PacketTypeShimmer.setExgRegsCommand
+        radio?.writeBytes(bytes: bytes)
+        
+        // Wait for ACK from the BT processing thread
+        let result1 = await withCheckedContinuation { continuation in
+            if self.continuation == nil {
+                self.continuation = continuation
+            }
+        } ?? false
+        bytes = []
+        // Write chip 2 block
+        bytes.append(PacketTypeShimmer.setExgRegsCommand.rawValue)
+        bytes.append(0x01)  // chip2
+        bytes.append(0x00)
+        bytes.append(0x0A)
+        bytes.append(contentsOf: valuesChip2)
+
+        commandSent = PacketTypeShimmer.setExgRegsCommand
+        radio?.writeBytes(bytes: bytes)
+
+        // Wait for ACK from the BT processing thread
+        let result2 = await withCheckedContinuation { continuation in
+            if self.continuation == nil {
+                self.continuation = continuation
+            }
+        } ?? false
+        if result1 && result2 {
+            print("Set EXG Configurations ACK received.")
+            exgSensor.setEXGArray(array1: valuesChip1,array2: valuesChip2)
+            
+        } else {
+            print("Set EXG Configurations FAILED")
+            return false
+        }
+
+        return true
+    }
+
+    
     public func updateInfoMemSamplingRate(infomem: [UInt8],samplingRateFreq: Double) -> [UInt8]{
 
         var infomemtoupdate = infomem
@@ -1681,12 +1744,12 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     }
     
     public class Shimmer3Configuration {
-        static let EXG_ECG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA0, 0x10, 0x40, 0x40, 0x2D, 0x00, 0x00, 0x02, 0x03]
-        static let EXG_ECG_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA0, 0x10, 0x40, 0x47, 0x00, 0x00, 0x00, 0x02, 0x01]
-        static let EXG_EMG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA0, 0x10, 0x69, 0x60, 0x20, 0x00, 0x00, 0x02, 0x03]
-        static let EXG_EMG_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA0, 0x10, 0xE1, 0xE1, 0x00, 0x00, 0x00, 0x02, 0x01]
-        static let EXG_TEST_SIGNAL_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA3, 0x10, 0x45, 0x45, 0x00, 0x00, 0x00, 0x02, 0x01]
-        static let EXG_TEST_SIGNAL_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA3, 0x10, 0x45, 0x45, 0x00, 0x00, 0x00, 0x02, 0x01]
+        public static let EXG_ECG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA0, 0x10, 0x40, 0x40, 0x2D, 0x00, 0x00, 0x02, 0x03]
+        public static let EXG_ECG_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA0, 0x10, 0x40, 0x47, 0x00, 0x00, 0x00, 0x02, 0x01]
+        public static let EXG_EMG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA0, 0x10, 0x69, 0x60, 0x20, 0x00, 0x00, 0x02, 0x03]
+        public static let EXG_EMG_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA0, 0x10, 0xE1, 0xE1, 0x00, 0x00, 0x00, 0x02, 0x01]
+        public static let EXG_TEST_SIGNAL_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA3, 0x10, 0x45, 0x45, 0x00, 0x00, 0x00, 0x02, 0x01]
+        public static let EXG_TEST_SIGNAL_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA3, 0x10, 0x45, 0x45, 0x00, 0x00, 0x00, 0x02, 0x01]
         
         public class SignalNames {
             static let V_SENSE_BATT = "VSenseBatt"

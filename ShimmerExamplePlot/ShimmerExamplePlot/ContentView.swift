@@ -306,6 +306,38 @@ struct ContentView: View {
                     }
                 }
                 })
+                Button("Enable EXG Test",action:{ Task {
+                    do {
+                        await viewModel.enableEXGTest()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable ECG",action:{ Task {
+                    do {
+                        await viewModel.enableECG()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable EMG",action:{ Task {
+                    do {
+                        await viewModel.enableEMG()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable PPG + GSR",action:{ Task {
+                    do {
+                        await viewModel.enableS3RHighGAccel()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
             }
             Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
                 ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
