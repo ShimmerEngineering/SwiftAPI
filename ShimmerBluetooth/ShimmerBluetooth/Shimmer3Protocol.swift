@@ -52,12 +52,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     public var gyroSensor: GyroSensor = GyroSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var altMagSensor: AltMagSensor = AltMagSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var highGAccelSensor: HighGAccelSensor = HighGAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
-    var adcA13Sensor: ADCSensor = ADCSensor()
-    var adcA12Sensor: ADCSensor = ADCSensor()
-    var adcA1Sensor: ADCSensor = ADCSensor()
-    var adcA7Sensor: ADCSensor = ADCSensor()
-    var adcA6Sensor: ADCSensor = ADCSensor()
-    var adcA15Sensor: ADCSensor = ADCSensor()
+    var adcInternalA3Sensor: ADCSensor = ADCSensor()
+    var adcInternalA2Sensor: ADCSensor = ADCSensor()
+    var adcInternalA1Sensor: ADCSensor = ADCSensor()
+    var adcInternalA0Sensor: ADCSensor = ADCSensor()
+    var adcExternalA0Sensor: ADCSensor = ADCSensor()
+    var adcExternalA1Sensor: ADCSensor = ADCSensor()
+    var adcExternalA2Sensor: ADCSensor = ADCSensor()
     var gsrSensor: GSRSensor = GSRSensor()
     public var exgSensor: EXGSensor = EXGSensor()
     public var pressureTempSensor : PressureTempSensor = PressureTempSensor(hwid: HardwareType.UNKNOWN.rawValue)
@@ -359,12 +360,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             timeSensor = TimeSensor()
             magSensor = MagSensor(hwid: REV_HW_MAJOR)
             gyroSensor = GyroSensor(hwid: REV_HW_MAJOR)
-            adcA13Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A13)
-            adcA12Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A12)
-            adcA1Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A1)
-            adcA7Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A7)
-            adcA6Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A6)
-            adcA15Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_A15)
+            adcInternalA0Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_Internal_A0)
+            adcInternalA1Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_Internal_A1)
+            adcInternalA2Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_Internal_A2)
+            adcInternalA3Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_Internal_A3)
+            adcExternalA0Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_External_A0)
+            adcExternalA1Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_External_A1)
+            adcExternalA2Sensor = ADCSensor(adc: ADCSensor.ADCType.Shimmer3_External_A2)
             gsrSensor = GSRSensor()
             exgSensor = EXGSensor()
             pressureTempSensor = PressureTempSensor(hwid: REV_HW_MAJOR)
@@ -388,13 +390,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             timeSensor.sensorEnabled = false
             magSensor.sensorEnabled = false
             gyroSensor.sensorEnabled = false
-            adcA13Sensor.sensorEnabled = false
-            adcA7Sensor.sensorEnabled = false
-            adcA6Sensor.sensorEnabled = false
-            adcA15Sensor.sensorEnabled = false
-            adcA12Sensor.sensorEnabled = false
-            adcA1Sensor.sensorEnabled = false
-
+            adcInternalA0Sensor.sensorEnabled = false
+            adcInternalA1Sensor.sensorEnabled = false
+            adcInternalA2Sensor.sensorEnabled = false
+            adcInternalA3Sensor.sensorEnabled = false
+            adcExternalA0Sensor.sensorEnabled = false
+            adcExternalA1Sensor.sensorEnabled = false
+            adcExternalA2Sensor.sensorEnabled = false
             gsrSensor.sensorEnabled = false
             exgSensor.sensorEnabled = false
             pressureTempSensor.sensorEnabled = false
@@ -410,6 +412,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             gsrSensor.sensorEnabled = false
             exgSensor.sensorEnabled = false
             pressureTempSensor.sensorEnabled = false
+            adcInternalA0Sensor.sensorEnabled = false
+            adcInternalA1Sensor.sensorEnabled = false
+            adcInternalA2Sensor.sensorEnabled = false
+            adcInternalA3Sensor.sensorEnabled = false
+            adcExternalA0Sensor.sensorEnabled = false
+            adcExternalA1Sensor.sensorEnabled = false
+            adcExternalA2Sensor.sensorEnabled = false
         }
     }
     
@@ -420,13 +429,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             timeSensor.setInfoMem(infomem: infoMem)
             magSensor.setInfoMem(infomem: infoMem)
             gyroSensor.setInfoMem(infomem: infoMem)
-            adcA13Sensor.setInfoMem(infomem: infoMem)
-            adcA7Sensor.setInfoMem(infomem: infoMem)
-            adcA6Sensor.setInfoMem(infomem: infoMem)
-            adcA15Sensor.setInfoMem(infomem: infoMem)
-            adcA12Sensor.setInfoMem(infomem: infoMem)
-            adcA1Sensor.setInfoMem(infomem: infoMem)
-
+            adcInternalA0Sensor.setInfoMem(infomem: infoMem)
+            adcInternalA1Sensor.setInfoMem(infomem: infoMem)
+            adcInternalA2Sensor.setInfoMem(infomem: infoMem)
+            adcInternalA3Sensor.setInfoMem(infomem: infoMem)
+            adcExternalA0Sensor.setInfoMem(infomem: infoMem)
+            adcExternalA1Sensor.setInfoMem(infomem: infoMem)
+            adcExternalA2Sensor.setInfoMem(infomem: infoMem)
             gsrSensor.setInfoMem(infomem: infoMem)
             exgSensor.setInfoMem(infomem: infoMem)
             pressureTempSensor.setInfoMom(infomem: infoMem)
@@ -442,6 +451,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             exgSensor.setInfoMem(infomem: infoMem)
             gsrSensor.setInfoMem(infomem: infoMem)
             pressureTempSensor.setInfoMom(infomem: infoMem)
+            adcInternalA0Sensor.setInfoMem(infomem: infoMem)
+            adcInternalA1Sensor.setInfoMem(infomem: infoMem)
+            adcInternalA2Sensor.setInfoMem(infomem: infoMem)
+            adcInternalA3Sensor.setInfoMem(infomem: infoMem)
+            adcExternalA0Sensor.setInfoMem(infomem: infoMem)
+            adcExternalA1Sensor.setInfoMem(infomem: infoMem)
+            adcExternalA2Sensor.setInfoMem(infomem: infoMem)
         }
     }
 
@@ -485,23 +501,26 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         if gyroSensor.sensorEnabled {
             ojc = gyroSensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
-        if adcA13Sensor.sensorEnabled {
-            ojc = adcA13Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        if adcInternalA1Sensor.sensorEnabled {
+            ojc = adcInternalA1Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
-        if adcA12Sensor.sensorEnabled {
-            ojc = adcA12Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        if adcInternalA0Sensor.sensorEnabled {
+            ojc = adcInternalA0Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
-        if adcA1Sensor.sensorEnabled {
-            ojc = adcA1Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        if adcInternalA2Sensor.sensorEnabled {
+            ojc = adcInternalA2Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
-        if adcA15Sensor.sensorEnabled {
-            ojc = adcA15Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        if adcInternalA3Sensor.sensorEnabled {
+            ojc = adcInternalA3Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
-        if adcA6Sensor.sensorEnabled {
-            ojc = adcA6Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        if adcExternalA2Sensor.sensorEnabled {
+            ojc = adcExternalA2Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
-        if adcA7Sensor.sensorEnabled {
-            ojc = adcA7Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        if adcExternalA1Sensor.sensorEnabled {
+            ojc = adcExternalA1Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
+        }
+        if adcExternalA0Sensor.sensorEnabled {
+            ojc = adcExternalA0Sensor.processData(sensorPacket: bytes, objectCluster: ojc)
         }
         if gsrSensor.sensorEnabled {
             ojc = gsrSensor.processData(sensorPacket: bytes, objectCluster: ojc)
@@ -1115,36 +1134,36 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             case ChannelContentsShimmer3.Exg2_CH2_16Bit.rawValue:
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXG2_16BIT.rawValue)
-            case ChannelContentsShimmer3.InternalAdc13.rawValue:
-                adcA13Sensor.sensorEnabled = true
-                adcA13Sensor.packetIndex = packetSize
-                packetSize += 2
-                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A13.rawValue)
-            case ChannelContentsShimmer3.ExternalAdc15.rawValue:
-                adcA15Sensor.sensorEnabled = true
-                adcA15Sensor.packetIndex = packetSize
-                packetSize += 2
-                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A15.rawValue)
-            case ChannelContentsShimmer3.InternalAdc12.rawValue:
-                adcA12Sensor.sensorEnabled = true
-                adcA12Sensor.packetIndex = packetSize
-                packetSize += 2
-                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A12.rawValue)
             case ChannelContentsShimmer3.InternalAdc1.rawValue:
-                adcA1Sensor.sensorEnabled = true
-                adcA1Sensor.packetIndex = packetSize
+                adcInternalA1Sensor.sensorEnabled = true
+                adcInternalA1Sensor.packetIndex = packetSize
                 packetSize += 2
                 enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A1.rawValue)
-            case ChannelContentsShimmer3.ExternalAdc6.rawValue:
-                adcA6Sensor.sensorEnabled = true
-                adcA6Sensor.packetIndex = packetSize
+            case ChannelContentsShimmer3.ExternalAdc2.rawValue:
+                adcExternalA2Sensor.sensorEnabled = true
+                adcExternalA2Sensor.packetIndex = packetSize
                 packetSize += 2
-                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A6.rawValue)
-            case ChannelContentsShimmer3.ExternalAdc7.rawValue:
-                adcA7Sensor.sensorEnabled = true
-                adcA7Sensor.packetIndex = packetSize
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A2.rawValue)
+            case ChannelContentsShimmer3.InternalAdc0.rawValue:
+                adcInternalA0Sensor.sensorEnabled = true
+                adcInternalA0Sensor.packetIndex = packetSize
                 packetSize += 2
-                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A7.rawValue)
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A0.rawValue)
+            case ChannelContentsShimmer3.InternalAdc3.rawValue:
+                adcInternalA3Sensor.sensorEnabled = true
+                adcInternalA3Sensor.packetIndex = packetSize
+                packetSize += 2
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_INT_A3.rawValue)
+            case ChannelContentsShimmer3.ExternalAdc1.rawValue:
+                adcExternalA1Sensor.sensorEnabled = true
+                adcExternalA1Sensor.packetIndex = packetSize
+                packetSize += 2
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A1.rawValue)
+            case ChannelContentsShimmer3.ExternalAdc0.rawValue:
+                adcExternalA0Sensor.sensorEnabled = true
+                adcExternalA0Sensor.packetIndex = packetSize
+                packetSize += 2
+                enabledSensors |= Int(SensorBitmapShimmer3.SENSOR_EXT_A0.rawValue)
             case ChannelContentsShimmer3.Temperature.rawValue:
                 pressureTempSensor.sensorEnabled = true
                 pressureTempSensor.packetIndexTemp = packetSize
@@ -1833,15 +1852,15 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case SENSOR_GYRO = 0x040
         case SENSOR_MAG = 0x20
         case SENSOR_GSR = 0x04
-        case SENSOR_EXT_A7 = 0x02
-        case SENSOR_EXT_A6 = 0x01
+        case SENSOR_EXT_A0 = 0x02
+        case SENSOR_EXT_A1 = 0x01
         case SENSOR_VBATT = 0x2000
         case SENSOR_WR_ACCEL = 0x1000
-        case SENSOR_EXT_A15 = 0x0800
-        case SENSOR_INT_A1 = 0x0400
-        case SENSOR_INT_A12 = 0x0200
-        case SENSOR_INT_A13 = 0x0100
-        case SENSOR_INT_A14 = 0x800000
+        case SENSOR_EXT_A2 = 0x0800
+        case SENSOR_INT_A3 = 0x0400
+        case SENSOR_INT_A0 = 0x0200
+        case SENSOR_INT_A1 = 0x0100
+        case SENSOR_INT_A2 = 0x800000
         case SENSOR_PRESSURE = 0x40000
         case SENSOR_EXG1_24BIT = 0x10
         case SENSOR_EXG2_24BIT = 0x08
@@ -1866,12 +1885,12 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case XGyro = 0x0A
         case YGyro = 0x0B
         case ZGyro = 0x0C
-        case ExternalAdc7 = 0x0D
-        case ExternalAdc6 = 0x0E
-        case ExternalAdc15 = 0x0F
-        case InternalAdc1 = 0x10
-        case InternalAdc12 = 0x11
-        case InternalAdc13 = 0x12
+        case ExternalAdc0 = 0x0D
+        case ExternalAdc1 = 0x0E
+        case ExternalAdc2 = 0x0F
+        case InternalAdc3 = 0x10
+        case InternalAdc0 = 0x11
+        case InternalAdc1 = 0x12
         case InternalAdc14 = 0x13
         // Unsupported cases
         case AlternativeXAccel = 0x14
