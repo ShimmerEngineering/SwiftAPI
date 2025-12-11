@@ -94,6 +94,20 @@ struct ContentView: View {
             }.onChange(of: signalSelection) { _ in
                 print(signalSelection)
                 viewModel.startIndex = signalSelection
+
+                // Clear ViewModel signals
+                viewModel.signal1 = []
+                viewModel.signal2 = []
+                viewModel.signal3 = []
+
+                // Clear local arrays used by Chart
+                numbers1 = []
+                numbers2 = []
+                numbers3 = []
+
+                // Reset min/max so chart rescales
+                min = 0
+                max = 0
             }
             
             Chart {
@@ -255,45 +269,84 @@ struct ContentView: View {
                 }
                 })
             } else if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
-                Button("WriteInfoMem LNAccel Shimmer3R",action:{ Task {
+                Button("Enable LNAccel Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RLNAccel()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                
-                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RAltMag()
+                        await viewModel.enableS3RLNAccel();
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
 
-                Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
+                Button("Enable Mag Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RMag()
+                        await viewModel.enableS3RMag()
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
                 
-                Button("WriteInfoMem Gyro Shimmer3R",action:{ Task {
+                Button("Enable Gyro Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RGyro()
+                        await viewModel.enableS3RGyro()
                     } catch {
                         print("Error: \(error)")
                     }
                 }
                 })
                 
-                Button("WriteInfoMem WRAccel Shimmer3R",action:{ Task {
+                Button("Enable WRAccel Shimmer3R",action:{ Task {
                     do {
-                        await viewModel.sendInfoMemS3RWRAccel()
+                        await viewModel.enableS3RWRAccel()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable Alt Mag Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.enableS3RAltMag()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable HighG Accel Shimmer3R",action:{ Task {
+                    do {
+                        await viewModel.enableS3RHighGAccel()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable EXG Test",action:{ Task {
+                    do {
+                        await viewModel.enableEXGTest()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable ECG",action:{ Task {
+                    do {
+                        await viewModel.enableECG()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable EMG",action:{ Task {
+                    do {
+                        await viewModel.enableEMG()
+                    } catch {
+                        print("Error: \(error)")
+                    }
+                }
+                })
+                Button("Enable PPG + GSR",action:{ Task {
+                    do {
+                        await viewModel.enableS3RPPG()
                     } catch {
                         print("Error: \(error)")
                     }

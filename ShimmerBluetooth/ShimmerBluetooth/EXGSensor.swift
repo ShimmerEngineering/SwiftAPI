@@ -79,7 +79,7 @@ public class EXGSensor: Sensor , SensorProcessing{
         }
     }
     var CurrentResolution = Resolution.RESOLUTION_16BIT
-
+    var resByte0InHexString:String = "";
     public var packetIndex:Int = -1
     public static let EXG1_STATUS = "ECG_EMG_Status"
     public static let EXG2_STATUS = "ECG_EMG_Status2"
@@ -437,46 +437,10 @@ public class EXGSensor: Sensor , SensorProcessing{
         }
         return gain
     }
-        
-    public func setInfoMem(infomem: [UInt8]) {
-        
-        var isEXG24Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors0]>>4) & 1
-        var isEXG16Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors2]>>4) & 1
-        
-        if (isEXG24Bit == 1){
-            self.isEXG24Bit = true
-        } else {
-            self.isEXG24Bit = false
-        }
-        
-        if (isEXG16Bit == 1){
-            self.isEXG16Bit = true
-        } else {
-            self.isEXG16Bit = false
-        }
-        
-        if (isEXG24Bit == 1 || isEXG16Bit == 1){
-            sensorEnabled = true
-            isEXG1Enabled = true
-        } else {
-            sensorEnabled = false
-            isEXG1Enabled = false
-        }
-        
-        
-        var exg2_24Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors0]>>3) & 1
-        var exg2_16Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors2]>>3) & 1
-        if (exg2_24Bit == 1 || exg2_16Bit == 1){
-            //sensorEnabled = true
-            isEXG2Enabled = true
-        } else {
-            //sensorEnabled = false
-            isEXG2Enabled = false
-        }
-        
-        exg1RegisterArray = Array(infomem[10..<20])
-        exg2RegisterArray = Array(infomem[20..<30])
-        
+    
+    public func setEXGArray(array1: [UInt8],array2:[UInt8]){
+        self.exg1RegisterArray = array1
+        self.exg2RegisterArray = array2
         CurrentEXGMode = EXGMode.UNKNOWN
         
         if(((exg1RegisterArray[3] & 0x0F)==5)
@@ -512,8 +476,6 @@ public class EXGSensor: Sensor , SensorProcessing{
 
         let exg1GainSetting = exg1RegisterArray[3]
         let exg2GainSetting = exg2RegisterArray[3]
-        
-        let resByte0InHexString = String(infomem[ConfigByteLayoutShimmer3.idxSensors0], radix: 16)
 
         if(CurrentEXGMode == EXGMode.EMG){
             exg1GainValue = convertEmgGainSettingToValue(setting: Int(exg1GainSetting))
@@ -543,6 +505,46 @@ public class EXGSensor: Sensor , SensorProcessing{
                 }
             }
         }
+    }
+    
+    public func setInfoMem(infomem: [UInt8]) {
+        
+        var isEXG24Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors0]>>4) & 1
+        var isEXG16Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors2]>>4) & 1
+        
+        if (isEXG24Bit == 1){
+            self.isEXG24Bit = true
+        } else {
+            self.isEXG24Bit = false
+        }
+        
+        if (isEXG16Bit == 1){
+            self.isEXG16Bit = true
+        } else {
+            self.isEXG16Bit = false
+        }
+        
+        if (isEXG24Bit == 1 || isEXG16Bit == 1){
+            sensorEnabled = true
+            isEXG1Enabled = true
+        } else {
+            sensorEnabled = false
+            isEXG1Enabled = false
+        }
+        
+        
+        var exg2_24Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors0]>>3) & 1
+        var exg2_16Bit = Int(infomem[ConfigByteLayoutShimmer3.idxSensors2]>>3) & 1
+        if (exg2_24Bit == 1 || exg2_16Bit == 1){
+            //sensorEnabled = true
+            isEXG2Enabled = true
+        } else {
+            //sensorEnabled = false
+            isEXG2Enabled = false
+        }
+        resByte0InHexString = String(infomem[ConfigByteLayoutShimmer3.idxSensors0], radix: 16)
+        setEXGArray(array1: Array(infomem[10..<20]),array2: Array(infomem[20..<30]))
+        
     }
     
     public func updateInfoMemExgResolution(infomem: [UInt8],resolution: Resolution) -> [UInt8]{

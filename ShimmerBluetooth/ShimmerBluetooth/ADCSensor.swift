@@ -11,27 +11,31 @@ public class ADCSensor: Sensor, SensorProcessing {
     
     public var packetIndex:Int = -1
     public enum ADCType {
-        case Shimmer3_A13
-        case Shimmer3_A12
-        case Shimmer3_A1
-        case Shimmer3_A6
-        case Shimmer3_A7
-        case Shimmer3_A15
+        
+        case Shimmer3_Internal_A1
+        case Shimmer3_Internal_A2
+        case Shimmer3_Internal_A0
+        case Shimmer3_Internal_A3
+        case Shimmer3_External_A1
+        case Shimmer3_External_A0
+        case Shimmer3_External_A2
 
         var description: String {
             switch self {
-            case .Shimmer3_A13:
-                return "Internal ADC A13"
-            case .Shimmer3_A12:
-                return "Internal ADC A12"
-            case .Shimmer3_A1:
+            case .Shimmer3_Internal_A2:
+                return "Internal ADC A2"
+            case .Shimmer3_Internal_A0:
+                return "Internal ADC A0"
+            case .Shimmer3_Internal_A3:
+                return "Internal ADC A3"
+            case .Shimmer3_External_A0:
+                return "External ADC A0"
+            case .Shimmer3_External_A1:
+                return "External ADC A1"
+            case .Shimmer3_External_A2:
+                return "External ADC A2"
+            case .Shimmer3_Internal_A1:
                 return "Internal ADC A1"
-            case .Shimmer3_A7:
-                return "External ADC A7"
-            case .Shimmer3_A6:
-                return "External ADC A6"
-            case .Shimmer3_A15:
-                return "External ADC A15"
             }
         }
 
@@ -48,7 +52,7 @@ public class ADCSensor: Sensor, SensorProcessing {
         self.ojcName = adc.description
     }
     
-    private var internalADCType:ADCType = ADCType.Shimmer3_A13;
+    private var internalADCType:ADCType = ADCType.Shimmer3_Internal_A1;
     private var ojcName = "Internal ADC A13"
     
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
@@ -64,42 +68,42 @@ public class ADCSensor: Sensor, SensorProcessing {
 
     public func setInfoMem(infomem: [UInt8]) {
         
-        if (self.internalADCType==ADCType.Shimmer3_A13){
+        if (self.internalADCType==ADCType.Shimmer3_Internal_A1){
             var enabled = Int(infomem[ConfigByteLayoutShimmer3.idxSensors1]) & 1
             if (enabled > 0){
                 sensorEnabled = true
             } else {
                 sensorEnabled = false
             }
-        } else if (self.internalADCType==ADCType.Shimmer3_A12){
+        } else if (self.internalADCType==ADCType.Shimmer3_Internal_A0){
             var enabled = Int(infomem[ConfigByteLayoutShimmer3.idxSensors1]) & 2
             if (enabled > 0){
                 sensorEnabled = true
             } else {
                 sensorEnabled = false
             }
-        } else if (self.internalADCType==ADCType.Shimmer3_A7){
+        } else if (self.internalADCType==ADCType.Shimmer3_External_A0){
             var enabled = Int(infomem[ConfigByteLayoutShimmer3.idxSensors0]) & 2
             if (enabled > 0){
                 sensorEnabled = true
             } else {
                 sensorEnabled = false
             }
-        } else if (self.internalADCType==ADCType.Shimmer3_A6){
+        } else if (self.internalADCType==ADCType.Shimmer3_External_A1){
             var enabled = Int(infomem[ConfigByteLayoutShimmer3.idxSensors0]) & 1
             if (enabled > 0){
                 sensorEnabled = true
             } else {
                 sensorEnabled = false
             }
-        } else if (self.internalADCType==ADCType.Shimmer3_A1){
+        } else if (self.internalADCType==ADCType.Shimmer3_Internal_A3){
             var enabled = Int(infomem[ConfigByteLayoutShimmer3.idxSensors1]) & 4
             if (enabled > 0){
                 sensorEnabled = true
             } else {
                 sensorEnabled = false
             }
-        } else if (self.internalADCType==ADCType.Shimmer3_A15){
+        } else if (self.internalADCType==ADCType.Shimmer3_External_A2){
             var enabled = Int(infomem[ConfigByteLayoutShimmer3.idxSensors1]) & 8
             if (enabled > 0){
                 sensorEnabled = true
