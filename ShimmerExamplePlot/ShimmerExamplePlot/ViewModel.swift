@@ -242,6 +242,13 @@ class ViewModel: NSObject, ObservableObject {
         await shimmer3Protocol?.sendSetSensorsCommand(sensorBitmap: Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_WR_ACCEL.rawValue);
         refreshUISettings()
     }
+
+    func enableS3RPPG() async{
+        
+        await shimmer3Protocol?.sendSetSensorsCommand(sensorBitmap: Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_INT_A1.rawValue)
+        await shimmer3Protocol?.sendInternalExpPower(1)
+        refreshUISettings()
+    }
     
      func enableEXGTest() async{
          await shimmer3Protocol?.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP2)

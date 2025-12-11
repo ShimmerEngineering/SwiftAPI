@@ -346,7 +346,7 @@ struct ContentView: View {
                 })
                 Button("Enable PPG + GSR",action:{ Task {
                     do {
-                        await viewModel.enableS3RHighGAccel()
+                        await viewModel.enableS3RPPG()
                     } catch {
                         print("Error: \(error)")
                     }

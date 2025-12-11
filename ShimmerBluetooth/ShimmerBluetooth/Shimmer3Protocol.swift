@@ -44,7 +44,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     public var EXPANSION_BOARD_REV: Int = -1
     
     public var EXPANSION_BOARD_REV_SPECIAL: Int = -1
-
+    public var internalExpPower:Int = -1
     public var lnAccelSensor: LNAccelSensor = LNAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var wrAccelSensor: WRAccelSensor = WRAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var timeSensor: TimeSensor = TimeSensor()
@@ -52,13 +52,13 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     public var gyroSensor: GyroSensor = GyroSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var altMagSensor: AltMagSensor = AltMagSensor(hwid: HardwareType.UNKNOWN.rawValue)
     public var highGAccelSensor: HighGAccelSensor = HighGAccelSensor(hwid: HardwareType.UNKNOWN.rawValue)
-    var adcInternalA3Sensor: ADCSensor = ADCSensor()
-    var adcInternalA2Sensor: ADCSensor = ADCSensor()
-    var adcInternalA1Sensor: ADCSensor = ADCSensor()
-    var adcInternalA0Sensor: ADCSensor = ADCSensor()
-    var adcExternalA0Sensor: ADCSensor = ADCSensor()
-    var adcExternalA1Sensor: ADCSensor = ADCSensor()
-    var adcExternalA2Sensor: ADCSensor = ADCSensor()
+    var adcInternalA3Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_Internal_A3)
+    var adcInternalA2Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_Internal_A2)
+    var adcInternalA1Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_Internal_A1)
+    var adcInternalA0Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_Internal_A0)
+    var adcExternalA0Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_External_A0)
+    var adcExternalA1Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_External_A1)
+    var adcExternalA2Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_External_A2)
     var gsrSensor: GSRSensor = GSRSensor()
     public var exgSensor: EXGSensor = EXGSensor()
     public var pressureTempSensor : PressureTempSensor = PressureTempSensor(hwid: HardwareType.UNKNOWN.rawValue)
@@ -131,6 +131,33 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         return result!
     }
     
+    public func sendInternalExpPower(_ expPower: UInt8) async -> Bool {
+        // Build packet: [command, value]
+        let bytes: [UInt8] = [
+            PacketTypeShimmer.setInternalEXPPowerEnableCommand.rawValue,
+            expPower
+        ]
+
+        commandSent = PacketTypeShimmer.setInternalEXPPowerEnableCommand
+        radio?.writeBytes(bytes: bytes)
+
+        // Wait for ACK
+        let result = await withCheckedContinuation { continuation in
+            if self.continuation == nil {
+                self.continuation = continuation
+            }
+        } ?? false
+
+        if result {
+            self.internalExpPower = Int(expPower)
+            print("Internal Exp Power set to \(expPower)")
+        } else {
+            print("Failed to set Internal Exp Power")
+        }
+
+        return result
+    }
+
     public func sendSetSensorsCommand(sensorBitmap: UInt32) async -> Bool {
         var bytes: [UInt8] = []
 
@@ -961,6 +988,30 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                                 print("CRC SetSensors Calculated: \(self.shimmerUartCrcCalc(received, (received.count - Int(self.CRCMode.rawValue))))")
                                 crcresult = self.checkCrc(received, (received.count - Int(self.CRCMode.rawValue)))
                                 print("CRC SetSensors Check: \(crcresult)")
+                            }
+
+                            if (crcresult) {
+                                self.continuation?.resume(returning: true)
+                                self.continuation = nil
+                            } else {
+                                self.continuation?.resume(returning: false)
+                                self.continuation = nil
+                                print("[CRC ERROR] : \(self.commandSent!)")
+                            }
+
+                            print("Command ACK Received and Processed: \(self.commandSent!)")
+                        }
+                        else if (self.commandSent == PacketTypeShimmer.setInternalEXPPowerEnableCommand) {
+                            print("Set EXP Power ACK Received")
+
+                            let received = Array(self.receivedBytes.prefix(1 + Int(self.CRCMode.rawValue)))
+                            self.receivedBytes.removeFirst(1 + Int(self.CRCMode.rawValue))
+
+                            var crcresult = true
+                            if self.CRCMode != BTCRCMode.OFF {
+                                print("CRC Set EXP Power Calculated: \(self.shimmerUartCrcCalc(received, (received.count - Int(self.CRCMode.rawValue))))")
+                                crcresult = self.checkCrc(received, (received.count - Int(self.CRCMode.rawValue)))
+                                print("CRC Set EXP Power Check: \(crcresult)")
                             }
 
                             if (crcresult) {
@@ -1974,6 +2025,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case setMagSamplingRateCommand = 0x3A
         case magSamplingRateResponse = 0x3B
         case getMagSamplingRateCommand = 0x3C
+        case setInternalEXPPowerEnableCommand = 0x5E
         case daughterCardIDResponse = 0x65
         case getDaughterCardIDCommand = 0x66
         case setInfoMem = 0x8c
