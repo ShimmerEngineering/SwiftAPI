@@ -19,6 +19,7 @@ public enum SensorDataType {
     case u24
     case u24MSB
     case i24MSB
+    case i12MSB
 }
 
 public class Sensor: NSObject{
