@@ -52,8 +52,8 @@ public class ADCSensor: Sensor, SensorProcessing {
         self.ojcName = adc.description
     }
     
-    private var internalADCType:ADCType = ADCType.Shimmer3_Internal_A1;
-    private var ojcName = "Internal ADC A13"
+    private var internalADCType: ADCType = .Shimmer3_Internal_A1
+    private var ojcName = ADCType.Shimmer3_Internal_A1.description
     
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         let x = Array(sensorPacket[packetIndex..<packetIndex+2])
