@@ -142,10 +142,12 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         radio?.writeBytes(bytes: bytes)
 
         // Wait for ACK
+        guard self.continuation == nil else {
+            print("Cannot send command: another command is already awaiting an ACK")
+            return false
+        }
         let result = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         } ?? false
 
         if result {
