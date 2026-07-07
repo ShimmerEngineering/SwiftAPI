@@ -277,7 +277,7 @@ struct ContentView: View {
                     }
                 }
                 })
- 
+                
                 Button("Enable Mag Shimmer3R",action:{ Task {
                     do {
                         await viewModel.enableS3RMag()
@@ -320,67 +320,75 @@ struct ContentView: View {
                     }
                 }
                 })
-                Button("Enable EXG Test",action:{ Task {
-                    do {
-                        await viewModel.enableEXGTest()
-                    } catch {
-                        print("Error: \(error)")
+                if viewModel.shimmer3Protocol?.hasEXGExpansionBoard() == true {
+                    Button("Enable EXG Test",action:{ Task {
+                        do {
+                            await viewModel.enableEXGTest()
+                        } catch {
+                            print("Error: \(error)")
+                        }
                     }
-                }
-                })
-                Button("Enable ECG",action:{ Task {
-                    do {
-                        await viewModel.enableECG()
-                    } catch {
-                        print("Error: \(error)")
+                    })
+                    Button("Enable ECG",action:{ Task {
+                        do {
+                            await viewModel.enableECG()
+                        } catch {
+                            print("Error: \(error)")
+                        }
                     }
-                }
-                })
-                Button("Enable EMG",action:{ Task {
-                    do {
-                        await viewModel.enableEMG()
-                    } catch {
-                        print("Error: \(error)")
+                    })
+                    Button("Enable EMG",action:{ Task {
+                        do {
+                            await viewModel.enableEMG()
+                        } catch {
+                            print("Error: \(error)")
+                        }
                     }
+                    })
                 }
-                })
-
-                Picker("PPG Input", selection: $viewModel.ppgInputSelectionIndex) {
-                    ForEach(0..<self.viewModel.ppgInputOptions.count, id: \.self) { index in
-                        Text(self.viewModel.ppgInputOptions[index])
+                
+                if viewModel.shimmer3Protocol?.hasGSRExpansionBoard() == true {
+                    Picker("PPG Input", selection: $viewModel.ppgInputSelectionIndex) {
+                        ForEach(0..<self.viewModel.ppgInputOptions.count, id: \.self) { index in
+                            Text(self.viewModel.ppgInputOptions[index])
+                        }
                     }
-                }
-                .onChange(of: viewModel.ppgInputSelectionIndex) { newValue in
-                    self.viewModel.ppgInputSelectionIndex = newValue
-                }
-
-                Button("Enable GSR + PPG",action:{ Task {
-                    do {
-                        await viewModel.enableS3RPPG()
-                    } catch {
-                        print("Error: \(error)")
+                    .onChange(of: viewModel.ppgInputSelectionIndex) { newValue in
+                        self.viewModel.ppgInputSelectionIndex = newValue
                     }
-                }
-                })
-            }
-            Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
-                ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
-                    Text(viewModel.exgGain[index])
-                }
-            }
-            .onChange(of: viewModel.exgGainIndex) { newValue in
-                // Update the ViewModel's exgGainIndex property
-                viewModel.exgGainIndex = newValue
-            }
-            Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
-                ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
-                    Text(viewModel.exgResolution[index])
+                    
+                    Button("Enable GSR + PPG",action:{ Task {
+                        do {
+                            await viewModel.enableS3RPPG()
+                        } catch {
+                            print("Error: \(error)")
+                        }
+                    }
+                    })
                 }
             }
-            .onChange(of: viewModel.exgResIndex) { newValue in
-                // Update the ViewModel's exgResIndex property
-                viewModel.exgResIndex = newValue
+            
+            if viewModel.shimmer3Protocol?.hasEXGExpansionBoard() == true {
+                Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
+                    ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
+                        Text(viewModel.exgGain[index])
+                    }
+                }
+                .onChange(of: viewModel.exgGainIndex) { newValue in
+                    // Update the ViewModel's exgGainIndex property
+                    viewModel.exgGainIndex = newValue
+                }
+                Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
+                    ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
+                        Text(viewModel.exgResolution[index])
+                    }
+                }
+                .onChange(of: viewModel.exgResIndex) { newValue in
+                    // Update the ViewModel's exgResIndex property
+                    viewModel.exgResIndex = newValue
+                }
             }
+            
             Picker("Select WR Accel Range", selection: $viewModel.wrRangeIndex) {
                 ForEach(0..<viewModel.wrRange.count, id: \.self) { index in
                     Text(viewModel.wrRange[index])
@@ -476,7 +484,7 @@ struct ContentView: View {
             Button("SetSamplingRate Shimmer3",action:{ Task {
                 do {
                     //await viewModel.setShimmerSamplingRate()
-                    await viewModel.sendInfoMemSamplingRate()
+                    await viewModel.setShimmerSamplingRate()
                     
                 } catch {
                     print("Error: \(error)")

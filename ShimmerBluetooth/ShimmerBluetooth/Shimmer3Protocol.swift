@@ -1818,6 +1818,14 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
 
     }
     
+    public func hasGSRExpansionBoard() -> Bool {
+        return EXPANSION_BOARD_ID == ExpansionBoardDetectShimmer3.EXP_BRD_GSR_UNIFIED.rawValue
+        || EXPANSION_BOARD_ID == ExpansionBoardDetectShimmer3.EXPANSION_GSR_PLUS.rawValue}
+    
+    public func hasEXGExpansionBoard() -> Bool {
+        return EXPANSION_BOARD_ID == ExpansionBoardDetectShimmer3.EXP_BRD_EXG_UNIFIED.rawValue
+        || EXPANSION_BOARD_ID == ExpansionBoardDetectShimmer3.EXPANSION_EXG.rawValue
+        || EXPANSION_BOARD_ID == ExpansionBoardDetectShimmer3.SHIMMER_3_EXG_EXTENDED.rawValue}
     
     class ShimmerConfiguration {
         class SignalNames {
