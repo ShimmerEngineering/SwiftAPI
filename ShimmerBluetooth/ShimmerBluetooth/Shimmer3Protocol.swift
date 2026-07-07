@@ -142,10 +142,12 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         radio?.writeBytes(bytes: bytes)
 
         // Wait for ACK
+        guard self.continuation == nil else {
+            print("Cannot send command: another command is already awaiting an ACK")
+            return false
+        }
         let result = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         } ?? false
 
         if result {
@@ -171,13 +173,15 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         bytes.append(UInt8((sensorBitmap >> 24) & 0xFF))
 
         commandSent = PacketTypeShimmer.setSensorsCommand
-        radio!.writeBytes(bytes: bytes)
+        guard let radio = radio else { return false }
+        radio.writeBytes(bytes: bytes)
 
-        // Wait for ACK of SetSensors
+        guard self.continuation == nil else {
+            print("Cannot send command: another command is already awaiting an ACK")
+            return false
+        }
         let cmdResult = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         } ?? false
 
         if cmdResult == false {
@@ -1556,11 +1560,14 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         radio?.writeBytes(bytes: bytes)
         
         // Wait for ACK from the BT processing thread
+        guard self.continuation == nil else {
+            print("Cannot send EXG config: another command is already awaiting an ACK")
+            return false
+        }
         let result1 = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         } ?? false
+
         bytes = []
         // Write chip 2 block
         bytes.append(PacketTypeShimmer.setExgRegsCommand.rawValue)
@@ -1573,10 +1580,12 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         radio?.writeBytes(bytes: bytes)
 
         // Wait for ACK from the BT processing thread
+        guard self.continuation == nil else {
+            print("Cannot send EXG config (chip2): another command is already awaiting an ACK")
+            return false
+        }
         let result2 = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         } ?? false
         if result1 && result2 {
             print("Set EXG Configurations ACK received.")
