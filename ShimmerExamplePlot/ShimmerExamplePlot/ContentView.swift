@@ -277,7 +277,7 @@ struct ContentView: View {
                     }
                 }
                 })
-
+ 
                 Button("Enable Mag Shimmer3R",action:{ Task {
                     do {
                         await viewModel.enableS3RMag()
@@ -344,7 +344,17 @@ struct ContentView: View {
                     }
                 }
                 })
-                Button("Enable PPG + GSR",action:{ Task {
+
+                Picker("PPG Input", selection: $viewModel.ppgInputSelectionIndex) {
+                    ForEach(0..<self.viewModel.ppgInputOptions.count, id: \.self) { index in
+                        Text(self.viewModel.ppgInputOptions[index])
+                    }
+                }
+                .onChange(of: viewModel.ppgInputSelectionIndex) { newValue in
+                    self.viewModel.ppgInputSelectionIndex = newValue
+                }
+
+                Button("Enable GSR + PPG",action:{ Task {
                     do {
                         await viewModel.enableS3RPPG()
                     } catch {
@@ -482,8 +492,6 @@ extension ContentView: ViewModelDelegate {
         self.refreshPlot()
     }
 }
-
 #Preview {
     ContentView()
 }
-

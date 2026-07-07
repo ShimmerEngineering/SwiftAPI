@@ -1902,6 +1902,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case SENSOR_LN_ACCEL = 0x80
         case SENSOR_GYRO = 0x040
         case SENSOR_MAG = 0x20
+        case SENSOR_PPG = 0
         case SENSOR_GSR = 0x04
         case SENSOR_EXT_A0 = 0x02
         case SENSOR_EXT_A1 = 0x01
@@ -1942,7 +1943,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case InternalAdc3 = 0x10
         case InternalAdc0 = 0x11
         case InternalAdc1 = 0x12
-        case InternalAdc14 = 0x13
+        case InternalAdc2 = 0x13
         // Unsupported cases
         case AlternativeXAccel = 0x14
         case AlternativeYAccel = 0x15
