@@ -1576,16 +1576,15 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         bytes.append(0x0A)
         bytes.append(contentsOf: valuesChip2)
 
-        commandSent = PacketTypeShimmer.setExgRegsCommand
-        radio?.writeBytes(bytes: bytes)
-
-        // Wait for ACK from the BT processing thread
+        guard let radio = radio else { return false }
         guard self.continuation == nil else {
             print("Cannot send EXG config (chip2): another command is already awaiting an ACK")
             return false
         }
         let result2 = await withCheckedContinuation { continuation in
             self.continuation = continuation
+            self.commandSent = PacketTypeShimmer.setExgRegsCommand
+            radio.writeBytes(bytes: bytes)
         } ?? false
         if result1 && result2 {
             print("Set EXG Configurations ACK received.")
