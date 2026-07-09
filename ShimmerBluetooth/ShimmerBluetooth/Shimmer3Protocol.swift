@@ -138,16 +138,16 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
             expPower
         ]
 
-        commandSent = PacketTypeShimmer.setInternalEXPPowerEnableCommand
-        radio?.writeBytes(bytes: bytes)
-
-        // Wait for ACK
+        guard let radio = radio else { return false }
         guard self.continuation == nil else {
             print("Cannot send command: another command is already awaiting an ACK")
             return false
         }
+
+        commandSent = PacketTypeShimmer.setInternalEXPPowerEnableCommand
         let result = await withCheckedContinuation { continuation in
             self.continuation = continuation
+            radio.writeBytes(bytes: bytes)
         } ?? false
 
         if result {
