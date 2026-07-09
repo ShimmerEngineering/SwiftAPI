@@ -345,6 +345,25 @@ struct ContentView: View {
                         }
                     }
                     })
+                    
+                    Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
+                        ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
+                            Text(viewModel.exgGain[index])
+                        }
+                    }
+                    .onChange(of: viewModel.exgGainIndex) { newValue in
+                        // Update the ViewModel's exgGainIndex property
+                        viewModel.exgGainIndex = newValue
+                    }
+                    Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
+                        ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
+                            Text(viewModel.exgResolution[index])
+                        }
+                    }
+                    .onChange(of: viewModel.exgResIndex) { newValue in
+                        // Update the ViewModel's exgResIndex property
+                        viewModel.exgResIndex = newValue
+                    }
                 }
                 
                 if viewModel.shimmer3Protocol?.hasGSRExpansionBoard() == true {
@@ -365,27 +384,6 @@ struct ContentView: View {
                         }
                     }
                     })
-                }
-            }
-            
-            if viewModel.shimmer3Protocol?.hasEXGExpansionBoard() == true {
-                Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
-                    ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
-                        Text(viewModel.exgGain[index])
-                    }
-                }
-                .onChange(of: viewModel.exgGainIndex) { newValue in
-                    // Update the ViewModel's exgGainIndex property
-                    viewModel.exgGainIndex = newValue
-                }
-                Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
-                    ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
-                        Text(viewModel.exgResolution[index])
-                    }
-                }
-                .onChange(of: viewModel.exgResIndex) { newValue in
-                    // Update the ViewModel's exgResIndex property
-                    viewModel.exgResIndex = newValue
                 }
             }
             
