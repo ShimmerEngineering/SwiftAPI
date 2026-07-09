@@ -37,6 +37,7 @@ public class Sensor: NSObject{
         case localflux = "localflux"
         case milliVolts = "mV"
         case kiloOhms = "kΩ"
+        case microSiemens = "µS"
         case percent = "%"
         case kpascal = "kPa"
         case degreescelcius = "Degree Celsius"

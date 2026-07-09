@@ -12,6 +12,8 @@ public class GSRSensor: Sensor , SensorProcessing{
     public var packetIndex:Int = -1
     public var gsrRange:Int = -1
     public static let GSR = "GSR"
+    public static let GSR_SKIN_RESISTANCE = "GSR Skin Resistance"
+    public static let GSR_SKIN_CONDUCTANCE = "GSR Skin Conductance"
     public static let SHIMMER3_GSR_REF_RESISTORS_KOHMS:[Double] = [
                 40.200,     //Range 0
                 287.000,     //Range 1
@@ -63,7 +65,10 @@ public class GSRSensor: Sensor , SensorProcessing{
                 gsrResistanceKOhms = calibrateGsrDataToResistanceFromAmplifierEq(gsrData, 3);
             }
             print("GSR (kOhms): \(gsrResistanceKOhms)")
-            objectCluster.addData(sensorName: GSRSensor.GSR, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.kiloOhms.rawValue, value: gsrResistanceKOhms)
+            objectCluster.addData(sensorName: GSRSensor.GSR_SKIN_RESISTANCE, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.kiloOhms.rawValue, value: gsrResistanceKOhms)
+             
+            let gsrConductanceUS = gsrResistanceKOhms > 0 ? (1000.0 / gsrResistanceKOhms) : 0.0
+            objectCluster.addData(sensorName: GSRSensor.GSR_SKIN_CONDUCTANCE, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.microSiemens.rawValue, value: gsrConductanceUS)
         }
         objectCluster.addData(sensorName: GSRSensor.GSR, formatName: SensorFormats.Raw.rawValue, unitName: SensorUnits.noUnit.rawValue, value: rawDataX)
         return objectCluster
