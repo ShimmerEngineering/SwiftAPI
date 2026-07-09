@@ -172,16 +172,16 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         bytes.append(UInt8((sensorBitmap >> 16) & 0xFF))
         bytes.append(UInt8((sensorBitmap >> 24) & 0xFF))
 
-        commandSent = PacketTypeShimmer.setSensorsCommand
-        guard let radio = radio else { return false }
-        radio.writeBytes(bytes: bytes)
-
         guard self.continuation == nil else {
             print("Cannot send command: another command is already awaiting an ACK")
             return false
         }
+
+        guard let radio = radio else { return false }
+        commandSent = PacketTypeShimmer.setSensorsCommand
         let cmdResult = await withCheckedContinuation { continuation in
             self.continuation = continuation
+            radio.writeBytes(bytes: bytes)
         } ?? false
 
         if cmdResult == false {
