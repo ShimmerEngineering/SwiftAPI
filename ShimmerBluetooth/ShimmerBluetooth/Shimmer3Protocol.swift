@@ -1919,7 +1919,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         case SENSOR_LN_ACCEL = 0x80
         case SENSOR_GYRO = 0x040
         case SENSOR_MAG = 0x20
-        case SENSOR_PPG = 0
+        // No dedicated SENSOR_PPG bitmap bit (PPG uses SENSOR_GSR + internal ADC bits).
         case SENSOR_GSR = 0x04
         case SENSOR_EXT_A0 = 0x02
         case SENSOR_EXT_A1 = 0x01
