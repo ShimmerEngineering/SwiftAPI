@@ -75,6 +75,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     private var continuation: CheckedContinuation<Bool?, Never>?
     private var continuationByteArray: CheckedContinuation<[UInt8]?, Never>?
     public var shimmer3InfoMem: Shimmer3InfoMem = Shimmer3InfoMem()
+    public static let INFOMEM_WRITE_SETTLE_DELAY_NS: UInt64 = 500_000_000 // 500ms — placeholder, tune against actual firmware flash-write timing
     
     let timeoutInSeconds: TimeInterval = 1 // Set your desired timeout duration in seconds
 
@@ -241,10 +242,10 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 }
             }
             if (res){
+                try? await Task.sleep(nanoseconds: Shimmer3Protocol.INFOMEM_WRITE_SETTLE_DELAY_NS)
                 self.changeState(btState:Shimmer3BTState.CONNECTED)
             }
             return res
-            
         }
     }
     
@@ -494,6 +495,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
 
     
     public func disconnect() async -> Bool {
+        if BTState == Shimmer3BTState.STREAMING {
+            _ = await sendStopStreamingCommand()
+        }
         var result = await radio?.disconnect()
         return result!
     }
@@ -616,6 +620,8 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                             print(self.receivedBytes)
                             self.changeState(btState:Shimmer3BTState.CONNECTED)
                             self.receivedBytes.removeAll()
+                            self.continuation?.resume(returning: true)
+                            self.continuation = nil
                         }
                     }
                 }
@@ -1356,6 +1362,10 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     }
     
     public func sendStartStreamingCommand() async ->Bool?{
+        guard self.continuation == nil else {
+            print("Cannot send StartStreaming: another command is already awaiting an ACK")
+            return false
+        }
         let bytes:[UInt8] = [PacketTypeShimmer.startStreamingCommand.rawValue]
         commandSent = PacketTypeShimmer.startStreamingCommand
         //let data = Data(bytes)
@@ -1363,10 +1373,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         radio!.writeBytes(bytes:bytes)
         
         let result = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                // 2
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         }
         if (result!){
             print("StartStreaming!")
@@ -1378,14 +1385,19 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
 
 
     
-    public func sendStopStreamingCommand() {
+    public func sendStopStreamingCommand() async -> Bool? {
+        guard self.continuation == nil else {
+            print("Cannot send StopStreaming: another command is already awaiting an ACK")
+            return false
+        }
         let bytes:[UInt8] = [PacketTypeShimmer.stopStreamingCommand.rawValue]
         commandSent = PacketTypeShimmer.stopStreamingCommand
-        //let data = Data(bytes)
-        //enableNotifications(enable: true)
-        print("send stop streaming command")
         radio!.writeBytes(bytes:bytes)
-        print("sent stop streaming command")
+     
+        let result = await withCheckedContinuation { continuation in
+            self.continuation = continuation
+        }
+        return result
     }
     
     func readInfoMemCommand(command: Int, address: Int, size: Int) {
@@ -1576,7 +1588,6 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         bytes.append(0x0A)
         bytes.append(contentsOf: valuesChip2)
 
-        guard let radio = radio else { return false }
         guard self.continuation == nil else {
             print("Cannot send EXG config (chip2): another command is already awaiting an ACK")
             return false
@@ -2114,6 +2125,8 @@ extension Shimmer3Protocol : ByteCommunicationDelegate {
     }
     
     public func byteCommunicationDisconnected(connectionloss: Bool) {
+        self.continuation?.resume(returning: false)
+        self.continuation = nil
         self.changeState(btState:Shimmer3BTState.DISCONNECTED)
         stopProcessing()
         print("Current State: \(BTState)")
