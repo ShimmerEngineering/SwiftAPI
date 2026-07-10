@@ -105,9 +105,9 @@ struct ContentView: View {
                 numbers2 = []
                 numbers3 = []
                 
-                // Reset min/max so chart rescales (avoid zero-range domain)
+                // Reset min/max so chart rescales
                 min = 0
-                max = 1
+                max = 0
             }
             
             Chart {
@@ -130,7 +130,7 @@ struct ContentView: View {
                         y: .value("Value3", value)
                     ).foregroundStyle(by: .value("Value3", "Value3"))
                 }
-            }.chartForegroundStyleScale(["Value1": Color.orange, "Value2": Color.blue, "Value3": Color.red]).chartYScale(domain: [min,max])
+            }.chartForegroundStyleScale(["Value1": Color.orange, "Value2": Color.blue, "Value3": Color.red]).chartYScale(domain: min < max ? min...max : 0.0...1.0)
             
             Button("Scan Shimmer3",action: { viewModel.scanShimmer3()})
             Picker("Select Shimmer3", selection: $deviceSelection) {
