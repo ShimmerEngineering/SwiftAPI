@@ -105,9 +105,9 @@ struct ContentView: View {
                 numbers2 = []
                 numbers3 = []
                 
-                // Reset min/max so chart rescales
+                // Reset min/max so chart rescales (avoid zero-range domain)
                 min = 0
-                max = 0
+                max = 1
             }
             
             Chart {
