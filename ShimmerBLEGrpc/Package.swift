@@ -18,22 +18,29 @@
 import PackageDescription
 
 let package = Package(
-  name: "hello-world",
+  name: "shimmer-ble-grpc",
   platforms: [.macOS("15.0")],
   dependencies: [
     .package(url: "https://github.com/grpc/grpc-swift.git", from: "2.0.0"),
     .package(url: "https://github.com/grpc/grpc-swift-protobuf.git", from: "1.0.0"),
     .package(url: "https://github.com/grpc/grpc-swift-nio-transport.git", from: "1.0.0"),
     .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.5.0"),
+    .package(path: "../ShimmerBluetooth"),
   ],
   targets: [
     .executableTarget(
-      name: "hello-world",
+      name: "shimmer-ble-grpc",
       dependencies: [
         .product(name: "GRPCCore", package: "grpc-swift"),
         .product(name: "GRPCNIOTransportHTTP2", package: "grpc-swift-nio-transport"),
         .product(name: "GRPCProtobuf", package: "grpc-swift-protobuf"),
         .product(name: "ArgumentParser", package: "swift-argument-parser"),
+        .product(name: "ShimmerBluetooth", package: "ShimmerBluetooth"),
+      ],
+      // Match the Xcode project (SWIFT_VERSION = 5.0): the @MainActor service conforms to
+      // the nonisolated ShimmerBluetooth delegate protocols, which Swift 6 mode rejects.
+      swiftSettings: [
+        .swiftLanguageMode(.v5)
       ],
       plugins: [
         .plugin(name: "GRPCProtobufGenerator", package: "grpc-swift-protobuf")

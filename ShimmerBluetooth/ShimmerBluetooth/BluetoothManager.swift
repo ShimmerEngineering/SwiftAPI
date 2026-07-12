@@ -52,26 +52,28 @@ public class BluetoothManager: NSObject {
         DispatchQueue.main.async {
             self.timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
         }
+        self.peripherals.removeAll() // start each scan with a fresh list of discovered peripherals
         self.centralManager.scanForPeripherals(withServices: [CBUUID(string: uuid)], options: nil)
         //self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         print(self.centralManager.isScanning)
         return true
     }
-    
+
     public func startScanning(timeout: Double) -> Bool {
         deviceName = ""
         if self.centralManager.state != .poweredOn {
-            
+
             print("[ERROR] Couldn´t start scanning")
             return false
         }
-        
+
         print("[DEBUG] Scanning started")
-        
+
         // CBCentralManagerScanOptionAllowDuplicatesKey
         DispatchQueue.main.async {
             self.timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
         }
+        self.peripherals.removeAll() // start each scan with a fresh list of discovered peripherals
         //self.centralManager.scanForPeripherals(withServices: [CBUUID(string: uuid)], options: nil)
         self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         print(self.centralManager.isScanning)
@@ -81,17 +83,18 @@ public class BluetoothManager: NSObject {
     public func startScanning(deviceName:String,timeout: Double) -> Bool {
         self.deviceName = deviceName
         if self.centralManager.state != .poweredOn {
-            
+
             print("[ERROR] Couldn´t start scanning")
             return false
         }
-        
+
         print("[DEBUG] Scanning started")
-        
+
         // CBCentralManagerScanOptionAllowDuplicatesKey
         DispatchQueue.main.async {
             self.timer = Timer.scheduledTimer(timeInterval: timeout, target: self, selector: #selector(BluetoothManager.scanTimeout), userInfo: nil, repeats: false)
         }
+        self.peripherals.removeAll() // start each scan with a fresh list of discovered peripherals
         //self.centralManager.scanForPeripherals(withServices: [CBUUID(string: uuid)], options: nil)
         self.centralManager.scanForPeripherals(withServices: nil, options: nil)
         print(self.centralManager.isScanning)
@@ -113,6 +116,9 @@ public class BluetoothManager: NSObject {
             if self.continuation == nil {
                 // 2
                 self.continuation = continuation
+            } else {
+                // A connect is already in flight; don't leak this continuation - fail fast
+                continuation.resume(returning: false)
             }
         }
     }
@@ -185,21 +191,24 @@ extension BluetoothManager: CBCentralManagerDelegate {
     }*/
     public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString)")
-        let pname = peripheral.name
-        delegates![pname!]!?.isDisconnected()
+        // Resume the pending connect continuation so the caller doesn't hang
+        self.continuation?.resume(returning: false)
+        self.continuation = nil
+        let pname = peripheral.name ?? peripheral.identifier.uuidString
+        delegates?[pname]??.isDisconnected()
     }
-    
+
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connect received from BluetoothManager")
         self.continuation?.resume(returning: true)
         self.continuation = nil
-        let pname = peripheral.name
-        delegates![pname!]!?.isConnected()
+        let pname = peripheral.name ?? peripheral.identifier.uuidString
+        delegates?[pname]??.isConnected()
     }
-    
+
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnect received from BluetoothManager")
-        let pname = peripheral.name
-        delegates![pname!]!?.isDisconnected()
+        let pname = peripheral.name ?? peripheral.identifier.uuidString
+        delegates?[pname]??.isDisconnected()
     }
 }

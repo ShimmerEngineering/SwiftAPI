@@ -39,7 +39,8 @@ public class BleByteRadio : NSObject, ByteCommunication {
         self.deviceName = deviceName
         self.activePeripheral = cbperipheral
         self.bluetoothManager = bluetoothManager
-        self.bluetoothManager!.delegates?[cbperipheral.name!] = self
+        let pname = cbperipheral.name ?? cbperipheral.identifier.uuidString
+        self.bluetoothManager!.delegates?[pname] = self
         
         if let isActive = self.activePeripheral?.name?.contains(BleByteRadio.VERISENSE), isActive {
             RBL_SERVICE_UUID = BleByteRadio.VERISENSE_RBL_SERVICE_UUID
@@ -59,33 +60,51 @@ public class BleByteRadio : NSObject, ByteCommunication {
     }
 
     
+    //Resume the pending connect continuation exactly once (guards against double-resume).
+    private func finishConnect(_ result: Bool) {
+        guard let continuation = self.continuation else { return }
+        self.continuation = nil
+        continuation.resume(returning: result)
+    }
+
     public func connect() async -> Bool? {
-        await self.bluetoothManager!.connect(activePeripheral: activePeripheral!)
-        
+        let centralConnected = await self.bluetoothManager!.connect(activePeripheral: activePeripheral!)
+
         /*
         if self.centralManager.state != .poweredOn {
-            
+
             print("[ERROR] Couldn´t connect to peripheral")
             return false
         }
-        
+
         print("[DEBUG] Connecting to peripheral: \(activePeripheral?.identifier.uuidString)")
-        
+
         self.centralManager.connect(activePeripheral!, options: [CBConnectPeripheralOptionNotifyOnDisconnectionKey : NSNumber(value: true)])
         */
-        var result = await withCheckedContinuation { continuation in
+
+        // If the underlying central connect failed, don't wait on characteristic discovery
+        // (which would never happen) - fail fast instead of hanging.
+        guard centralConnected ?? false else {
+            return false
+        }
+
+        let result = await withCheckedContinuation { continuation in
             if self.continuation == nil {
                 // 2
                 self.continuation = continuation
+            } else {
+                // A connect is already pending; fail this duplicate rather than leak it
+                continuation.resume(returning: false)
             }
         }
-        
+
         return result
     }
     
 
     public func disconnect() async -> Bool? {
-        return await self.bluetoothManager!.disconnect(activePeripheral: activePeripheral!)
+        guard let peripheral = activePeripheral else { return false }
+        return await self.bluetoothManager!.disconnect(activePeripheral: peripheral)
     }
     
     public func read() {
@@ -143,7 +162,8 @@ extension BleByteRadio: CBCentralManagerDelegate {
         print(peripheral.name)
     }*/
     public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: NSError?) {
-        print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString) error: \(error!.description)")
+        print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString) error: \(error?.description ?? "unknown")")
+        finishConnect(false)
         self.delegate?.byteCommunicationDisconnected(connectionloss: false)
     }
     
@@ -173,14 +193,18 @@ extension BleByteRadio: CBCentralManagerDelegate {
         self.activePeripheral?.delegate = nil
         self.activePeripheral = nil
         self.characteristics.removeAll(keepingCapacity: false)
-        
+
+        // If a connect was still pending when we disconnected, fail it
+        finishConnect(false)
         self.delegate?.byteCommunicationDisconnected(connectionloss: false)
     }
 }
 
 extension BleByteRadio : BluetoothManagerDelegate{
     public func isDisconnected() {
-        print("DISCONNECTED : \(activePeripheral!.name!)" )
+        print("DISCONNECTED : \(activePeripheral?.name ?? "Unknown")" )
+        // Fail any pending connect so the caller doesn't hang on a lost link
+        finishConnect(false)
         self.delegate?.byteCommunicationDisconnected(connectionloss: false)
     }
     
@@ -189,7 +213,7 @@ extension BleByteRadio : BluetoothManagerDelegate{
     }
     
     public func isConnected() {
-        print("CONNECTED : \(activePeripheral!.name!)" )
+        print("CONNECTED : \(activePeripheral?.name ?? "Unknown")" )
         self.activePeripheral?.delegate = self
         self.activePeripheral?.discoverServices([CBUUID(string: RBL_SERVICE_UUID)])
     }
@@ -211,9 +235,11 @@ extension BleByteRadio : CBPeripheralDelegate {
         
         if error != nil {
             print("[ERROR] Error discovering services.")
+            // Fail the pending connect so the caller doesn't hang
+            finishConnect(false)
             return
         }
-        
+
         print("[DEBUG] Found services for peripheral: \(peripheral.identifier.uuidString)")
         
         
@@ -239,18 +265,19 @@ extension BleByteRadio : CBPeripheralDelegate {
         
         if error != nil {
             print("[ERROR] Error discovering characteristics.")
+            // Fail the pending connect so the caller doesn't hang
+            finishConnect(false)
             return
         }
-        
+
         print("[DEBUG] Found characteristics for peripheral: \(peripheral.identifier.uuidString)")
-        
+
         for characteristic in service.characteristics! {
             self.characteristics[characteristic.uuid.uuidString] = characteristic
         }
-        
+
         enableNotifications(enable: true)
-        self.continuation?.resume(returning: true)
-        self.continuation = nil
+        finishConnect(true)
         self.delegate?.byteCommunicationConnected()
     }
     public func peripheral(
