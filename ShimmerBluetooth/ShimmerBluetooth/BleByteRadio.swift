@@ -164,7 +164,7 @@ extension BleByteRadio: CBCentralManagerDelegate {
     public func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: NSError?) {
         print("[ERROR] Could not connecto to peripheral \(peripheral.identifier.uuidString) error: \(error?.description ?? "unknown")")
         finishConnect(false)
-        self.delegate?.byteCommunicationDisconnected(connectionloss: false)
+        self.delegate?.byteCommunicationDisconnected(connectionloss: false, deviceName: self.deviceName ?? "")
     }
     
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -196,7 +196,7 @@ extension BleByteRadio: CBCentralManagerDelegate {
 
         // If a connect was still pending when we disconnected, fail it
         finishConnect(false)
-        self.delegate?.byteCommunicationDisconnected(connectionloss: false)
+        self.delegate?.byteCommunicationDisconnected(connectionloss: false, deviceName: self.deviceName ?? "")
     }
 }
 
@@ -205,7 +205,7 @@ extension BleByteRadio : BluetoothManagerDelegate{
         print("DISCONNECTED : \(activePeripheral?.name ?? "Unknown")" )
         // Fail any pending connect so the caller doesn't hang on a lost link
         finishConnect(false)
-        self.delegate?.byteCommunicationDisconnected(connectionloss: false)
+        self.delegate?.byteCommunicationDisconnected(connectionloss: false, deviceName: self.deviceName ?? "")
     }
     
     public func scanCompleted() {

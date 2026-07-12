@@ -31,6 +31,9 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     private var dataStreamContinuationMap = [String: AsyncStream<Data>.Continuation]()
     //Names of devices with a getDataStream() currently draining their buffer
     private var activeDataStreams = Set<String>()
+    //Names of devices with a disconnect/teardown already in flight (guards reentry when
+    //an intentional disconnect triggers the link-loss delegate callback)
+    private var disconnectingDevices = Set<String>()
 
     //Outcome of a connect attempt, delivered from startConnectShimmer() back to connectShimmer()
     private enum ConnectOutcome {
@@ -90,17 +93,23 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     //Initiates a BLE scan first, then awaits the outcome of the connect flow which is
     //driven by scanCompleted() -> startConnectShimmer().
     func connectShimmer(request: ShimmerBLEGRPC_Request, response: GRPCCore.RPCWriter<ShimmerBLEGRPC_StateStatus>, context: GRPCCore.ServerContext) async throws {
-        //Single-flight: the BluetoothManager library only supports one scan/connect at a time.
+        //Single-flight for the connect HANDSHAKE only: the BluetoothManager library supports
+        //one scan/connect at a time, but multiple devices may stay connected concurrently.
         guard !isConnecting else {
             print("Received connectShimmer request for: " + request.name)
             print("Error: connection attempt already in progress!")
             throw RPCError(code: .failedPrecondition, message: "Connection attempt already in progress; retry once it completes")
         }
         let name = request.name
+        guard bluetoothDeviceMap[name] == nil else {
+            throw RPCError(code: .failedPrecondition, message: "Device \(name) is already connected")
+        }
         deviceNameToConnect = name
+        //Held only for the handshake; reset on the scan-failure throw below and right
+        //after the outcome continuation resolves. No defer: this RPC keeps running for
+        //the whole connection lifetime, and a deferred reset would clobber a later
+        //device's in-flight handshake.
         isConnecting = true
-        //Always reset the connecting flag on every exit path of connectShimmer itself
-        defer { isConnecting = false }
         print("Received connectShimmer request for: " + name)
 
         // register the writer up front
@@ -116,11 +125,13 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
                                       state: ShimmerBLEGRPC_BluetoothState.disconnected,
                                       message: "Bluetooth is not powered on or scan could not start")
             cleanupConnectAttempt(name)
+            isConnecting = false
             throw RPCError(code: .unavailable, message: "Bluetooth is not powered on or scan could not start")
         }
 
         //Await the real outcome of the connect flow, bounded by an overall timeout so a
-        //hung library call can't leak the RPC forever.
+        //hung library call can't leak the RPC forever. Client cancellation during this
+        //suspension is observed once the outcome resolves (scan timeout / 30s guard).
         let outcome: ConnectOutcome = await withCheckedContinuation { continuation in
             self.connectContinuation = continuation
             self.connectTimeoutTask = Task { @MainActor [weak self] in
@@ -128,6 +139,9 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
                 self?.resumeConnect(.timedOut)
             }
         }
+        //Handshake is over: free the single-flight slot so other devices can connect
+        //while this stream stays open for the connection lifetime.
+        isConnecting = false
 
         switch outcome {
         case .connected(let radio, let peripheral):
@@ -174,18 +188,23 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
     }
 
     //Resume the pending connect continuation exactly once (guards against double-resume).
-    private func resumeConnect(_ outcome: ConnectOutcome) {
+    //Returns false when there was no pending continuation to deliver the outcome to.
+    @discardableResult
+    private func resumeConnect(_ outcome: ConnectOutcome) -> Bool {
         connectTimeoutTask?.cancel()
         connectTimeoutTask = nil
-        guard let continuation = connectContinuation else { return }
+        guard let continuation = connectContinuation else { return false }
         connectContinuation = nil
         continuation.resume(returning: outcome)
+        return true
     }
 
-    //Create the per-device push buffer if it does not already exist.
+    //Create the per-device push buffer if it does not already exist. Bounded so a device
+    //that streams with no getDataStream() client draining it can't grow memory forever;
+    //the oldest packets are dropped once the backlog is full.
     private func ensureDataStream(for name: String) {
         guard dataStreamMap[name] == nil else { return }
-        let (stream, continuation) = AsyncStream.makeStream(of: Data.self, bufferingPolicy: .unbounded)
+        let (stream, continuation) = AsyncStream.makeStream(of: Data.self, bufferingPolicy: .bufferingNewest(4096))
         dataStreamMap[name] = stream
         dataStreamContinuationMap[name] = continuation
     }
@@ -283,13 +302,22 @@ final class ShimmerBLEService: ShimmerBLEGRPC_ShimmerBLEByteServer.SimpleService
 
         let success = await radio.connect()
         if success ?? false {
-            resumeConnect(.connected(radio, peripheral))
+            if !resumeConnect(.connected(radio, peripheral)) {
+                //The RPC already gave up (timeout/cancelled): release the live
+                //CoreBluetooth link rather than orphaning it.
+                _ = await radio.disconnect()
+            }
         } else {
+            //Discovery can fail after the central connected; release any half-open link
+            _ = await radio.disconnect()
             resumeConnect(.radioFailed)
         }
     }
 
     func startDisconnectShimmer(name: String) async {
+        guard !disconnectingDevices.contains(name) else { return }
+        disconnectingDevices.insert(name)
+        defer { disconnectingDevices.remove(name) }
         //If a connect attempt for this device is still pending, resume it so the
         //connectShimmer RPC doesn't hang until its timeout.
         if name == deviceNameToConnect {
@@ -359,6 +387,16 @@ extension ShimmerBLEService : ByteCommunicationDelegate {
     }
 
     func byteCommunicationDisconnected(connectionloss: Bool) {
+    }
+
+    func byteCommunicationDisconnected(connectionloss: Bool, deviceName: String) {
+        //Unsolicited link loss (device out of range, battery died): tear down the device's
+        //state so the connect stream ends with a terminal status and its maps are cleared.
+        //Without this the keep-alive loop in connectShimmer would spin forever.
+        guard bluetoothDeviceMap[deviceName] != nil || radioMap[deviceName] != nil else { return }
+        Task {
+            await startDisconnectShimmer(name: deviceName)
+        }
     }
 
     func byteCommunicationDataReceived(data: Data?, deviceName: String) {

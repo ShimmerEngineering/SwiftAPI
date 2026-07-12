@@ -16,5 +16,13 @@ public protocol ByteCommunication {
 public protocol ByteCommunicationDelegate {
     func byteCommunicationConnected()
     func byteCommunicationDisconnected(connectionloss: Bool)
+    func byteCommunicationDisconnected(connectionloss: Bool, deviceName: String)
     func byteCommunicationDataReceived(data: Data?, deviceName: String)
+}
+
+public extension ByteCommunicationDelegate {
+    //Default forwards to the legacy callback so existing conformers keep compiling
+    func byteCommunicationDisconnected(connectionloss: Bool, deviceName: String) {
+        byteCommunicationDisconnected(connectionloss: connectionloss)
+    }
 }

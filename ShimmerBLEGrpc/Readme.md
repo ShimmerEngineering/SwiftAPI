@@ -33,7 +33,7 @@ message.
 
 | RPC | Shape | Behaviour / error semantics |
 | --- | --- | --- |
-| `ConnectShimmer` | unary request, **server-streaming** `StateStatus` | Scans for and connects the named device. Streams `connecting` then `connected`; the stream stays open for the connection lifetime and emits a terminal `disconnected` status on teardown. `FAILED_PRECONDITION` if another connect is already in progress; `UNAVAILABLE` if Bluetooth is off / the scan can't start or the radio fails to connect; `NOT_FOUND` if the device is never discovered; `DEADLINE_EXCEEDED` if the connect attempt times out (~30s); `ABORTED` if the attempt is cancelled by a disconnect or server shutdown. |
+| `ConnectShimmer` | unary request, **server-streaming** `StateStatus` | Scans for and connects the named device. Streams `connecting` then `connected`; the stream stays open for the connection lifetime and emits a terminal `disconnected` status on teardown, including unsolicited link loss. Multiple devices can be connected concurrently; only the connect *handshake* is single-flight. `FAILED_PRECONDITION` if another connect handshake is in progress or the device is already connected; `UNAVAILABLE` if Bluetooth is off / the scan can't start or the radio fails to connect; `NOT_FOUND` if the device is never discovered; `DEADLINE_EXCEEDED` if the connect attempt times out (~30s); `ABORTED` if the attempt is cancelled by a disconnect or server shutdown. |
 | `DisconnectShimmer` | unary request, unary `Reply` | Disconnects the named device and cleans up. `NOT_FOUND` if the device is not connected. |
 | `GetDataStream` | unary request, **server-streaming** `ObjectClusterByteArray` | Streams received BLE byte packets for the device. `NOT_FOUND` if the device is not connected; `FAILED_PRECONDITION` if a data stream is already active for that device. Ends when the device disconnects or the client cancels. |
 | `WriteBytesShimmer` | unary request, unary `Reply` | Writes bytes to the device's TX characteristic. `NOT_FOUND` if the device is not connected; `UNAVAILABLE` if the write characteristic is not available. |
@@ -56,3 +56,6 @@ v1.0.2
 - Graceful shutdown on SIGINT/SIGTERM that disconnects all devices
 - Add `--port` validation and `--version`; clearer bind-failure message
 - Command-line `swift run` support (SwiftPM manifests for the server and the ShimmerBluetooth library)
+- Detect unsolicited BLE link loss: device state is torn down and the connect stream ends with a terminal `disconnected` status
+- Multiple devices can be connected concurrently (single-flight applies to the connect handshake only)
+- Data buffers are bounded (oldest packets dropped if no client is draining)
