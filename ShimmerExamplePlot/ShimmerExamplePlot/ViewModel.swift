@@ -27,10 +27,68 @@ class ViewModel: NSObject, ObservableObject {
     @Published var exgResolution = ["16 BIT", "24 BIT"]
     @Published var pressResolution = ["LOW", "STANDARD", "HIGH", "ULTRAHIGH"]
     @Published var samplingRate = ["1Hz", "10.2Hz", "51.2Hz", "102.4Hz", "204.8Hz", "256Hz", "512Hz", "1024Hz"]
-    @Published var stateText = "Disconnected"
+    @Published var btState: Shimmer3Protocol.Shimmer3BTState = .DISCONNECTED
+    @Published private(set) var plotTick = 0
+    @Published var connectedDeviceName: String?
     private var updatedPicker = false;
-    public var delegate: ViewModelDelegate?
     var count = 1
+
+    // MARK: - Derived UI state
+
+    /// Human-readable connection state for status labels.
+    var stateText: String { btState.stringValue }
+
+    var isConnected: Bool {
+        btState == .CONNECTED || btState == .STREAMING || btState == .CONFIGURING
+    }
+    var isStreaming: Bool { btState == .STREAMING }
+    /// True while a connection/configuration operation is in flight.
+    var isBusy: Bool { btState == .CONNECTING || btState == .CONFIGURING }
+
+    var isShimmer3Hardware: Bool {
+        shimmer3Protocol?.REV_HW_MAJOR == Shimmer3Protocol.HardwareType.Shimmer3.rawValue
+    }
+    var isShimmer3RHardware: Bool {
+        shimmer3Protocol?.REV_HW_MAJOR == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue
+    }
+    var hardwareTypeName: String? {
+        if isShimmer3Hardware { return "Shimmer3" }
+        if isShimmer3RHardware { return "Shimmer3R" }
+        return nil
+    }
+    var firmwareVersionString: String? {
+        guard let p = shimmer3Protocol, p.REV_FW_MAJOR >= 0 else { return nil }
+        return "v\(p.REV_FW_MAJOR).\(p.REV_FW_MINOR).\(p.REV_FW_INTERNAL)"
+    }
+
+    // MARK: - Plot data
+
+    var hasPlotData: Bool {
+        !signal1.isEmpty || !signal2.isEmpty || !signal3.isEmpty
+    }
+
+    /// Y-axis range computed across every active signal (replaces the old manual min/max tracking).
+    var yAxisDomain: ClosedRange<Double> {
+        let all = signal1 + signal2 + signal3
+        guard let low = all.min(), let high = all.max() else { return 0...1 }
+        if low == high { return (low - 1)...(high + 1) }
+        let padding = (high - low) * 0.1
+        return (low - padding)...(high + padding)
+    }
+
+    /// The signals currently being plotted, paired with their channel names.
+    var plotSeries: [PlotSeries] {
+        let arrays = [signal1, signal2, signal3]
+        var series: [PlotSeries] = []
+        for i in 0..<Swift.min(numberOfSignals, arrays.count) {
+            let nameIndex = startIndex + i
+            let name = (nameIndex >= 0 && nameIndex < pickerData.count && pickerData[nameIndex] != "No Signal")
+                ? pickerData[nameIndex]
+                : "Signal \(i + 1)"
+            series.append(PlotSeries(id: i, name: name, values: arrays[i]))
+        }
+        return series
+    }
     @Published var lnAccelRangeIndex = 0 // Initial value
     @Published var wrRangeIndex = 0 // Initial value
     @Published var gyroRangeIndex = 0 // Initial value
@@ -68,8 +126,8 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func scanShimmer3(){
-        //bluetoothManager?.startScanning(deviceName: "Shimmer3-3E36",timeout: 10)
-        pickerDevices = ["Scanning"]
+        isScanning = true
+        pickerDevices = []
         bluetoothManager?.startScanning(timeout: 3)
     }
     
@@ -88,9 +146,11 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func connectDev2() async{
+        guard deviceIndex >= 0, deviceIndex < pickerDevices.count else { return }
         let deviceName = pickerDevices[deviceIndex]
-        var peripheral = bluetoothManager?.getPeripheral(deviceName: deviceName)
-        self.radio = BleByteRadio(deviceName: deviceName,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
+        guard let peripheral = bluetoothManager?.getPeripheral(deviceName: deviceName) else { return }
+        connectedDeviceName = deviceName
+        self.radio = BleByteRadio(deviceName: deviceName,cbperipheral: peripheral,bluetoothManager: bluetoothManager!)
         if (protocolShimmer3==0){
             shimmer3Protocol = Shimmer3Protocol(radio: self.radio!)
             shimmer3Protocol?.delegate = self
@@ -110,6 +170,8 @@ class ViewModel: NSObject, ObservableObject {
         } else {
             await shimmer3Protocol!.disconnect()
         }
+        connectedDeviceName = nil
+        btState = .DISCONNECTED
     }
     
     func sendInquiryCommandDev2() async {
@@ -375,9 +437,9 @@ class ViewModel: NSObject, ObservableObject {
 }
 extension ViewModel : BluetoothManagerDelegate{
     func scanCompleted() {
-        print("Bluetooth Manager Scan Completed")
-        self.pickerDevices = (bluetoothManager?.getDiscoveredPeripherals().compactMap { $0.name })!
-        print(pickerDevices)
+        self.pickerDevices = (bluetoothManager?.getDiscoveredPeripherals().compactMap { $0.name }) ?? []
+        if deviceIndex >= pickerDevices.count { deviceIndex = 0 }
+        self.isScanning = false
     }
     
     func isConnected() {
@@ -392,7 +454,7 @@ extension ViewModel : BluetoothManagerDelegate{
 extension ViewModel : ShimmerProtocolDelegate {
     func shimmerBTStateChange(message: ShimmerBluetooth.Shimmer3Protocol.Shimmer3BTState) {
         DispatchQueue.main.async {
-            self.stateText = message.stringValue
+            self.btState = message
         }
     }
     
@@ -438,15 +500,20 @@ extension ViewModel : ShimmerProtocolDelegate {
             }
             self.count += 1
             if (self.count % 10 == 0) {
-                self.delegate?.plotEvent(message: "")
+                // Throttle chart refreshes: bumping this @Published counter drives
+                // a SwiftUI redraw roughly every 10 packets instead of every sample.
+                self.plotTick &+= 1
             }
         }
     }
-    
+
 }
 
-public protocol ViewModelDelegate {
-    func plotEvent(message:String)
+/// A single plotted signal and the channel name it corresponds to.
+struct PlotSeries: Identifiable {
+    let id: Int
+    let name: String
+    let values: [Double]
 }
 
 

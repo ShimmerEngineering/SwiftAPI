@@ -9,428 +9,359 @@ import SwiftUI
 import Charts
 import ShimmerBluetooth
 
-struct ToyShape: Identifiable {
-    var type: String
-    var count: Double
-    var id = UUID()
-}
-
 struct ContentView: View {
-    @State var xNumbers = [1, 3, 5, 7, 9, 11, 13, 15]
-    @State var yNumbers = [1, 3, 5, 7, 9, 11, 13, 15]
-    @State var test = 2000.0
-    @State var min = 0.0
-    @State var max = 4000.0
-    @State var numbers1: [Double] = []
-    @State var numbers2: [Double] = []
-    @State var numbers3: [Double] = []
-    @StateObject var viewModel = ViewModel()
-    func refreshPlot() {
-        numbers1 = viewModel.signal1
-        numbers2 = viewModel.signal2
-        numbers3 = viewModel.signal3
-        if (viewModel.signal1.count>0){
-            min = viewModel.signal1.min()!
-            max = viewModel.signal1.max()!
-        }
-        if (viewModel.signal2.count>0){
-            if viewModel.signal2.min()! < min {
-                min = viewModel.signal2.min()!
-            }
-            
-            if viewModel.signal2.max()! > max {
-                max = viewModel.signal2.max()!
-            }
-        }
-        if (viewModel.signal3.count>0){
-            if viewModel.signal3.min()! < min {
-                min = viewModel.signal3.min()!
-            }
-            
-            if viewModel.signal3.max()! > max {
-                max = viewModel.signal3.max()!
-            }
-        }
-        
-        
-    }
-    @State private var selectedIndex = 0
-    
-    @State private var selectionS = 0
-    @State private var selection = 0
-    @State private var signalSelection = 0
-    @State private var rangeSelection = 0
+    @StateObject private var viewModel = ViewModel()
+
+    // Local picker state mirrored into the ViewModel's plain (non-published) inputs.
     @State private var protocolSelection = 0
     @State private var deviceSelection = 0
-    
-    var body: some View {
-        ScrollView {
-            Picker(selection: $selectionS, label: Text("Number Of Signals (Max 3)")) {
-                ForEach(1 ..< 4) {
-                    Text("\($0)") }
-            }.onChange(of: selectionS) { _ in
-                print(selectionS+1)
-                viewModel.numberOfSignals = selectionS+1
-                viewModel.signal1 = []
-                viewModel.signal2 = []
-                viewModel.signal3 = []
-            }
-            
-            Picker(selection: $selection, label: Text("Signal Index")) {
-                ForEach(0 ..< 22) {
-                    Text("\($0)") }
-            }.onChange(of: selection) { _ in
-                print(selection)
-                viewModel.startIndex = selection
-                viewModel.signal1 = []
-                viewModel.signal2 = []
-                viewModel.signal3 = []
-            }
-            
-            Picker("Select Plot", selection: $signalSelection) {
-                ForEach(0..<viewModel.pickerData.count, id: \.self) { index in
-                    Text(self.viewModel.pickerData[index])
-                }
-            }.onChange(of: signalSelection) { _ in
-                print(signalSelection)
-                viewModel.startIndex = signalSelection
-            }
-            
-            Chart {
-                ForEach(Array(numbers1.enumerated()), id: \.offset) { index, value in
-                    LineMark(
-                        x: .value("Index", index),
-                        y: .value("Value1", value)
-                    ).foregroundStyle(by: .value("Value1", "Value1"))
-                }
-                ForEach(Array(numbers2.enumerated()), id: \.offset) { index, value in
-                    LineMark(
-                        x: .value("Index", index),
-                        y: .value("Value2", value)
-                    ).foregroundStyle(by: .value("Value2", "Value2"))
-                }
-                
-                ForEach(Array(numbers3.enumerated()), id: \.offset) { index, value in
-                    LineMark(
-                        x: .value("Index", index),
-                        y: .value("Value3", value)
-                    ).foregroundStyle(by: .value("Value3", "Value3"))
-                }
-            }.chartForegroundStyleScale(["Value1": Color.orange, "Value2": Color.blue, "Value3": Color.red]).chartYScale(domain: [min,max])
-            
-            Button("Scan Shimmer3",action: { viewModel.scanShimmer3()})
-            Picker("Select Shimmer3", selection: $deviceSelection) {
-                ForEach(0..<viewModel.pickerDevices.count, id: \.self) { index in
-                    Text(self.viewModel.pickerDevices[index])
-                }
-            }.onChange(of: deviceSelection) { _ in
-                print(deviceSelection)
-                viewModel.deviceIndex = deviceSelection
-            }
-            Picker("Select Protocol", selection: $protocolSelection) {
-                ForEach(0..<viewModel.pickerProtocol.count, id: \.self) { index in
-                    Text(self.viewModel.pickerProtocol[index])
-                }
-            }.onChange(of: protocolSelection) { _ in
-                print(protocolSelection)
-                viewModel.protocolShimmer3 = protocolSelection
-            }
-            
-            Text("BT State: \(viewModel.stateText)")
-            Button("Connect Shimmer3",action: {Task {
-                do {
-                    viewModel.delegate = self
-                    
-                    await viewModel.connectDev2()
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-            })
-            Button("Disconnect Shimmer3",action:{ Task {
-                do {
-                    await viewModel.disconnectDev2()
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-            })
-            
-            Button("StartStreaming Shimmer3",action:{ Task {
-                do {
-                    await viewModel.sendStartStreamingCommandDev2()
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-            })
-            Button("StopStreaming Shimmer3",action:{ Task {
-                do {
-                    await viewModel.sendStopStreamingCommandDev2()
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-            })
-            if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
-                Button("WriteInfoMem WRAccel Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemWRAccel()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem IMU Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemIMU()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem Pressure Temperature Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemPressureAndTemperature()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem PPG+GSR Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemPPGGSR()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                
-                Button("WriteInfoMem ECG 24-bit Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemECG24Bit()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem ECG 16-bit Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemECG16Bit()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem EMG Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemEMG()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem EXG Test Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemEXGTest()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem Respiration Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemRespiration()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                Button("WriteInfoMem Battery Voltage Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemBattery()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-            } else if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
-                Button("WriteInfoMem LNAccel Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RLNAccel()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                
-                Button("WriteInfoMem Alt Mag Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RAltMag()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
+    @State private var numberOfSignalsSelection = 1
+    @State private var signalSelection = 0
 
-                Button("WriteInfoMem Mag Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RMag()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                
-                Button("WriteInfoMem Gyro Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RGyro()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-                
-                Button("WriteInfoMem WRAccel Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendInfoMemS3RWRAccel()
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-            }
-            Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
-                ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
-                    Text(viewModel.exgGain[index])
+    /// Colors used for the live chart series (chart colors may be literal per the design brief).
+    private let seriesPalette: [Color] = [.orange, .blue, .green]
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                chartSection
+                deviceSection
+                if viewModel.isConnected {
+                    plotSettingsSection
+                    sensorPresetSection
+                    sensorConfigurationSection
+                    samplingRateSection
+                    streamingSection
                 }
             }
-            .onChange(of: viewModel.exgGainIndex) { newValue in
-                // Update the ViewModel's exgGainIndex property
-                viewModel.exgGainIndex = newValue
-            }
-            Picker("Select EXG Resolution", selection: $viewModel.exgResIndex) {
-                ForEach(0..<viewModel.exgResolution.count, id: \.self) { index in
-                    Text(viewModel.exgResolution[index])
-                }
-            }
-            .onChange(of: viewModel.exgResIndex) { newValue in
-                // Update the ViewModel's exgResIndex property
-                viewModel.exgResIndex = newValue
-            }
-            Picker("Select WR Accel Range", selection: $viewModel.wrRangeIndex) {
-                ForEach(0..<viewModel.wrRange.count, id: \.self) { index in
-                    Text(viewModel.wrRange[index])
-                }
-            }
-            .onChange(of: viewModel.wrRangeIndex) { newValue in
-                // Update the ViewModel's wrRangeIndex property
-                viewModel.wrRangeIndex = newValue
-            }
-            if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
-                
-                Picker("Select Gyro Range", selection: $viewModel.gyroRangeIndex) {
-                    ForEach(0..<viewModel.gyroRange.count, id: \.self) { index in
-                        Text(viewModel.gyroRange[index])
-                    }
-                }
-                .onChange(of: viewModel.gyroRangeIndex) { newValue in
-                    // Update the ViewModel's gyroRangeIndex property
-                    viewModel.gyroRangeIndex = newValue
-                }
-                Picker("Select Pressure Resolution", selection: $viewModel.pressResIndex) {
-                    ForEach(0..<viewModel.pressResolution.count, id: \.self) { index in
-                        Text(viewModel.pressResolution[index])
-                    }
-                }
-                .onChange(of: viewModel.pressResIndex) { newValue in
-                    // Update the ViewModel's pressResIndex property
-                    viewModel.pressResIndex = newValue
-                }
-                Button("WriteInfoMem Shimmer3",action:{ Task {
-                    do {
-                        await viewModel.sendS3InfoMemConfigUpdate()
-                        //await viewModel.sendInfoMemGyroRange()
-                        //await viewModel.sendInfoMemPPGGSR()
-                        
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                    
-                })
-            } else if (viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
-                Picker("Select LN Accel Range", selection: $viewModel.lnAccelRangeIndex) {
-                    ForEach(0..<viewModel.lnAccelRange.count, id: \.self) { index in
-                        Text(viewModel.lnAccelRange[index])
-                    }
-                }
-                .onChange(of: viewModel.lnAccelRangeIndex) { newValue in
-                    // Update the ViewModel's wrRangeIndex property
-                    viewModel.lnAccelRangeIndex = newValue
-                }
-                
-                Picker("Select Alt Mag Range", selection: $viewModel.altMagRange3RIndex) {
-                    ForEach(0..<viewModel.altMagRange3R.count, id: \.self) { index in
-                        Text(viewModel.altMagRange3R[index])
-                    }
-                }
-                .onChange(of: viewModel.altMagRange3RIndex) { newValue in
-                    // Update the ViewModel's wrRangeIndex property
-                    viewModel.altMagRange3RIndex = newValue
-                }
-                
-                Picker("Select Gyro Range", selection: $viewModel.gyroRange3RIndex) {
-                    ForEach(0..<viewModel.gyroRange3R.count, id: \.self) { index in
-                        Text(viewModel.gyroRange3R[index])
-                    }
-                }
-                .onChange(of: viewModel.gyroRange3RIndex) { newValue in
-                    // Update the ViewModel's wrRangeIndex property
-                    viewModel.gyroRange3RIndex = newValue
-                }
-                
-                Button("WriteInfoMem Shimmer3R",action:{ Task {
-                    do {
-                        await viewModel.sendS3RInfoMemConfigUpdate()
-                        
-                    } catch {
-                        print("Error: \(error)")
-                    }
-                }
-                })
-            }
-            Picker("Sampling Rate", selection: $viewModel.samplingRateIndex) {
-                ForEach(0..<viewModel.samplingRate.count, id: \.self) { index in
-                    Text(viewModel.samplingRate[index])
-                }
-            }
-            .onChange(of: viewModel.samplingRateIndex) { newValue in
-                // Update the ViewModel's samplingRateIndex property
-                viewModel.samplingRateIndex = newValue
-            }
-            
-            Button("SetSamplingRate Shimmer3",action:{ Task {
-                do {
-                    //await viewModel.setShimmerSamplingRate()
-                    await viewModel.sendInfoMemSamplingRate()
-                    
-                } catch {
-                    print("Error: \(error)")
-                }
-            }
-            })
+            .navigationTitle("Shimmer Plot")
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .animation(.default, value: viewModel.stateText)
+            .animation(.default, value: viewModel.isScanning)
         }
     }
-    
-}
-extension ContentView: ViewModelDelegate {
-    func plotEvent(message: String) {
-        self.refreshPlot()
+
+    // MARK: - Live chart
+
+    private var chartSection: some View {
+        Section("Live Signal") {
+            VStack(alignment: .leading, spacing: 10) {
+                ZStack {
+                    if viewModel.hasPlotData {
+                        chart
+                    } else {
+                        plotPlaceholder
+                    }
+                }
+                .frame(height: 240)
+                .animation(.default, value: viewModel.hasPlotData)
+
+                if viewModel.hasPlotData {
+                    legend
+                }
+            }
+            .padding(.vertical, 4)
+        }
+    }
+
+    private var chart: some View {
+        Chart {
+            ForEach(viewModel.plotSeries) { series in
+                ForEach(Array(series.values.enumerated()), id: \.offset) { index, value in
+                    LineMark(
+                        x: .value("Sample", index),
+                        y: .value("Value", value)
+                    )
+                    .foregroundStyle(by: .value("Series", String(series.id)))
+                    .interpolationMethod(.catmullRom)
+                }
+            }
+        }
+        .chartForegroundStyleScale([
+            "0": seriesPalette[0],
+            "1": seriesPalette[1],
+            "2": seriesPalette[2]
+        ])
+        .chartLegend(.hidden)
+        .chartYScale(domain: viewModel.yAxisDomain)
+        .chartXAxisLabel("Sample")
+        .chartYAxisLabel("Value")
+    }
+
+    private var legend: some View {
+        HStack(spacing: 16) {
+            ForEach(viewModel.plotSeries) { series in
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(seriesPalette[series.id])
+                        .frame(width: 8, height: 8)
+                    Text(series.name)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private var plotPlaceholder: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "waveform.path.ecg")
+                .font(.system(size: 44))
+                .foregroundStyle(.secondary)
+            Text(viewModel.isConnected
+                 ? "Start streaming to see live sensor data."
+                 : "Connect a Shimmer device to begin.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    // MARK: - Device connection
+
+    private var deviceSection: some View {
+        Section("Device") {
+            LabeledContent("Status") { statusBadge }
+
+            if let name = viewModel.connectedDeviceName, viewModel.isConnected {
+                LabeledContent("Name", value: name)
+            }
+            if let hardware = viewModel.hardwareTypeName {
+                LabeledContent("Hardware", value: hardware)
+            }
+            if let firmware = viewModel.firmwareVersionString {
+                LabeledContent("Firmware", value: firmware)
+            }
+
+            if viewModel.isConnected {
+                Button(role: .destructive) {
+                    Task { await viewModel.disconnectDev2() }
+                } label: {
+                    Label("Disconnect", systemImage: "xmark.circle")
+                }
+            } else {
+                Picker("Protocol", selection: $protocolSelection) {
+                    ForEach(0..<viewModel.pickerProtocol.count, id: \.self) { index in
+                        Text(viewModel.pickerProtocol[index]).tag(index)
+                    }
+                }
+                .onChange(of: protocolSelection) { newValue in
+                    viewModel.protocolShimmer3 = newValue
+                }
+
+                Button {
+                    viewModel.scanShimmer3()
+                } label: {
+                    Label("Scan for Devices", systemImage: "magnifyingglass")
+                }
+                .disabled(viewModel.isScanning)
+
+                deviceList
+
+                Button {
+                    Task { await viewModel.connectDev2() }
+                } label: {
+                    Label("Connect", systemImage: "link")
+                }
+                .disabled(viewModel.pickerDevices.isEmpty || viewModel.isScanning || viewModel.isBusy)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var deviceList: some View {
+        if viewModel.isScanning {
+            HStack(spacing: 8) {
+                ProgressView().controlSize(.small)
+                Text("Scanning for devices…").foregroundStyle(.secondary)
+            }
+        } else if viewModel.pickerDevices.isEmpty {
+            Text("No devices found. Tap Scan to search.")
+                .foregroundStyle(.secondary)
+        } else {
+            Picker("Discovered", selection: $deviceSelection) {
+                ForEach(0..<viewModel.pickerDevices.count, id: \.self) { index in
+                    Text(viewModel.pickerDevices[index]).tag(index)
+                }
+            }
+            .onChange(of: deviceSelection) { newValue in
+                viewModel.deviceIndex = newValue
+            }
+        }
+    }
+
+    private var statusBadge: some View {
+        HStack(spacing: 6) {
+            if viewModel.isBusy || viewModel.isScanning {
+                ProgressView().controlSize(.small)
+            } else {
+                Circle().fill(statusColor).frame(width: 8, height: 8)
+            }
+            Text(viewModel.isScanning ? "Scanning" : viewModel.stateText)
+                .font(.subheadline.weight(.medium))
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 4)
+        .background(statusColor.opacity(0.15), in: Capsule())
+    }
+
+    private var statusColor: Color {
+        switch viewModel.btState {
+        case .CONNECTED: return .green
+        case .STREAMING: return .blue
+        case .CONNECTING, .CONFIGURING: return .orange
+        case .DISCONNECTED: return .gray
+        }
+    }
+
+    // MARK: - Plot settings
+
+    private var plotSettingsSection: some View {
+        Section("Plot Settings") {
+            Picker("Signals Shown", selection: $numberOfSignalsSelection) {
+                ForEach(1...3, id: \.self) { count in
+                    Text("\(count)").tag(count)
+                }
+            }
+            .onChange(of: numberOfSignalsSelection) { newValue in
+                viewModel.numberOfSignals = newValue
+                clearSignals()
+            }
+
+            Picker("Channel", selection: $signalSelection) {
+                ForEach(0..<viewModel.pickerData.count, id: \.self) { index in
+                    Text(viewModel.pickerData[index]).tag(index)
+                }
+            }
+            .onChange(of: signalSelection) { newValue in
+                viewModel.startIndex = newValue
+                clearSignals()
+            }
+        }
+    }
+
+    // MARK: - Sensor presets
+
+    @ViewBuilder
+    private var sensorPresetSection: some View {
+        if viewModel.isShimmer3Hardware || viewModel.isShimmer3RHardware {
+            Section("Sensor Preset") {
+                Menu {
+                    if viewModel.isShimmer3Hardware {
+                        presetButton("Wide-Range Accel") { await viewModel.sendInfoMemWRAccel() }
+                        presetButton("IMU (9-DoF)") { await viewModel.sendInfoMemIMU() }
+                        presetButton("Pressure & Temperature") { await viewModel.sendInfoMemPressureAndTemperature() }
+                        presetButton("PPG + GSR") { await viewModel.sendInfoMemPPGGSR() }
+                        presetButton("ECG (24-bit)") { await viewModel.sendInfoMemECG24Bit() }
+                        presetButton("ECG (16-bit)") { await viewModel.sendInfoMemECG16Bit() }
+                        presetButton("EMG") { await viewModel.sendInfoMemEMG() }
+                        presetButton("EXG Test Signal") { await viewModel.sendInfoMemEXGTest() }
+                        presetButton("Respiration") { await viewModel.sendInfoMemRespiration() }
+                        presetButton("Battery Voltage") { await viewModel.sendInfoMemBattery() }
+                    } else {
+                        presetButton("Low-Noise Accel") { await viewModel.sendInfoMemS3RLNAccel() }
+                        presetButton("Wide-Range Accel") { await viewModel.sendInfoMemS3RWRAccel() }
+                        presetButton("Magnetometer") { await viewModel.sendInfoMemS3RMag() }
+                        presetButton("Alt Magnetometer") { await viewModel.sendInfoMemS3RAltMag() }
+                        presetButton("Gyroscope") { await viewModel.sendInfoMemS3RGyro() }
+                    }
+                } label: {
+                    Label("Apply Sensor Preset", systemImage: "slider.horizontal.3")
+                }
+                .disabled(viewModel.isBusy)
+            }
+        }
+    }
+
+    private func presetButton(_ title: String, action: @escaping () async -> Void) -> some View {
+        Button(title) { Task { await action() } }
+    }
+
+    // MARK: - Sensor configuration
+
+    @ViewBuilder
+    private var sensorConfigurationSection: some View {
+        Section("Sensor Configuration") {
+            configPicker("EXG Gain", options: viewModel.exgGain, selection: $viewModel.exgGainIndex)
+            configPicker("EXG Resolution", options: viewModel.exgResolution, selection: $viewModel.exgResIndex)
+            configPicker("WR Accel Range", options: viewModel.wrRange, selection: $viewModel.wrRangeIndex)
+
+            if viewModel.isShimmer3Hardware {
+                configPicker("Gyro Range", options: viewModel.gyroRange, selection: $viewModel.gyroRangeIndex)
+                configPicker("Pressure Resolution", options: viewModel.pressResolution, selection: $viewModel.pressResIndex)
+                writeConfigButton { await viewModel.sendS3InfoMemConfigUpdate() }
+            } else if viewModel.isShimmer3RHardware {
+                configPicker("LN Accel Range", options: viewModel.lnAccelRange, selection: $viewModel.lnAccelRangeIndex)
+                configPicker("Alt Mag Range", options: viewModel.altMagRange3R, selection: $viewModel.altMagRange3RIndex)
+                configPicker("Gyro Range", options: viewModel.gyroRange3R, selection: $viewModel.gyroRange3RIndex)
+                writeConfigButton { await viewModel.sendS3RInfoMemConfigUpdate() }
+            }
+        }
+    }
+
+    private func configPicker(_ title: String, options: [String], selection: Binding<Int>) -> some View {
+        Picker(title, selection: selection) {
+            ForEach(0..<options.count, id: \.self) { index in
+                Text(options[index]).tag(index)
+            }
+        }
+    }
+
+    private func writeConfigButton(action: @escaping () async -> Void) -> some View {
+        Button {
+            Task { await action() }
+        } label: {
+            Label("Write Configuration", systemImage: "square.and.arrow.down")
+        }
+        .disabled(viewModel.isBusy)
+    }
+
+    // MARK: - Sampling rate
+
+    private var samplingRateSection: some View {
+        Section("Sampling Rate") {
+            configPicker("Rate", options: viewModel.samplingRate, selection: $viewModel.samplingRateIndex)
+            Button {
+                Task { await viewModel.sendInfoMemSamplingRate() }
+            } label: {
+                Label("Set Sampling Rate", systemImage: "metronome")
+            }
+            .disabled(viewModel.isBusy)
+        }
+    }
+
+    // MARK: - Streaming
+
+    private var streamingSection: some View {
+        Section("Streaming") {
+            Button {
+                Task { await viewModel.sendStartStreamingCommandDev2() }
+            } label: {
+                Label("Start Streaming", systemImage: "play.fill")
+            }
+            .disabled(viewModel.isStreaming)
+
+            Button(role: .destructive) {
+                Task { await viewModel.sendStopStreamingCommandDev2() }
+            } label: {
+                Label("Stop Streaming", systemImage: "stop.fill")
+            }
+            .disabled(!viewModel.isStreaming)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private func clearSignals() {
+        viewModel.signal1 = []
+        viewModel.signal2 = []
+        viewModel.signal3 = []
     }
 }
 
 #Preview {
     ContentView()
 }
-
