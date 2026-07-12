@@ -9,137 +9,162 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject var viewModel = ViewModel()
-    
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-            
-        }
-        .padding()
-        
-        
-        Button("Scan Veri",action: { viewModel.test()})
-        Button("Connect Dev1",action: { Task {
-            do {
-                await viewModel.connect()
-            } catch {
-                print("Error: \(error)")
+        // NavigationView (not NavigationStack) — app deployment target is iOS 15.
+        NavigationView {
+            List {
+                statusSection
+                verisenseConnectionSection
+                verisenseCommandsSection
+                shimmer3ConnectionSection
+                shimmer3CommandsSection
+                activityLogSection
             }
+            .listStyle(InsetGroupedListStyle())
+            .navigationTitle("Shimmer Device Demo")
         }
-        })
-        Button("Disconnect Dev1",action: { Task {
-            do {
-                await viewModel.disconnect()
-            } catch {
-                print("Error: \(error)")
+        .navigationViewStyle(StackNavigationViewStyle())
+    }
+
+    // MARK: - Sections
+
+    private var statusSection: some View {
+        Section(header: Text("Status")) {
+            HStack {
+                statusBadge(label: "Dev1 (Verisense)", connected: viewModel.isDev1Connected)
+                Spacer()
+                statusBadge(label: "Dev2 (Shimmer3)", connected: viewModel.isDev2Connected)
             }
-        }
-        })
-        Button("Read Production Dev1",action:{
-            Task {
-                do {
-                    await viewModel.sendReadProductionCommand()
-                } catch {
-                    print("Error: \(error)")
+            HStack {
+                Text(viewModel.statusMessage)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+                if viewModel.isScanning {
+                    ProgressView()
                 }
             }
-        })
-        Button("Speed Test Dev1",action:{
-            Task {
-                do {
-                    await viewModel.sendSpeedTestCommand()
-                } catch {
-                    print("Error: \(error)")
+        }
+    }
+
+    private var verisenseConnectionSection: some View {
+        Section(header: Text("Connection — Verisense (Dev1)")) {
+            actionRow("Scan for Verisense", systemImage: "antenna.radiowaves.left.and.right", disabled: viewModel.isScanning) {
+                viewModel.test()
+            }
+            actionRow("Connect", systemImage: "link", disabled: viewModel.isDev1Connected) {
+                Task { await viewModel.connect() }
+            }
+            actionRow("Disconnect", systemImage: "xmark.circle", disabled: !viewModel.isDev1Connected) {
+                Task { await viewModel.disconnect() }
+            }
+        }
+    }
+
+    private var verisenseCommandsSection: some View {
+        Section(header: Text("Device Commands — Verisense (Dev1)")) {
+            actionRow("Read Production Info", systemImage: "info.circle", disabled: !viewModel.isDev1Connected) {
+                Task { await viewModel.sendReadProductionCommand() }
+            }
+            actionRow("Speed Test", systemImage: "speedometer", disabled: !viewModel.isDev1Connected) {
+                Task { await viewModel.sendSpeedTestCommand() }
+            }
+        }
+    }
+
+    private var shimmer3ConnectionSection: some View {
+        Section(header: Text("Connection — Shimmer3 (Dev2)")) {
+            actionRow("Scan for Shimmer3", systemImage: "antenna.radiowaves.left.and.right", disabled: viewModel.isScanning) {
+                viewModel.scanShimmer3()
+            }
+            actionRow("Connect", systemImage: "link", disabled: viewModel.isDev2Connected) {
+                Task { await viewModel.connectDev2() }
+            }
+            actionRow("Disconnect", systemImage: "xmark.circle", disabled: !viewModel.isDev2Connected) {
+                Task { await viewModel.disconnectDev2() }
+            }
+        }
+    }
+
+    private var shimmer3CommandsSection: some View {
+        Section(header: Text("Device Commands — Shimmer3 (Dev2)")) {
+            actionRow("Start Streaming", systemImage: "play.fill", disabled: !viewModel.isDev2Connected) {
+                Task { await viewModel.sendStartStreamingCommandDev2() }
+            }
+            actionRow("Stop Streaming", systemImage: "stop.fill", disabled: !viewModel.isDev2Connected) {
+                Task { await viewModel.sendStopStreamingCommandDev2() }
+            }
+            DisclosureGroup("Write InfoMem (Advanced)") {
+                actionRow("IMU", systemImage: "square.and.pencil", disabled: !viewModel.isDev2Connected) {
+                    Task { await viewModel.sendInfoMemIMU() }
+                }
+                actionRow("Accel", systemImage: "square.and.pencil", disabled: !viewModel.isDev2Connected) {
+                    Task { await viewModel.sendInfoMemAccel() }
+                }
+                actionRow("ECG", systemImage: "square.and.pencil", disabled: !viewModel.isDev2Connected) {
+                    Task { await viewModel.sendInfoMemECG() }
+                }
+                actionRow("EMG", systemImage: "square.and.pencil", disabled: !viewModel.isDev2Connected) {
+                    Task { await viewModel.sendInfoMemEMG() }
+                }
+                actionRow("EXG Test", systemImage: "square.and.pencil", disabled: !viewModel.isDev2Connected) {
+                    Task { await viewModel.sendInfoMemEXGTest() }
+                }
+                actionRow("Respiration", systemImage: "square.and.pencil", disabled: !viewModel.isDev2Connected) {
+                    Task { await viewModel.sendInfoMemRespiration() }
                 }
             }
-        })
-        Button("Scan Shimmer3",action: { viewModel.scanShimmer3()})
-        Button("Connect Dev2",action: {Task {
-            do {
-                await viewModel.connectDev2()
-            } catch {
-                print("Error: \(error)")
+        }
+    }
+
+    private var activityLogSection: some View {
+        Section(header: Text("Activity Log")) {
+            if viewModel.activityLog.isEmpty {
+                Text("No activity yet")
+                    .font(.system(.footnote, design: .monospaced))
+                    .foregroundColor(.secondary)
+            } else {
+                ForEach(Array(viewModel.activityLog.prefix(10).enumerated()), id: \.offset) { _, entry in
+                    Text(entry)
+                        .font(.system(.footnote, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
             }
         }
-        })
-        Button("Disconnect Dev2",action:{ Task {
-            do {
-                await viewModel.disconnectDev2()
-            } catch {
-                print("Error: \(error)")
-            }
+    }
+
+    // MARK: - Helpers
+
+    @ViewBuilder
+    private func actionRow(_ title: String, systemImage: String, disabled: Bool = false, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Label(title, systemImage: systemImage)
         }
-        })
-        Button("StartStreaming Dev2",action:{ Task {
-            do {
-                await viewModel.sendStartStreamingCommandDev2()
-            } catch {
-                print("Error: \(error)")
-            }
+        .disabled(disabled)
+    }
+
+    private func statusBadge(label: String, connected: Bool) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(connected ? Color.green : Color.gray)
+                .frame(width: 8, height: 8)
+            Text(label)
+                .font(.caption)
         }
-        })
-        Button("StopStreaming Dev2",action:{ Task {
-            do {
-                await viewModel.sendStopStreamingCommandDev2()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem WRAccel Dev2",action:{ Task {
-            do {
-                await viewModel.sendInfoMemAccel()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem IMU Dev2",action:{ Task {
-            do {
-                await viewModel.sendInfoMemIMU()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem ECG Dev2",action:{ Task {
-            do {
-                await viewModel.sendInfoMemECG()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem EMG Dev2",action:{ Task {
-            do {
-                await viewModel.sendInfoMemEMG()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem EXG Test Dev2",action:{ Task {
-            do {
-                await viewModel.sendInfoMemEXGTest()
-            } catch   {
-                print("Error: \(error)")
-            }
-        }
-        })
-        Button("WriteInfoMem Respiration Dev2",action:{ Task {
-            do {
-                await viewModel.sendInfoMemRespiration()
-            } catch {
-                print("Error: \(error)")
-            }
-        }
-        })
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            Capsule()
+                .fill(Color(.secondarySystemBackground))
+        )
     }
 }
 
-#Preview {
-    ContentView()
+#if DEBUG
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
+#endif
