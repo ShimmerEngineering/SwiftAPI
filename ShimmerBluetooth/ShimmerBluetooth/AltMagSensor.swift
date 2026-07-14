@@ -44,21 +44,22 @@ public class AltMagSensor : IMUSensor , SensorProcessing{
     var calibBytes_16Ga: [UInt8] = []
     var altMagRange = 0
     var CALIBRATION_ID = 41
-    var AlignmentMatrix : [[Double]] = [[]]
-    var SensitivityMatrix : [[Double]] = [[]]
-    var OffsetVector : [Double] = []
-    var AlignmentMatrix_4Ga:[[Double]] = [[]]
-    var SensitivityMatrix_4Ga:[[Double]] = [[]]
-    var OffsetVector_4Ga:[Double]=[]
-    var AlignmentMatrix_8Ga:[[Double]] = [[]]
-    var SensitivityMatrix_8Ga:[[Double]] = [[]]
-    var OffsetVector_8Ga:[Double]=[]
-    var AlignmentMatrix_12Ga:[[Double]] = [[]]
-    var SensitivityMatrix_12Ga:[[Double]] = [[]]
-    var OffsetVector_12Ga:[Double]=[]
-    var AlignmentMatrix_16Ga:[[Double]] = [[]]
-    var SensitivityMatrix_16Ga:[[Double]] = [[]]
-    var OffsetVector_16Ga:[Double]=[]
+    var AlignmentMatrix_4Ga:[[Double]] = [[1,0,0],[0,-1,0],[0,0,-1]]
+    var SensitivityMatrix_4Ga:[[Double]] = [[6842,0,0],[0,6842,0],[0,0,6842]]
+    var OffsetVector_4Ga:[Double] = [0,0,0]
+    var AlignmentMatrix_8Ga:[[Double]] = [[1,0,0],[0,-1,0],[0,0,-1]]
+    var SensitivityMatrix_8Ga:[[Double]] = [[3421,0,0],[0,3421,0],[0,0,3421]]
+    var OffsetVector_8Ga:[Double] = [0,0,0]
+    var AlignmentMatrix_12Ga:[[Double]] = [[1,0,0],[0,-1,0],[0,0,-1]]
+    var SensitivityMatrix_12Ga:[[Double]] = [[2281,0,0],[0,2281,0],[0,0,2281]]
+    var OffsetVector_12Ga:[Double] = [0,0,0]
+    var AlignmentMatrix_16Ga:[[Double]] = [[1,0,0],[0,-1,0],[0,0,-1]]
+    var SensitivityMatrix_16Ga:[[Double]] = [[1711,0,0],[0,1711,0],[0,0,1711]]
+    var OffsetVector_16Ga:[Double] = [0,0,0]
+     
+    var AlignmentMatrix : [[Double]] = [[1,0,0],[0,-1,0],[0,0,-1]]
+    var SensitivityMatrix : [[Double]] = [[6842,0,0],[0,6842,0],[0,0,6842]]
+    var OffsetVector : [Double] = [0,0,0]
     
     public func get3RRange()->Range3R{
         return Current3RRange
@@ -71,7 +72,7 @@ public class AltMagSensor : IMUSensor , SensorProcessing{
         let rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.i16)!)
         let rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i16)!)
         let rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.i16)!)
-        if (calibrationEnabled){
+        if (calibrationEnabled && AlignmentMatrix.count == 3 && SensitivityMatrix.count == 3 && OffsetVector.count == 3){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
 
             let(calData)=IMUSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)

@@ -39,22 +39,24 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
     public var packetIndexAccelX:Int = -1
     public var packetIndexAccelY:Int = -1
     public var packetIndexAccelZ:Int = -1
-    var AlignmentMatrix:[[Double]] = [[]]
-    var SensitivityMatrix:[[Double]] = [[]]
-    var OffsetVector:[Double]=[]
+    
     var CalibrationID = 2
-    var AlignmentMatrix_2G:[[Double]] = [[]]
-    var SensitivityMatrix_2G:[[Double]] = [[]]
-    var OffsetVector_2G:[Double]=[]
-    var AlignmentMatrix_4G:[[Double]] = [[]]
-    var SensitivityMatrix_4G:[[Double]] = [[]]
-    var OffsetVector_4G:[Double]=[]
-    var AlignmentMatrix_8G:[[Double]] = [[]]
-    var SensitivityMatrix_8G:[[Double]] = [[]]
-    var OffsetVector_8G:[Double]=[]
-    var AlignmentMatrix_16G:[[Double]] = [[]]
-    var SensitivityMatrix_16G:[[Double]] = [[]]
-    var OffsetVector_16G:[Double]=[]
+    var AlignmentMatrix:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix:[[Double]] = [[1672,0,0],[0,1672,0],[0,0,1672]]
+    var OffsetVector:[Double] = [0,0,0]
+     
+    var AlignmentMatrix_2G:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_2G:[[Double]] = [[1672,0,0],[0,1672,0],[0,0,1672]]
+    var OffsetVector_2G:[Double] = [0,0,0]
+    var AlignmentMatrix_4G:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_4G:[[Double]] = [[836,0,0],[0,836,0],[0,0,836]]
+    var OffsetVector_4G:[Double] = [0,0,0]
+    var AlignmentMatrix_8G:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_8G:[[Double]] = [[418,0,0],[0,418,0],[0,0,418]]
+    var OffsetVector_8G:[Double] = [0,0,0]
+    var AlignmentMatrix_16G:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_16G:[[Double]] = [[209,0,0],[0,209,0],[0,0,209]]
+    var OffsetVector_16G:[Double] = [0,0,0]
     var lnAccelRange = 1
     
     var calibBytes_2G: [UInt8] = []
@@ -78,7 +80,7 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
             rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i16)!)
             rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.i16)!)
         }
-        if (calibrationEnabled){
+        if (calibrationEnabled && AlignmentMatrix.count == 3 && SensitivityMatrix.count == 3 && OffsetVector.count == 3){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
             let(calData)=LNAccelSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)
             objectCluster.addData(sensorName: LNAccelSensor.LOW_NOISE_ACCELEROMETER_X, formatName: SensorFormats.Calibrated.rawValue, unitName: SensorUnits.meterPerSecondSquared.rawValue, value: calData![0])
@@ -106,20 +108,39 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
                 (AlignmentMatrix,SensitivityMatrix,OffsetVector) = parseIMUCalibrationParameters(bytes: calbytes)
             }else if(HardwareVersion == Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
                 if range==0{
-                    calibBytes_2G = calbytes
-                    (AlignmentMatrix_2G,SensitivityMatrix_2G,OffsetVector_2G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    if ShimmerUtilities.isAllFF(calbytes) || ShimmerUtilities.isAllZeros(calbytes) {
+                        print("LNAccel 2G calibration invalid — keeping default calibration")
+                    } else {
+                        calibBytes_2G = calbytes
+                        (AlignmentMatrix_2G,SensitivityMatrix_2G,OffsetVector_2G) = parseIMUCalibrationParameters(bytes: calbytes)
+                        print("REAL LNAccel 2G Alignment: \(AlignmentMatrix_2G)")
+                        print("REAL LNAccel 2G Sensitivity: \(SensitivityMatrix_2G)")
+                        print("REAL LNAccel 2G Offset: \(OffsetVector_2G)")
+                    }
                 }
                 if range==1{
-                    calibBytes_4G = calbytes
-                    (AlignmentMatrix_4G,SensitivityMatrix_4G,OffsetVector_4G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    if ShimmerUtilities.isAllFF(calbytes) || ShimmerUtilities.isAllZeros(calbytes) {
+                        print("LNAccel 4G calibration invalid — keeping default calibration")
+                    } else {
+                        calibBytes_4G = calbytes
+                        (AlignmentMatrix_4G,SensitivityMatrix_4G,OffsetVector_4G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    }
                 }
                 if range==2{
-                    calibBytes_8G = calbytes
-                    (AlignmentMatrix_8G,SensitivityMatrix_8G,OffsetVector_8G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    if ShimmerUtilities.isAllFF(calbytes) || ShimmerUtilities.isAllZeros(calbytes) {
+                        print("LNAccel 8G calibration invalid — keeping default calibration")
+                    } else {
+                        calibBytes_8G = calbytes
+                        (AlignmentMatrix_8G,SensitivityMatrix_8G,OffsetVector_8G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    }
                 }
                 if range==3{
-                    calibBytes_16G = calbytes
-                    (AlignmentMatrix_16G,SensitivityMatrix_16G,OffsetVector_16G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    if ShimmerUtilities.isAllFF(calbytes) || ShimmerUtilities.isAllZeros(calbytes) {
+                        print("LNAccel 16G calibration invalid — keeping default calibration")
+                    } else {
+                        calibBytes_16G = calbytes
+                        (AlignmentMatrix_16G,SensitivityMatrix_16G,OffsetVector_16G) = parseIMUCalibrationParameters(bytes: calbytes)
+                    }
                 }
             }
             

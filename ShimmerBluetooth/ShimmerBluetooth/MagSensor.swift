@@ -17,9 +17,9 @@ public class MagSensor : IMUSensor , SensorProcessing{
     public static let MAGNETOMETER_Z = "Magnetometer Z"
     var magRange = 0
     var CALIBRATION_ID = 32
-    var AlignmentMatrix : [[Double]] = [[]]
-    var SensitivityMatrix : [[Double]] = [[]]
-    var OffsetVector : [Double] = []
+    var AlignmentMatrix : [[Double]] = [[-1,0,0],[0,-1,0],[0,0,-1]]
+    var SensitivityMatrix : [[Double]] = [[667,0,0],[0,667,0],[0,0,667]]
+    var OffsetVector : [Double] = [0,0,0]
 
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         let x = Array(sensorPacket[packetIndexMagX..<packetIndexMagX+2])
@@ -28,7 +28,7 @@ public class MagSensor : IMUSensor , SensorProcessing{
         let rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.i16)!)
         let rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i16)!)
         let rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.i16)!)
-        if (calibrationEnabled){
+        if (calibrationEnabled && AlignmentMatrix.count == 3 && SensitivityMatrix.count == 3 && OffsetVector.count == 3){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
 
             let(calData)=IMUSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)

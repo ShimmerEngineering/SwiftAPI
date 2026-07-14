@@ -18,9 +18,9 @@ public class HighGAccelSensor : IMUSensor , SensorProcessing{
     public static let HIGHG_ACCEL_Z = "HighG Accel Z"
     var highGAccelRange = 0
     var CALIBRATION_ID = 40
-    var AlignmentMatrix : [[Double]] = [[]]
-    var SensitivityMatrix : [[Double]] = [[]]
-    var OffsetVector : [Double] = []
+    var AlignmentMatrix : [[Double]] = [[0,1,0],[1,0,0],[0,0,-1]]
+    var SensitivityMatrix : [[Double]] = [[1,0,0],[0,1,0],[0,0,1]]
+    var OffsetVector : [Double] = [10,10,10]
     
     public func processData(sensorPacket: [UInt8], objectCluster: ObjectCluster) -> ObjectCluster {
         let x = Array(sensorPacket[packetIndexHighGAccelX..<packetIndexHighGAccelX+2])
@@ -29,7 +29,7 @@ public class HighGAccelSensor : IMUSensor , SensorProcessing{
         let rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.i12MSB)!)
         let rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i12MSB)!)
         let rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.i12MSB)!)
-        if (calibrationEnabled){
+        if (calibrationEnabled && AlignmentMatrix.count == 3 && SensitivityMatrix.count == 3 && OffsetVector.count == 3){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
 
             let(calData)=IMUSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)
@@ -52,6 +52,10 @@ public class HighGAccelSensor : IMUSensor , SensorProcessing{
             var range = bytes[2]
             var calbytes = bytes
             calbytes.removeFirst(12)
+            if ShimmerUtilities.isAllFF(calbytes) || ShimmerUtilities.isAllZeros(calbytes) {
+                print("HighGAccel calibration invalid — keeping default calibration")
+                return
+            }
             (AlignmentMatrix,SensitivityMatrix,OffsetVector) = parseIMUCalibrationParameters(bytes: calbytes)
         }
     }

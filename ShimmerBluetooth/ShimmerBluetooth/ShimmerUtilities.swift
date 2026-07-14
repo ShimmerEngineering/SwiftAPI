@@ -179,4 +179,12 @@ public class ShimmerUtilities{
         
         return nil
     }
+    
+    public static func isAllFF(_ bytes: [UInt8]) -> Bool {
+        return bytes.allSatisfy { $0 == 0xFF }
+    }
+     
+    public static func isAllZeros(_ bytes: [UInt8]) -> Bool {
+        return bytes.allSatisfy { $0 == 0x00 }
+    }
 }

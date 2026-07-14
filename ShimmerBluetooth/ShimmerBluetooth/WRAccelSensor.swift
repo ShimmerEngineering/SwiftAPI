@@ -42,22 +42,24 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
     public static let WIDE_RANGE_ACCELEROMETER_Z = "Wide Range Accelerometer Z"
     
     var CalibrationID = 31
-    var AlignmentMatrix_2G:[[Double]] = [[]]
-    var SensitivityMatrix_2G:[[Double]] = [[]]
-    var OffsetVector_2G:[Double]=[]
-    var AlignmentMatrix_4G:[[Double]] = [[]]
-    var SensitivityMatrix_4G:[[Double]] = [[]]
-    var OffsetVector_4G:[Double]=[]
-    var AlignmentMatrix_8G:[[Double]] = [[]]
-    var SensitivityMatrix_8G:[[Double]] = [[]]
-    var OffsetVector_8G:[Double]=[]
-    var AlignmentMatrix_16G:[[Double]] = [[]]
-    var SensitivityMatrix_16G:[[Double]] = [[]]
-    var OffsetVector_16G:[Double]=[]
     var wrAccelRange = 1
-    var AlignmentMatrix : [[Double]] = [[]]
-    var SensitivityMatrix : [[Double]] = [[]]
-    var OffsetVector : [Double] = []
+
+    var AlignmentMatrix_2G:[[Double]] = [[0,-1,0],[-1,0,0],[0,0,-1]]
+    var SensitivityMatrix_2G:[[Double]] = [[1671,0,0],[0,1671,0],[0,0,1671]]
+    var OffsetVector_2G:[Double] = [0,0,0]
+    var AlignmentMatrix_4G:[[Double]] = [[0,-1,0],[-1,0,0],[0,0,-1]]
+    var SensitivityMatrix_4G:[[Double]] = [[836,0,0],[0,836,0],[0,0,836]]
+    var OffsetVector_4G:[Double] = [0,0,0]
+    var AlignmentMatrix_8G:[[Double]] = [[0,-1,0],[-1,0,0],[0,0,-1]]
+    var SensitivityMatrix_8G:[[Double]] = [[418,0,0],[0,418,0],[0,0,418]]
+    var OffsetVector_8G:[Double] = [0,0,0]
+    var AlignmentMatrix_16G:[[Double]] = [[0,-1,0],[-1,0,0],[0,0,-1]]
+    var SensitivityMatrix_16G:[[Double]] = [[209,0,0],[0,209,0],[0,0,209]]
+    var OffsetVector_16G:[Double] = [0,0,0]
+     
+    var AlignmentMatrix : [[Double]] = [[0,-1,0],[-1,0,0],[0,0,-1]]
+    var SensitivityMatrix : [[Double]] = [[1671,0,0],[0,1671,0],[0,0,1671]]
+    var OffsetVector : [Double] = [0,0,0]
     
     var calibBytes_2G: [UInt8] = []
     var calibBytes_4G: [UInt8] = []
@@ -72,7 +74,7 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
         let rawDataX = Double(ShimmerUtilities.parseSensorData(sensorData: x, dataType: SensorDataType.i16)!)
         let rawDataY = Double(ShimmerUtilities.parseSensorData(sensorData: y, dataType: SensorDataType.i16)!)
         let rawDataZ = Double(ShimmerUtilities.parseSensorData(sensorData: z, dataType: SensorDataType.i16)!)
-        if (calibrationEnabled){
+        if (calibrationEnabled && AlignmentMatrix.count == 3 && SensitivityMatrix.count == 3 && OffsetVector.count == 3){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
 
             let(calData)=LNAccelSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)
