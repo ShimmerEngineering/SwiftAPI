@@ -59,7 +59,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     var adcExternalA0Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_External_A0)
     var adcExternalA1Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_External_A1)
     var adcExternalA2Sensor: ADCSensor = ADCSensor(adc: .Shimmer3_External_A2)
-    var gsrSensor: GSRSensor = GSRSensor()
+    public var gsrSensor: GSRSensor = GSRSensor()
     public var exgSensor: EXGSensor = EXGSensor()
     public var pressureTempSensor : PressureTempSensor = PressureTempSensor(hwid: HardwareType.UNKNOWN.rawValue)
     var battVoltageSensor : BattVoltageSensor = BattVoltageSensor()
@@ -120,16 +120,15 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     }
     
     func writeInfoMem(bytes:[UInt8]) async -> Bool{
-        
+        guard self.continuation == nil else {
+            print("Cannot send writeInfoMem: another command is already awaiting an ACK")
+            return false
+        }
         radio!.writeBytes(bytes:bytes)
         let result = await withCheckedContinuation { continuation in
-            if self.continuation == nil {
-                // 2
-                self.continuation = continuation
-            }
+            self.continuation = continuation
         }
-        
-        return result!
+        return result ?? false
     }
     
     public func sendInternalExpPower(_ expPower: UInt8) async -> Bool {
@@ -628,7 +627,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                 else{
                     if (self.receivedBytes.first==PacketTypeShimmer.ackCommand.rawValue){
                         if (self.commandSent==PacketTypeShimmer.getCalibDumpCommand){
-                            if (self.receivedBytes[1] == PacketTypeShimmer.calibDumpResponse.rawValue)
+                            if (self.receivedBytes.count > 1 && self.receivedBytes[1] == PacketTypeShimmer.calibDumpResponse.rawValue)
                             {
                                 Thread.sleep(forTimeInterval: 0.5)
                                 var received = self.receivedBytes
@@ -662,7 +661,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                             }
                         }
                         if (self.commandSent==PacketTypeShimmer.getInfoMem){
-                            if (self.receivedBytes[1] == PacketTypeShimmer.getInfoMemResponse.rawValue)
+                            if (self.receivedBytes.count > 1 && self.receivedBytes[1] == PacketTypeShimmer.getInfoMemResponse.rawValue)
                             {
                                 Thread.sleep(forTimeInterval: 0.5)
                                 //print(self.receivedBytes)
@@ -731,7 +730,7 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                             }
                             print("Command ACK Received and Processed: \(self.commandSent!)")
                         } else if (self.commandSent==PacketTypeShimmer.inquiryCommand){
-                            if (self.receivedBytes[1] == PacketTypeShimmer.inquiryResponse.rawValue)
+                            if (self.receivedBytes.count > 1 && self.receivedBytes[1] == PacketTypeShimmer.inquiryResponse.rawValue)
                             {
                                 print(self.receivedBytes.map { String($0) }.joined(separator: " "))
                                 var length = 1 + 1 + 8 //ack + response byte + 8
@@ -740,38 +739,42 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
                                     xlength = 3
                                     length = length + xlength
                                 }
-                                var received = Array(self.receivedBytes.prefix(length))
-                                self.receivedBytes.removeFirst(length)
                                 
-                                for index in 0..<(received[2+6+xlength]+self.CRCMode.rawValue){
-                                    received.append(self.receivedBytes.removeFirst())
-                                }
-                                var crcresult = true
-                                if(self.CRCMode != BTCRCMode.OFF){
-                                    print("CRC 3 Calculated: \(self.shimmerUartCrcCalc(received,(received.count-Int(self.CRCMode.rawValue))))")
-                                    crcresult = self.checkCrc(received,(received.count-Int(self.CRCMode.rawValue)))
-                                    print("CRC 3 Check:  \(crcresult) ")
-                                }
-                                if (crcresult){
-                                    print("Inquiry Response Received")
-                                    self.removeACKandCRCForResponse(bytes: &received)
-                                    print(received)
-                                    self.inquiry = received
-                                    if (self.REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
-                                        self.interpretInquiryResponseShimmer3R(packet: received)
-                                    } else if (self.REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
-                                        self.interpretInquiryResponseShimmer3(packet: received)
+                                if (self.receivedBytes.count >= length) {
+                                    var received = Array(self.receivedBytes.prefix(length))
+                                    self.receivedBytes.removeFirst(length)
+                                    
+                                    for index in 0..<(received[2+6+xlength]+self.CRCMode.rawValue){
+                                        received.append(self.receivedBytes.removeFirst())
                                     }
-                                    print("Command ACK Received and Processed: \(self.commandSent!)")
-                                    self.continuation?.resume(returning: true)
-                                    self.continuation = nil
-                                } else{
-                                    self.continuation?.resume(returning: false)
-                                    self.continuation = nil
-                                    print("[CRC ERROR] : \(self.commandSent!)")
+                                    var crcresult = true
+                                    if(self.CRCMode != BTCRCMode.OFF){
+                                        print("CRC 3 Calculated: \(self.shimmerUartCrcCalc(received,(received.count-Int(self.CRCMode.rawValue))))")
+                                        crcresult = self.checkCrc(received,(received.count-Int(self.CRCMode.rawValue)))
+                                        print("CRC 3 Check:  \(crcresult) ")
+                                    }
+                                    if (crcresult){
+                                        print("Inquiry Response Received")
+                                        self.removeACKandCRCForResponse(bytes: &received)
+                                        print(received)
+                                        self.inquiry = received
+                                        if (self.REV_HW_MAJOR==HardwareType.Shimmer3R.rawValue){
+                                            self.interpretInquiryResponseShimmer3R(packet: received)
+                                        } else if (self.REV_HW_MAJOR==HardwareType.Shimmer3.rawValue){
+                                            self.interpretInquiryResponseShimmer3(packet: received)
+                                        }
+                                        print("Command ACK Received and Processed: \(self.commandSent!)")
+                                        self.continuation?.resume(returning: true)
+                                        self.continuation = nil
+                                    } else{
+                                        self.continuation?.resume(returning: false)
+                                        self.continuation = nil
+                                        print("[CRC ERROR] : \(self.commandSent!)")
+                                    }
+                                    
+                                    
                                 }
-                                
-                                
+                               
                             }
                         } else if (self.commandSent==PacketTypeShimmer.getShimmerVersionCommand){
                             if (self.receivedBytes[1] == PacketTypeShimmer.getShimmerVersionResponse.rawValue)
@@ -1383,13 +1386,21 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         return result
     }
 
-
-    
     public func sendStopStreamingCommand() async -> Bool? {
         guard self.continuation == nil else {
-            print("Cannot send StopStreaming: another command is already awaiting an ACK")
-            return false
+            print("Cannot send StopStreaming: another command is already awaiting an ACK — will retry")
+            // brief wait for whatever's in flight to clear, then try once more
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            guard self.continuation == nil else {
+                print("StopStreaming still blocked after retry")
+                return false
+            }
+            return await sendStopStreamingCommandInternal()
         }
+        return await sendStopStreamingCommandInternal()
+    }
+     
+    private func sendStopStreamingCommandInternal() async -> Bool? {
         let bytes:[UInt8] = [PacketTypeShimmer.stopStreamingCommand.rawValue]
         commandSent = PacketTypeShimmer.stopStreamingCommand
         radio!.writeBytes(bytes:bytes)
@@ -1535,21 +1546,21 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     public func sendSetSamplingRateCommand(samplingRate: Double) async -> Bool?{
         var samplingByteValue = (Int)(32768/samplingRate)
         var bytes = [UInt8]()
-
+     
         bytes.append(PacketTypeShimmer.setSamplingRateCommand.rawValue)
         bytes.append((UInt8)(samplingByteValue & 0xFF))
         bytes.append((UInt8)((samplingByteValue >> 8) & 0xFF))
-        
         commandSent = PacketTypeShimmer.setSamplingRateCommand
-        //let data = Data(bytes)
-        //enableNotifications(enable: true)
         radio!.writeBytes(bytes:bytes)
-        return await withCheckedContinuation { continuation in
+        let result = await withCheckedContinuation { continuation in
             if self.continuation == nil {
-                // 2
                 self.continuation = continuation
             }
         }
+        if (result ?? false) {
+            CurrentSamplingRate = samplingRate
+        }
+        return result
     }
     
     public func sendSetEXGConfigurations(valuesChip1: [UInt8], valuesChip2: [UInt8]) async -> Bool {

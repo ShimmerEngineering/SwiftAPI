@@ -3,6 +3,15 @@ import CoreBluetooth
 import ShimmerBluetooth
 //let radio = BLEByteRadio(deviceType: DeviceType.verisense, deviceName: "Verisense-21082701B799")
 //private let radio = BleByteRadio(deviceName: "Verisense-21082701B799")
+
+enum EXGMode: String, CaseIterable, Identifiable {
+    case none = "None"
+    case ecg = "ECG"
+    case emg = "EMG"
+    case exgTest = "EXG Test"
+    var id: String { self.rawValue }
+}
+
 private var pendingData=[Data]()
 @available(macOS 10.15, *)
 @MainActor
@@ -45,6 +54,15 @@ class ViewModel: NSObject, ObservableObject {
     @Published var stateText = "Disconnected"
     @Published var ppgInputOptions = PPGInputOption.allCases.map(\.rawValue)
     @Published var ppgInputSelectionIndex = 0
+    @Published var lnAccelEnabled = false
+    @Published var magEnabled = false
+    @Published var gyroEnabled = false
+    @Published var wrAccelEnabled = false
+    @Published var altMagEnabled = false
+    @Published var highGAccelEnabled = false
+    @Published var gsrPpgEnabled = false
+    @Published var exgMode: EXGMode = .none
+    @Published var isSensorCommandInFlight = false
     private var updatedPicker = false;
     public var delegate: ViewModelDelegate?
     var count = 1
@@ -62,6 +80,15 @@ class ViewModel: NSObject, ObservableObject {
     public var numberOfSignals = 1
     public var deviceIndex = 0
     private var currentShimmer3RSensorBitmap: UInt32?
+    var signal1Label: String {
+        return pickerData.indices.contains(startIndex) ? pickerData[startIndex] : "Value1"
+    }
+    var signal2Label: String {
+        return pickerData.indices.contains(startIndex+1) ? pickerData[startIndex+1] : "Value2"
+    }
+    var signal3Label: String {
+        return pickerData.indices.contains(startIndex+2) ? pickerData[startIndex+2] : "Value3"
+    }
     
     @Published var isScanning = false
     public override init() {
@@ -100,15 +127,23 @@ class ViewModel: NSObject, ObservableObject {
     func refreshUISettings(){
         lnAccelRangeIndex = Int((shimmer3Protocol?.lnAccelSensor.getRange().rawValue)!)
         wrRangeIndex = Int((shimmer3Protocol?.wrAccelSensor.getRange().rawValue)!)
-        
         gyroRangeIndex = Int((shimmer3Protocol?.gyroSensor.getRange().rawValue)!)
         gyroRange3RIndex = Int((shimmer3Protocol?.gyroSensor.get3RRange().rawValue)!)
         pressResIndex = Int((shimmer3Protocol?.pressureTempSensor.getResolution().rawValue)!)
         exgGainIndex = Int((shimmer3Protocol?.exgSensor.getGain().rawValue)!)
         exgResIndex = Int((shimmer3Protocol?.exgSensor.getResolution().rawValue)!)
         samplingRateIndex = Int((shimmer3Protocol?.getSamplingRateIndex())!)
-        
         altMagRange3RIndex = Int((shimmer3Protocol?.altMagSensor.get3RRange().rawValue)!)
+     
+        // Sync checkbox state from the device's actual current sensor-enabled bitmap
+        lnAccelEnabled = shimmer3Protocol?.lnAccelSensor.sensorEnabled ?? false
+        magEnabled = shimmer3Protocol?.magSensor.sensorEnabled ?? false
+        gyroEnabled = shimmer3Protocol?.gyroSensor.sensorEnabled ?? false
+        wrAccelEnabled = shimmer3Protocol?.wrAccelSensor.sensorEnabled ?? false
+        altMagEnabled = shimmer3Protocol?.altMagSensor.sensorEnabled ?? false
+        highGAccelEnabled = shimmer3Protocol?.highGAccelSensor.sensorEnabled ?? false
+        gsrPpgEnabled = shimmer3Protocol?.gsrSensor.sensorEnabled ?? false
+     
         self.updatedPicker = false
     }
     
@@ -142,13 +177,17 @@ class ViewModel: NSObject, ObservableObject {
     }
     
     func sendStartStreamingCommandDev2() async {
-        updatedPicker = false;
-         await shimmer3Protocol!.sendStartStreamingCommand()
-        
+        isSensorCommandInFlight = true
+        await shimmer3Protocol?.sendStartStreamingCommand()
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        isSensorCommandInFlight = false
     }
-    
+     
     func sendStopStreamingCommandDev2() async {
-        _ = await shimmer3Protocol!.sendStopStreamingCommand()
+        isSensorCommandInFlight = true
+        _ = await shimmer3Protocol?.sendStopStreamingCommand()
+        try? await Task.sleep(nanoseconds: 1_500_000_000)
+        isSensorCommandInFlight = false
     }
     
     func sendS3InfoMemConfigUpdate() async {
@@ -299,6 +338,77 @@ class ViewModel: NSObject, ObservableObject {
         await shimmer3Protocol?.sendInternalExpPower(1)
         refreshUISettings()
     }
+    
+    func configureShimmer3R() async {
+        isSensorCommandInFlight = true
+            guard let shimmer3Protocol = shimmer3Protocol else {
+                isSensorCommandInFlight = false
+                return
+            }
+        
+        var bitmap: UInt32 = 0
+        if lnAccelEnabled   { bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_LN_ACCEL.rawValue }
+        if magEnabled       { bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_MAG.rawValue }
+        if gyroEnabled      { bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_GYRO.rawValue }
+        if wrAccelEnabled   { bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_WR_ACCEL.rawValue }
+        if altMagEnabled    { bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_ALT_MAG.rawValue }
+        if highGAccelEnabled{ bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_HIGHG_ACCEL.rawValue }
+        if gsrPpgEnabled {
+            let ppgInput = selectedPPGInputOption()
+            bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_GSR.rawValue | ppgInput.sensorBitmap
+        }
+        if exgMode != .none {
+            bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue |
+                  Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG2_24BIT.rawValue
+        }
+        currentShimmer3RSensorBitmap = bitmap
+     
+        // EXG chip config — exactly one mode, enforced by the segmented picker
+        switch exgMode {
+        case .exgTest:
+            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP2)
+        case .ecg:
+            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_ECG_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_ECG_CONFIGURATION_CHIP2)
+        case .emg:
+            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_EMG_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_EMG_CONFIGURATION_CHIP2)
+        case .none:
+            break
+        }
+     
+        // Range settings via InfoMem write
+        var infomem = shimmer3Protocol.getInfoMemByteArray()
+        if let range = LNAccelSensor.Range.fromValue(UInt8(lnAccelRangeIndex)) {
+            infomem = shimmer3Protocol.lnAccelSensor.updateInfoMemLNAccelRange(infomem: infomem, range: range)
+        }
+        if let range = AltMagSensor.Range3R.fromValue(UInt8(altMagRange3RIndex)) {
+            infomem = shimmer3Protocol.altMagSensor.updateInfoMem3RAltMagRange(infomem: infomem, range: range)
+        }
+        if let range = GyroSensor.Range3R.fromValue(UInt8(gyroRange3RIndex)) {
+            infomem = shimmer3Protocol.gyroSensor.updateInfoMem3RGyroRange(infomem: infomem, range: range)
+        }
+        if let range = WRAccelSensor.Range.fromValue(UInt8(wrRangeIndex)) {
+            infomem = shimmer3Protocol.wrAccelSensor.updateInfoMemAccelRange(infomem: infomem, range: range)
+        }
+        await shimmer3Protocol.writeShimmer3InfoMem(infoMem: infomem)
+     
+        // Sensor enable bitmap
+        await shimmer3Protocol.sendSetSensorsCommand(sensorBitmap: bitmap)
+     
+        // Internal ADC power for GSR+PPG combos that use internal ADC channels
+        if (bitmap & Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_GSR.rawValue) != 0 &&
+           ((bitmap & Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_INT_A1.rawValue) != 0 ||
+            (bitmap & Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_INT_A0.rawValue) != 0) {
+            await shimmer3Protocol.sendInternalExpPower(1)
+        }
+     
+        // Sampling rate
+        await setShimmerSamplingRate()
+     
+        refreshUISettings()
+        
+        try? await Task.sleep(nanoseconds: 1500_000_000) // 0.75s, adjust if still not enough
+        isSensorCommandInFlight = false
+    }
 
     private func selectedPPGInputOption() -> PPGInputOption {
         guard ppgInputSelectionIndex >= 0 && ppgInputSelectionIndex < PPGInputOption.allCases.count else {
@@ -439,23 +549,14 @@ extension ViewModel : ShimmerProtocolDelegate {
                 self.updatedPicker = true
             }
             
-            if (message.SignalData.count >= 1) {
-                if (message.SignalData.count < self.startIndex + self.numberOfSignals) {
-                    self.startIndex = 0
-                }
-                if (self.numberOfSignals > 0) {
-                    self.signal1.append(message.SignalData[self.startIndex + 0])
-                }
+            if (self.numberOfSignals > 0 && self.startIndex + 0 < message.SignalData.count) {
+                self.signal1.append(message.SignalData[self.startIndex + 0])
             }
-            if (message.SignalData.count >= 2) {
-                if (self.numberOfSignals > 1) {
-                    self.signal2.append(message.SignalData[self.startIndex + 1])
-                }
+            if (self.numberOfSignals > 1 && self.startIndex + 1 < message.SignalData.count) {
+                self.signal2.append(message.SignalData[self.startIndex + 1])
             }
-            if (message.SignalData.count >= 3) {
-                if (self.numberOfSignals > 2) {
-                    self.signal3.append(message.SignalData[self.startIndex + 2])
-                }
+            if (self.numberOfSignals > 2 && self.startIndex + 2 < message.SignalData.count) {
+                self.signal3.append(message.SignalData[self.startIndex + 2])
             }
             if (self.signal1.count == 500) {
                 self.signal1.removeFirst()

@@ -75,18 +75,7 @@ struct ContentView: View {
                 viewModel.signal2 = []
                 viewModel.signal3 = []
             }
-            
-            Picker(selection: $selection, label: Text("Signal Index")) {
-                ForEach(0 ..< 22) {
-                    Text("\($0)") }
-            }.onChange(of: selection) { _ in
-                print(selection)
-                viewModel.startIndex = selection
-                viewModel.signal1 = []
-                viewModel.signal2 = []
-                viewModel.signal3 = []
-            }
-            
+             
             Picker("Select Plot", selection: $signalSelection) {
                 ForEach(0..<viewModel.pickerData.count, id: \.self) { index in
                     Text(self.viewModel.pickerData[index])
@@ -94,20 +83,25 @@ struct ContentView: View {
             }.onChange(of: signalSelection) { _ in
                 print(signalSelection)
                 viewModel.startIndex = signalSelection
-                
-                // Clear ViewModel signals
+             
                 viewModel.signal1 = []
                 viewModel.signal2 = []
                 viewModel.signal3 = []
-                
-                // Clear local arrays used by Chart
+             
                 numbers1 = []
                 numbers2 = []
                 numbers3 = []
-                
-                // Reset min/max so chart rescales
+             
                 min = 0
                 max = 0
+            }
+            .onChange(of: viewModel.pickerData.count) { newCount in
+                if signalSelection >= newCount {
+                    signalSelection = 0
+                }
+                if selection >= newCount {
+                    selection = 0
+                }
             }
             
             Chart {
@@ -123,14 +117,30 @@ struct ContentView: View {
                         y: .value("Value2", value)
                     ).foregroundStyle(by: .value("Value2", "Value2"))
                 }
-                
                 ForEach(Array(numbers3.enumerated()), id: \.offset) { index, value in
                     LineMark(
                         x: .value("Index", index),
                         y: .value("Value3", value)
                     ).foregroundStyle(by: .value("Value3", "Value3"))
                 }
-            }.chartForegroundStyleScale(["Value1": Color.orange, "Value2": Color.blue, "Value3": Color.red]).chartYScale(domain: min < max ? min...max : 0.0...1.0)
+            }
+            .chartForegroundStyleScale(["Value1": Color.orange, "Value2": Color.blue, "Value3": Color.red])
+            .chartYScale(domain: [min,max])
+            .chartLegend(.hidden)
+            
+            HStack {
+                Label(viewModel.signal1Label, systemImage: "circle.fill")
+                    .foregroundColor(.orange)
+                    .font(.caption)
+                Label(viewModel.signal2Label, systemImage: "circle.fill")
+                    .foregroundColor(.blue)
+                    .font(.caption)
+                Label(viewModel.signal3Label, systemImage: "circle.fill")
+                    .foregroundColor(.red)
+                    .font(.caption)
+            }
+            .padding(.top, 12)
+            .padding(.bottom, 16)
             
             Button("Scan Shimmer3",action: { viewModel.scanShimmer3()})
             Picker("Select Shimmer3", selection: $deviceSelection) {
@@ -180,7 +190,8 @@ struct ContentView: View {
                 }
             }
             })
-            .disabled(viewModel.stateText != "Connected")
+            .disabled(viewModel.stateText != "Connected" || viewModel.isSensorCommandInFlight)
+          
             
             Button("StopStreaming Shimmer3",action:{ Task {
                 do {
@@ -190,7 +201,11 @@ struct ContentView: View {
                 }
             }
             })
-            .disabled(viewModel.stateText != "Streaming")
+            .disabled(viewModel.stateText != "Streaming" || viewModel.isSensorCommandInFlight)
+            
+            if viewModel.isSensorCommandInFlight {
+                ProgressView().scaleEffect(0.3)
+            }
             
             Group {
                 if (viewModel.isShimmerConnected && viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3.rawValue){
@@ -276,6 +291,7 @@ struct ContentView: View {
                     }
                     })
                 } else if (viewModel.isShimmerConnected && viewModel.shimmer3Protocol?.REV_HW_MAJOR==Shimmer3Protocol.HardwareType.Shimmer3R.rawValue){
+                    /*
                     Button("Enable LNAccel Shimmer3R",action:{ Task {
                         do {
                             await viewModel.enableS3RLNAccel();
@@ -326,8 +342,17 @@ struct ContentView: View {
                             print("Error: \(error)")
                         }
                     }
-                    })
+                    })*/
+                    
+                    Toggle("LN Accel", isOn: $viewModel.lnAccelEnabled)
+                    Toggle("Mag", isOn: $viewModel.magEnabled)
+                    Toggle("Gyro", isOn: $viewModel.gyroEnabled)
+                    Toggle("WR Accel", isOn: $viewModel.wrAccelEnabled)
+                    Toggle("Alt Mag", isOn: $viewModel.altMagEnabled)
+                    Toggle("HighG Accel", isOn: $viewModel.highGAccelEnabled)
+                    
                     if viewModel.shimmer3Protocol?.hasEXGExpansionBoard() == true {
+                        /*
                         Button("Enable EXG Test",action:{ Task {
                             do {
                                 await viewModel.enableEXGTest()
@@ -351,7 +376,13 @@ struct ContentView: View {
                                 print("Error: \(error)")
                             }
                         }
-                        })
+                        })*/
+                    
+                        Picker("EXG Mode", selection: $viewModel.exgMode) {
+                            ForEach(EXGMode.allCases) { mode in
+                                Text(mode.rawValue).tag(mode)
+                            }
+                        }
                         
                         Picker("Select EXG Gain", selection: $viewModel.exgGainIndex) {
                             ForEach(0..<viewModel.exgGain.count, id: \.self) { index in
@@ -382,7 +413,7 @@ struct ContentView: View {
                         .onChange(of: viewModel.ppgInputSelectionIndex) { newValue in
                             self.viewModel.ppgInputSelectionIndex = newValue
                         }
-                        
+                        /*
                         Button("Enable GSR + PPG",action:{ Task {
                             do {
                                 await viewModel.enableS3RPPG()
@@ -390,7 +421,8 @@ struct ContentView: View {
                                 print("Error: \(error)")
                             }
                         }
-                        })
+                        })*/
+                        Toggle("GSR + PPG", isOn: $viewModel.gsrPpgEnabled)
                     }
                 }
             }
@@ -477,6 +509,27 @@ struct ContentView: View {
                         viewModel.gyroRange3RIndex = newValue
                     }
                     
+                    Picker("Sampling Rate", selection: $viewModel.samplingRateIndex) {
+                        ForEach(0..<viewModel.samplingRate.count, id: \.self) { index in
+                            Text(viewModel.samplingRate[index])
+                        }
+                    }
+                    .onChange(of: viewModel.samplingRateIndex) { newValue in
+                        // Update the ViewModel's samplingRateIndex property
+                        viewModel.samplingRateIndex = newValue
+                    }
+                    
+                    Button("Configure", action: { Task {
+                        do {
+                            await viewModel.configureShimmer3R()
+                        } catch {
+                            print("Error: \(error)")
+                        }
+                    }
+                    })
+                    .disabled(viewModel.stateText == "Streaming" || viewModel.isSensorCommandInFlight)
+                   
+                    /*
                     Button("WriteInfoMem Shimmer3R",action:{ Task {
                         do {
                             await viewModel.sendS3RInfoMemConfigUpdate()
@@ -485,10 +538,11 @@ struct ContentView: View {
                             print("Error: \(error)")
                         }
                     }
-                    })
+                    })*/
                 }
                 
                 if (viewModel.isShimmerConnected) {
+                    /*
                     Picker("Sampling Rate", selection: $viewModel.samplingRateIndex) {
                         ForEach(0..<viewModel.samplingRate.count, id: \.self) { index in
                             Text(viewModel.samplingRate[index])
@@ -506,7 +560,8 @@ struct ContentView: View {
                             print("Error: \(error)")
                         }
                     }
-                    })
+                    })*/
+                    
                 }
             }
             .disabled(viewModel.stateText == "Streaming")
