@@ -174,10 +174,14 @@ public class WRAccelSensor : IMUSensor , SensorProcessing{
             }
         }
             
-            infomemtoupdate.replaceSubrange(
-                ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration..<ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
-                with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
-            
+            if calibBytes.count >= ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes {
+                infomemtoupdate.replaceSubrange(
+                    ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration..<ConfigByteLayoutShimmer3.idxLSM303DLHCAccelCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                    with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+            } else {
+                print("WRAccel calibration bytes for this range unavailable — skipping calibration byte write")
+            }
+
             let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0]
             let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte0] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)
             let range = UInt8(wrAccelRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCAccelRange)

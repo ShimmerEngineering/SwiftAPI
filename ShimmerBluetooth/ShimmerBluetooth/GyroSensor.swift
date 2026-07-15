@@ -226,9 +226,13 @@ public class GyroSensor : IMUSensor , SensorProcessing{
             }
         
         
-        infomemtoupdate.replaceSubrange(
-                        ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
-                        with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        if calibBytes.count >= ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes {
+            infomemtoupdate.replaceSubrange(
+                            ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                            with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        } else {
+            print("Gyro calibration bytes for this range unavailable — skipping calibration byte write")
+        }
         
             let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
             let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150GyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
@@ -273,9 +277,13 @@ public class GyroSensor : IMUSensor , SensorProcessing{
         }
         
         
-        infomemtoupdate.replaceSubrange(
-                        ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
-                        with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        if calibBytes.count >= ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes {
+            infomemtoupdate.replaceSubrange(
+                            ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                            with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        } else {
+            print("Gyro calibration bytes for this range unavailable — skipping calibration byte write")
+        }
         
         let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
         let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150GyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)

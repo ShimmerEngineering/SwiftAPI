@@ -167,10 +167,14 @@ public class LNAccelSensor : IMUSensor , SensorProcessing{
                 calibBytes = calibBytes_16G
             }
 
-            infomemtoupdate.replaceSubrange(
-                ConfigByteLayoutShimmer3.idxLSM6DSVAccelCalibration..<ConfigByteLayoutShimmer3.idxLSM6DSVAccelCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
-                with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
-            
+            if calibBytes.count >= ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes {
+                infomemtoupdate.replaceSubrange(
+                    ConfigByteLayoutShimmer3.idxLSM6DSVAccelCalibration..<ConfigByteLayoutShimmer3.idxLSM6DSVAccelCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                    with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+            } else {
+                print("LNAccel calibration bytes for this range unavailable — skipping calibration byte write")
+            }
+
             let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3]
             let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte3] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150AccelRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150AccelRange)
             let range = UInt8(lnAccelRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150AccelRange)
