@@ -149,8 +149,11 @@ class ViewModel: NSObject, ObservableObject {
     
     func connectDev2() async{
         let deviceName = pickerDevices[deviceIndex]
-        var peripheral = bluetoothManager?.getPeripheral(deviceName: deviceName)
-        self.radio = BleByteRadio(deviceName: deviceName,cbperipheral: peripheral!,bluetoothManager: bluetoothManager!)
+        guard let peripheral = bluetoothManager?.getPeripheral(deviceName: deviceName) else {
+            print("[ERROR] No scanned peripheral found for device name: \(deviceName)")
+            return
+        }
+        self.radio = BleByteRadio(deviceName: deviceName,cbperipheral: peripheral,bluetoothManager: bluetoothManager!)
         if (protocolShimmer3==0){
             shimmer3Protocol = Shimmer3Protocol(radio: self.radio!)
             shimmer3Protocol?.delegate = self
@@ -357,26 +360,28 @@ class ViewModel: NSObject, ObservableObject {
             let ppgInput = selectedPPGInputOption()
             bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_GSR.rawValue | ppgInput.sensorBitmap
         }
-        if exgMode != .none {
-            bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue |
-                  Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG2_24BIT.rawValue
-        }
-        currentShimmer3RSensorBitmap = bitmap
-     
-        // EXG chip config — exactly one mode, enforced by the segmented picker
+        // Consensys's isEXGUsingDefaultEMGConfiguration() requires chip1 enabled
+        // and chip2 DISABLED (mIsExg1_24bitEnabled && !mIsExg2_24bitEnabled) — unlike
+        // ECG/Test which require both chips enabled. Enabling EXG2 for EMG makes
+        // Consensys's detection gate fail and fall back to "Custom".
         switch exgMode {
-        case .exgTest:
-            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP2)
-        case .ecg:
-            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_ECG_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_ECG_CONFIGURATION_CHIP2)
+        case .ecg, .exgTest:
+            bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue |
+                      Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG2_24BIT.rawValue
         case .emg:
-            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: Shimmer3Protocol.Shimmer3Configuration.EXG_EMG_CONFIGURATION_CHIP1, valuesChip2: Shimmer3Protocol.Shimmer3Configuration.EXG_EMG_CONFIGURATION_CHIP2)
+            bitmap |= Shimmer3Protocol.SensorBitmapShimmer3.SENSOR_EXG1_24BIT.rawValue
         case .none:
             break
         }
+        currentShimmer3RSensorBitmap = bitmap
      
-        // Range settings via InfoMem write
+        // Range settings via InfoMem write — do this FIRST
         var infomem = shimmer3Protocol.getInfoMemByteArray()
+        
+        infomem[ConfigByteLayoutShimmer3.idxSensors0] = UInt8(bitmap & 0xFF)
+        infomem[ConfigByteLayoutShimmer3.idxSensors1] = UInt8((bitmap >> 8) & 0xFF)
+        infomem[ConfigByteLayoutShimmer3.idxSensors2] = UInt8((bitmap >> 16) & 0xFF)
+        
         if let range = LNAccelSensor.Range.fromValue(UInt8(lnAccelRangeIndex)) {
             infomem = shimmer3Protocol.lnAccelSensor.updateInfoMemLNAccelRange(infomem: infomem, range: range)
         }
@@ -389,7 +394,36 @@ class ViewModel: NSObject, ObservableObject {
         if let range = WRAccelSensor.Range.fromValue(UInt8(wrRangeIndex)) {
             infomem = shimmer3Protocol.wrAccelSensor.updateInfoMemAccelRange(infomem: infomem, range: range)
         }
+
+        // Mirror the EXG chip register config into InfoMem too, so a device read-back
+        // (e.g. from Consensys) sees the same registers as what's live on the chips —
+        // otherwise InfoMem keeps a stale/default EXG config that matches no known mode.
+        var exgChip1: [UInt8]? = nil
+        var exgChip2: [UInt8]? = nil
+        switch exgMode {
+        case .exgTest:
+            exgChip1 = Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP1
+            exgChip2 = Shimmer3Protocol.Shimmer3Configuration.EXG_TEST_SIGNAL_CONFIGURATION_CHIP2
+        case .ecg:
+            exgChip1 = Shimmer3Protocol.Shimmer3Configuration.EXG_ECG_CONFIGURATION_CHIP1
+            exgChip2 = Shimmer3Protocol.Shimmer3Configuration.EXG_ECG_CONFIGURATION_CHIP2
+        case .emg:
+            exgChip1 = Shimmer3Protocol.Shimmer3Configuration.EXG_EMG_CONFIGURATION_CHIP1
+            exgChip2 = Shimmer3Protocol.Shimmer3Configuration.EXG_EMG_CONFIGURATION_CHIP2
+        case .none:
+            break
+        }
+        if let exgChip1, let exgChip2 {
+            infomem = shimmer3Protocol.exgSensor.updateInfoMemExgChipConfig(infomem: infomem, chip1: exgChip1, chip2: exgChip2)
+        }
+
         await shimmer3Protocol.writeShimmer3InfoMem(infoMem: infomem)
+
+        // EXG chip config — moved to AFTER the InfoMem write, so its internal
+        // setEXGArray() call is the last thing to touch CurrentEXGMode
+        if let exgChip1, let exgChip2 {
+            await shimmer3Protocol.sendSetEXGConfigurations(valuesChip1: exgChip1, valuesChip2: exgChip2)
+        }
      
         // Sensor enable bitmap
         await shimmer3Protocol.sendSetSensorsCommand(sensorBitmap: bitmap)

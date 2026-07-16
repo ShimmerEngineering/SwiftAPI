@@ -598,6 +598,17 @@ public class EXGSensor: Sensor , SensorProcessing{
         
        }
     
+    public func updateInfoMemExgChipConfig(infomem: [UInt8], chip1: [UInt8], chip2: [UInt8]) -> [UInt8]{
+        var infomemtoupdate = infomem
+        for i in 0..<chip1.count {
+            infomemtoupdate[ConfigByteLayoutShimmer3.idxEXGADS1292RChip1Config1 + i] = chip1[i]
+        }
+        for i in 0..<chip2.count {
+            infomemtoupdate[ConfigByteLayoutShimmer3.idxEXGADS1292RChip2Config1 + i] = chip2[i]
+        }
+        return infomemtoupdate
+    }
+
     public func getUpdatedEcgGainInfomem(infomem: [UInt8], gain: Gain) -> [UInt8]{
         var infomemtoupdate = infomem
         var ecgGainBytesToUpdate: [UInt8] = [0x00, 0x00, 0x00, 0x00]

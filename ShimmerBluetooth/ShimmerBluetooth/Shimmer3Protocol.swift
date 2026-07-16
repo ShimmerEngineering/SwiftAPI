@@ -1671,8 +1671,8 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
         sendSetExgRegsCommand(byte: (UInt8)(0))
         sendSetExgRegsCommand(byte: (UInt8)(10))
         for i in 0..<10 {
-            sendSetExgRegsCommand(byte: valuesChip1[i])
-            exgSensor.exg1RegisterArray[i] = valuesChip1[i]
+            sendSetExgRegsCommand(byte: valuesChip2[i])
+            exgSensor.exg2RegisterArray[i] = valuesChip2[i]
         }
     }
     public func sendSetExgRegsCommand(){
@@ -1880,9 +1880,9 @@ public class Shimmer3Protocol : NSObject, ShimmerProtocol {
     }
     
     public class Shimmer3Configuration {
-        public static let EXG_ECG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA0, 0x10, 0x40, 0x40, 0x2D, 0x00, 0x00, 0x02, 0x03]
+        public static let EXG_ECG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA8, 0x10, 0x40, 0x40, 0x2D, 0x00, 0x00, 0x02, 0x03]
         public static let EXG_ECG_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA0, 0x10, 0x40, 0x47, 0x00, 0x00, 0x00, 0x02, 0x01]
-        public static let EXG_EMG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA0, 0x10, 0x69, 0x60, 0x20, 0x00, 0x00, 0x02, 0x03]
+        public static let EXG_EMG_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA8, 0x10, 0x69, 0x60, 0x20, 0x00, 0x00, 0x02, 0x03]
         public static let EXG_EMG_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA0, 0x10, 0xE1, 0xE1, 0x00, 0x00, 0x00, 0x02, 0x01]
         public static let EXG_TEST_SIGNAL_CONFIGURATION_CHIP1: [UInt8] = [0x00, 0xA3, 0x10, 0x45, 0x45, 0x00, 0x00, 0x00, 0x02, 0x01]
         public static let EXG_TEST_SIGNAL_CONFIGURATION_CHIP2: [UInt8] = [0x00, 0xA3, 0x10, 0x45, 0x45, 0x00, 0x00, 0x00, 0x02, 0x01]

@@ -10,9 +10,9 @@ import Foundation
 public class ConfigByteLayoutShimmer3{
     static let idxShimmerSamplingRate = 0
     static let idxBufferSize = 2
-    static let idxSensors0 = 3
-    static let idxSensors1 = 4
-    static let idxSensors2 = 5
+    public static let idxSensors0 = 3
+    public static let idxSensors1 = 4
+    public static let idxSensors2 = 5
     static let idxConfigSetupByte0 = 6
     static let idxConfigSetupByte1 = 7
     static let idxConfigSetupByte2 = 8
