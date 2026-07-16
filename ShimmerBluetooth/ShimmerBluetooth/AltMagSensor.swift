@@ -188,6 +188,7 @@ public class AltMagSensor : IMUSensor , SensorProcessing{
     
     public func updateInfoMem3RAltMagRange(infomem: [UInt8],range: Range3R) -> [UInt8]{
         var infomemtoupdate = infomem
+        print("oriinfomem: \(infomemtoupdate)")
         var altMagRange = 0
         var calibBytes = calibBytes_4Ga
         if (range == Range3R.RANGE_4Ga){
@@ -215,9 +216,14 @@ public class AltMagSensor : IMUSensor , SensorProcessing{
         let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
         let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskLSM303DLHCMagRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCMagRange)
         let range = UInt8(altMagRange<<ConfigByteLayoutShimmer3.bitShiftLSM303DLHCMagRange)
-
+        
+        print("orivalue range: \(orivalue)")
+        print("value: \(value)")
+        print("range: \(range)")
+        
         infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] = value | range
-
+        print("updatedinfomem: \(infomemtoupdate)")
+        
         return infomemtoupdate
     }
     
