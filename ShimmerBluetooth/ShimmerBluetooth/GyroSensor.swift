@@ -71,29 +71,30 @@ public class GyroSensor : IMUSensor , SensorProcessing{
     public static let GYROSCOPE_Y = "Gyroscope Y"
     public static let GYROSCOPE_Z = "Gyroscope Z"
     var CALIBRATION_ID = 30
-    var AlignmentMatrix_125DPS:[[Double]] = [[]]
-    var SensitivityMatrix_125DPS:[[Double]] = [[]]
-    var OffsetVector_125DPS:[Double]=[]
-    var AlignmentMatrix_250DPS:[[Double]] = [[]]
-    var SensitivityMatrix_250DPS:[[Double]] = [[]]
-    var OffsetVector_250DPS:[Double]=[]
-    var AlignmentMatrix_500DPS:[[Double]] = [[]]
-    var SensitivityMatrix_500DPS:[[Double]] = [[]]
-    var OffsetVector_500DPS:[Double]=[]
-    var AlignmentMatrix_1000DPS:[[Double]] = [[]]
-    var SensitivityMatrix_1000DPS:[[Double]] = [[]]
-    var OffsetVector_1000DPS:[Double]=[]
-    var AlignmentMatrix_2000DPS:[[Double]] = [[]]
-    var SensitivityMatrix_2000DPS:[[Double]] = [[]]
-    var OffsetVector_2000DPS:[Double]=[]
-    var AlignmentMatrix_4000DPS:[[Double]] = [[]]
-    var SensitivityMatrix_4000DPS:[[Double]] = [[]]
-    var OffsetVector_4000DPS:[Double]=[]
+    var AlignmentMatrix_125DPS:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_125DPS:[[Double]] = [[229,0,0],[0,229,0],[0,0,229]]
+    var OffsetVector_125DPS:[Double] = [0,0,0]
+    var AlignmentMatrix_250DPS:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_250DPS:[[Double]] = [[114,0,0],[0,114,0],[0,0,114]]
+    var OffsetVector_250DPS:[Double] = [0,0,0]
+    var AlignmentMatrix_500DPS:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_500DPS:[[Double]] = [[57,0,0],[0,57,0],[0,0,57]]
+    var OffsetVector_500DPS:[Double] = [0,0,0]
+    var AlignmentMatrix_1000DPS:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_1000DPS:[[Double]] = [[29,0,0],[0,29,0],[0,0,29]]
+    var OffsetVector_1000DPS:[Double] = [0,0,0]
+    var AlignmentMatrix_2000DPS:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_2000DPS:[[Double]] = [[14,0,0],[0,14,0],[0,0,14]]
+    var OffsetVector_2000DPS:[Double] = [0,0,0]
+    var AlignmentMatrix_4000DPS:[[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix_4000DPS:[[Double]] = [[7,0,0],[0,7,0],[0,0,7]]
+    var OffsetVector_4000DPS:[Double] = [0,0,0]
+     
+    var AlignmentMatrix : [[Double]] = [[-1,0,0],[0,1,0],[0,0,-1]]
+    var SensitivityMatrix : [[Double]] = [[229,0,0],[0,229,0],[0,0,229]]
+    var OffsetVector : [Double] = [0,0,0]
     
     var gyroRange = 1
-    var AlignmentMatrix : [[Double]] = [[]]
-    var SensitivityMatrix : [[Double]] = [[]]
-    var OffsetVector : [Double] = []
     
     var calibBytes_125DPS: [UInt8] = []
     var calibBytes_250DPS: [UInt8] = []
@@ -121,7 +122,7 @@ public class GyroSensor : IMUSensor , SensorProcessing{
         }
        
         //print("G X : \(rawDataX) ,  G Y : \(rawDataY),  G Z : \(rawDataZ)")
-        if (calibrationEnabled){
+        if (calibrationEnabled && AlignmentMatrix.count == 3 && SensitivityMatrix.count == 3 && OffsetVector.count == 3){
             let data:[Double] = [rawDataX,rawDataY,rawDataZ]
 
             let(calData)=LNAccelSensor.calibrateInertialSensorData(data,AlignmentMatrix,SensitivityMatrix,OffsetVector)
@@ -225,9 +226,13 @@ public class GyroSensor : IMUSensor , SensorProcessing{
             }
         
         
-        infomemtoupdate.replaceSubrange(
-                        ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
-                        with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        if calibBytes.count >= ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes {
+            infomemtoupdate.replaceSubrange(
+                            ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                            with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        } else {
+            print("Gyro calibration bytes for this range unavailable — skipping calibration byte write")
+        }
         
             let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
             let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150GyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
@@ -272,9 +277,13 @@ public class GyroSensor : IMUSensor , SensorProcessing{
         }
         
         
-        infomemtoupdate.replaceSubrange(
-                        ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
-                        with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        if calibBytes.count >= ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes {
+            infomemtoupdate.replaceSubrange(
+                            ConfigByteLayoutShimmer3.idxGyroCalibration..<ConfigByteLayoutShimmer3.idxGyroCalibration + ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes,
+                            with: calibBytes[0..<ConfigByteLayoutShimmer3.lengthGeneralCalibrationBytes])
+        } else {
+            print("Gyro calibration bytes for this range unavailable — skipping calibration byte write")
+        }
         
         let orivalue = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2]
         let value = infomemtoupdate[ConfigByteLayoutShimmer3.idxConfigSetupByte2] & ~UInt8(ConfigByteLayoutShimmer3.maskMPU9150GyroRange<<ConfigByteLayoutShimmer3.bitShiftMPU9150GyroRange)
