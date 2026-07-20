@@ -440,7 +440,7 @@ class ViewModel: NSObject, ObservableObject {
      
         refreshUISettings()
         
-        try? await Task.sleep(nanoseconds: 1500_000_000) // 0.75s, adjust if still not enough
+        try? await Task.sleep(nanoseconds: 1500_000_000)
         isSensorCommandInFlight = false
     }
 
